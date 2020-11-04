@@ -1,7 +1,7 @@
 # maniphono
 
-[![Build Status](https://travis-ci.org/tresoldi/maniphono.svg?branch=master)](https://travis-ci.org/tresoldi/maniphono)
-[![codecov](https://codecov.io/gh/tresoldi/maniphono/branch/master/graph/badge.svg)](https://codecov.io/gh/tresoldi/maniphono)
+[![Build Status](https://travis-ci.org/tresoldi/maniphono.svg?branch=main)](https://travis-ci.org/tresoldi/maniphono)
+[![codecov](https://codecov.io/gh/tresoldi/maniphono/branch/main/graph/badge.svg)](https://codecov.io/gh/tresoldi/maniphono)
 
 Python library for the symbolic manipulation of phoneme representations
 
