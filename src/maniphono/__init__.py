@@ -13,3 +13,4 @@ __email__ = "tresoldi@shh.mpg.de"
 from maniphono.model import PhonoModel
 from maniphono.sound import Sound
 from maniphono.segment import Segment
+from maniphono.sequence import Sequence
