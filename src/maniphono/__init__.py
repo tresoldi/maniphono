@@ -12,3 +12,4 @@ __email__ = "tresoldi@shh.mpg.de"
 # Build the namespace
 from maniphono.model import PhonoModel
 from maniphono.sound import Sound
+from maniphono.segment import Segment

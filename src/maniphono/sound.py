@@ -91,3 +91,6 @@ class Sound:
         return " ".join(
             sorted(self.values, reverse=True, key=lambda v: self.model.weights[v])
         )
+
+    def __str__(self):
+        return self.grapheme()
