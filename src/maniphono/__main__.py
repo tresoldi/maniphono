@@ -33,7 +33,12 @@ def main():
 
     e = maniphono.Bundle(tresoldi, grapheme="e")
     e.set_description("preaspirated")
-    print(e.grapheme())
+    print(e.grapheme(), repr(e))
+
+    pj = maniphono.Bundle(
+        ipa, "labialized aspirated voiceless bilabial plosive consonant"
+    )
+    print(pj.grapheme(), repr(pj))
 
 
 if __name__ == "__main__":

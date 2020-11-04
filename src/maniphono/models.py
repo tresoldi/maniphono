@@ -2,11 +2,14 @@ import csv
 from pprint import pprint
 from collections import defaultdict
 
+# TODO: allow system to add implied values?
+
 # TODO: solution for name order, with a weight
-
+# TODO: multiple implies, such as aspiration -> voiceless consonant; also positive negative?
 # TODO: rename implies to constrains (should have OR?)
-
+# TODO: overload operators
 # TODO: allow to initialize a bundle from a grapheme in the model (including modifiers)
+# TODO: labio-palatalized?
 class Bundle:
     """
     Class representing a bundle of phonetic features according to a model.
@@ -66,28 +69,40 @@ class Bundle:
             # `best_score`
             best_score = 0.0
             best_features = None
-            best_grapheme = None
             for candidate_f, candidate_g in self.model.feats2graph.items():
                 common = [value for value in feat_tuple if value in candidate_f]
                 score = sum([1 / self.model.weights[value] for value in common])
                 if score > best_score:
                     best_score = score
                     best_features = candidate_f
-                    best_grapheme = candidate_g
+                    grapheme = candidate_g
 
             # Build grapheme
-            # TODO: deal with diacritics
             not_common = [value for value in feat_tuple if value not in best_features]
-            grapheme = f"{best_grapheme}[{','.join(not_common)}]"
+            leftover = []
+            for value in not_common:
+                # If there is no prefix or no suffix
+                prefix = self.model.modifiers[value]["prefix"]
+                suffix = self.model.modifiers[value]["suffix"]
+                if not any([prefix, suffix]):
+                    leftover.append(value)
+                else:
+                    grapheme = f"{prefix}{grapheme}{suffix}"
+
+            if leftover:
+                grapheme = f"{grapheme}[{','.join(leftover)}]"
 
         return grapheme
 
     def __repr__(self):
         # TODO: build in order, something which probably should be cached
-        return " ".join(sorted(self.values))
+        # TODO: what about same weight values, like palatalization and velarization?
+        return " ".join(
+            sorted(self.values, reverse=True, key=lambda v: self.model.weights[v])
+        )
 
 
-class PhonoModel:
+class OldPhonoModel:
     def __init__(self, feature_file, inventory_file):
         # TODO: read model name from file name
         self.name = "bipa"
@@ -97,6 +112,7 @@ class PhonoModel:
         self.weights = {}
         self.implies = defaultdict(list)
         self.value2feature = {}
+        self.modifiers = {}
         with open(feature_file) as csvfile:
             for row in csv.DictReader(csvfile):
                 # Make sure the value is not repeated
@@ -111,6 +127,12 @@ class PhonoModel:
                     # Store implies (unless it is an empty string, as read from file)
                     if row["IMPLIES"]:
                         self.implies[row["VALUE"]].append(row["IMPLIES"])
+
+                    # Store modifiers (i.e., diacritics)
+                    self.modifiers[row["VALUE"]] = {
+                        "prefix": row["PREFIX"],
+                        "suffix": row["SUFFIX"],
+                    }
 
         # Read inventory
         # TODO: add checks
