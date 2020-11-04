@@ -1,4 +1,8 @@
 # TODO: should WEIGHT be reversed to be more obvious? renameto RANK?
+# TODO: rename implies to constrains (should have OR?)
+# TODO: multiple implies, such as aspiration -> voiceless consonant; also positive negative?
+# TODO: `model_path` is not strictly necessary, we can infer it if a default one
+# TODO: already load and provide IPA/TRESOLDI models here
 
 import csv
 from collections import defaultdict

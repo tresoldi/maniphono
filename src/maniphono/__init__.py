@@ -10,5 +10,5 @@ __author__ = "Tiago Tresoldi"
 __email__ = "tresoldi@shh.mpg.de"
 
 # Build the namespace
-from maniphono.models import OldPhonoModel, Bundle
 from maniphono.model import PhonoModel
+from maniphono.sound import Sound

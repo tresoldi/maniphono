@@ -1,20 +1,11 @@
-import csv
-from pprint import pprint
-from collections import defaultdict
-
-# TODO: allow system to add implied values?
-
-# TODO: solution for name order, with a weight
-# TODO: multiple implies, such as aspiration -> voiceless consonant; also positive negative?
-# TODO: rename implies to constrains (should have OR?)
 # TODO: overload operators
-# TODO: allow to initialize a bundle from a grapheme in the model (including modifiers)
-# TODO: labio-palatalized?
-class Bundle:
+# TODO: allow to initialize a sound from a grapheme in the model (including modifiers)
+# TODO: build implies -> e.g., all plosives will be consonants automatically
+class Sound:
     """
     Class representing a bundle of phonetic features according to a model.
 
-    Note that, by definition, a bundle does not need to be a complete sound, but
+    Note that, by definition, a sound does not need to be a "complete sound", but
     can also be used to represent sound classes (such "consonant" or "front vowel").
     The class is intended to work with any generic model provided by the
     PhonoModel class.
@@ -96,50 +87,7 @@ class Bundle:
 
     def __repr__(self):
         # TODO: build in order, something which probably should be cached
-        # TODO: what about same weight values, like palatalization and velarization?
+        # TODO: what about same weight values, like palatalization and velarization? alphabetical?
         return " ".join(
             sorted(self.values, reverse=True, key=lambda v: self.model.weights[v])
         )
-
-
-class OldPhonoModel:
-    def __init__(self, feature_file, inventory_file):
-        # TODO: read model name from file name
-        self.name = "bipa"
-
-        # Parse file with feature definitions
-        self.features = defaultdict(list)
-        self.weights = {}
-        self.implies = defaultdict(list)
-        self.value2feature = {}
-        self.modifiers = {}
-        with open(feature_file) as csvfile:
-            for row in csv.DictReader(csvfile):
-                # Make sure the value is not repeated
-                if row["VALUE"] in self.value2feature:
-                    raise ValueError(f"Duplicate value {row['VALUE']}")
-                else:
-                    # Store features (also as reverse map) as weights
-                    self.features[row["FEATURE"]].append(row["VALUE"])
-                    self.value2feature[row["VALUE"]] = row["FEATURE"]
-                    self.weights[row["VALUE"]] = int(row["WEIGHT"])
-
-                    # Store implies (unless it is an empty string, as read from file)
-                    if row["IMPLIES"]:
-                        self.implies[row["VALUE"]].append(row["IMPLIES"])
-
-                    # Store modifiers (i.e., diacritics)
-                    self.modifiers[row["VALUE"]] = {
-                        "prefix": row["PREFIX"],
-                        "suffix": row["SUFFIX"],
-                    }
-
-        # Read inventory
-        # TODO: add checks
-        self.graph2feats = {}
-        self.feats2graph = {}
-        with open(inventory_file) as csvfile:
-            for row in csv.DictReader(csvfile):
-                feat_tuple = tuple(sorted(row["DESCRIPTION"].split()))
-                self.graph2feats[row["GRAPHEME"]] = feat_tuple
-                self.feats2graph[feat_tuple] = row["GRAPHEME"]
