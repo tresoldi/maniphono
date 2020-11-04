@@ -10,7 +10,7 @@ from pathlib import Path
 
 
 class PhonoModel:
-    def __init__(self, name, model_path):
+    def __init__(self, name, model_path=None):
         # Setup model and defaults
         self.name = name
         self.features = defaultdict(list)
@@ -21,8 +21,12 @@ class PhonoModel:
         self.graph2feats = {}
         self.feats2graph = {}
 
-        # Build a path for reading the model
-        model_path = Path(model_path).absolute()
+        # Build a path for reading the model; if it was not provided, assume it lives in
+        # the `model/` directory
+        if not model_path:
+            model_path = Path(__file__).parent.parent.parent / "models" / name
+        else:
+            model_path = Path(model_path).absolute()
 
         # Parse file with feature definitions
         # TODO: enforce feature/value name restrictions
@@ -58,3 +62,8 @@ class PhonoModel:
                 feat_key = tuple(sorted(row["DESCRIPTION"].split()))
                 self.graph2feats[row["GRAPHEME"]] = feat_key
                 self.feats2graph[feat_key] = row["GRAPHEME"]
+
+
+# Load default models
+IPA = PhonoModel("ipa")
+Tresoldi = PhonoModel("tresoldi")

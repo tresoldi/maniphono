@@ -38,13 +38,20 @@ class Sound:
         for descriptor in descriptors:
             # Get the feature for the value, remove all conflicting values,
             # and add the current one
-            feature = self.model.value2feature[descriptor]
-            self.values = [
-                value
-                for value in self.values
-                if value not in self.model.features[feature]
-            ]
-            self.values.append(descriptor)
+            self.add_value(descriptor)
+
+    # TODO: add multiple values?
+    # TODO: run constraint check
+    def add_value(self, value):
+        # Get the feature related to the value, remove all values for that feature,
+        # and add the new feature
+        feature = self.model.value2feature[value]
+        self.values = [
+            _value
+            for _value in self.values
+            if _value not in self.model.features[feature]
+        ]
+        self.values.append(value)
 
     def grapheme(self):
         # get the grapheme from the model
