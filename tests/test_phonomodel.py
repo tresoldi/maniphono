@@ -2,10 +2,10 @@
 # pylint: disable=no-self-use
 
 """
-test_maniphono
-==============
+test_phonomodel
+===============
 
-Tests for the `maniphono` package.
+Tests for the PhonoModel class of the `maniphono` package.
 """
 
 # Import Python libraries
@@ -19,7 +19,7 @@ import maniphono
 HOME_PATH = Path(__file__).parent.parent.absolute()
 
 
-class TestModel(unittest.TestCase):
+class TestPhonoModel(unittest.TestCase):
     """
     Suite of tests for phonological models.
     """
@@ -59,20 +59,7 @@ class TestModel(unittest.TestCase):
         assert _tresoldi.weights["click"] == 12
 
 
-class TestManiphono(unittest.TestCase):
-    """
-    Suite of tests for the `maniphono` library.
-    """
-
-    def test_dummy(self):
-        assert 1 == 1
-
-
 if __name__ == "__main__":
     # Explicitly creating and running a test suite allows to profile it
-    suite = unittest.TestLoader().loadTestsFromTestCase(TestModel)
-    unittest.TextTestRunner(verbosity=2).run(suite)
-
-    # Explicitly creating and running a test suite allows to profile it
-    suite = unittest.TestLoader().loadTestsFromTestCase(TestManiphono)
+    suite = unittest.TestLoader().loadTestsFromTestCase(TestPhonoModel)
     unittest.TextTestRunner(verbosity=2).run(suite)
