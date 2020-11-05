@@ -137,7 +137,7 @@ class Sound:
             best_features = None
             for candidate_f, candidate_g in self.model.feats2graph.items():
                 common = [value for value in feat_tuple if value in candidate_f]
-                score = sum([1 / self.model[value]['rank'] for value in common])
+                score = sum([1 / self.model[value]["rank"] for value in common])
                 if score > best_score:
                     best_score = score
                     best_features = candidate_f
