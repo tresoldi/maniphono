@@ -15,7 +15,13 @@ $ pip install maniphono
 
 ## TODO:
 
-clts/bipa integration
+  - Add disjoint contraints to `model.py`
+  - Consider expanding checks in `model.parse_constraints()` to evaluate non-shallow
+    constraints (from different layers); this is not such a problem for the data as it
+    is, because graphemes will be rejected if necessary, but it would be nice to
+    have such a check in the function (it involves building a tree of contraints,
+    which is interesting and potentially useful in itself)
+  - Consider adding option in `model.py` to Unicode-normalize graphemes
 
 ## Description
 

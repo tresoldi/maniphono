@@ -1,20 +1,23 @@
-# TODO: check if constrainst refer to valid values (can only be done after loading everything)
-# TODO: preprocessing with double space removal and strip, at least for description
-# TODO: option to unicode normalize graphemes
+"""
+Module for phonological model abstractions and operations.
 
-import itertools
+This module holds the code for phonological models, the bottom-most layer of our
+abstractions. A model is defined from tabular data as...
+"""
+# TODO: expand module doc, preparing for paper
+
+# Import Python standard libraries
 from collections import defaultdict, Counter
 from pathlib import Path
 import csv
+import itertools
 import re
 
 # Define regular expression for accepting names
-# TODO: cannot start with "-"
-RE_FEATURE = re.compile(r"[-a-z]+")
-RE_VALUE = re.compile(r"[-a-z]+")
+RE_FEATURE = re.compile(r"[a-z][-a-z]*")
+RE_VALUE = re.compile(r"[a-z][-a-z]*")
 
-# TODO: future version, disjoint constraints?
-# TODO: cascading of constraints? explain it
+
 def parse_constraints(constraints_str):
     """
     Parse a list of value constraints.
@@ -86,13 +89,18 @@ def parse_constraints(constraints_str):
     # Check for inconsistencies
     inconsistent = [value for value in presence if value in absence]
     if inconsistent:
-        value_str = "/".join([sorted(inconsistent)])
-        raise ValueError("Inconsistent constraints ({value_str})")
+        raise ValueError("Inconsistent constraints ({sorted(inconsistent)})")
 
     return {"presence": set(presence), "absence": set(absence)}
 
 
 class PhonoModel:
+    """
+    Phonological model.
+    """
+
+    # TODO: expand class documentation
+
     def __init__(self, name, model_path=None):
         # Setup model and defaults
         self.name = name
@@ -108,6 +116,11 @@ class PhonoModel:
         else:
             model_path = Path(model_path).absolute()
 
+        # Init model first, and inventory later
+        self._init_model(model_path)
+        self._init_sounds(model_path)
+
+    def _init_model(self, model_path):
         # Parse file with feature definitions
         with open(model_path / "model.csv") as csvfile:
             for row in csv.DictReader(csvfile):
@@ -129,7 +142,6 @@ class PhonoModel:
                     )
 
                 # Store features (also as reverse map) and ranks
-                # TODO: maybe just rename `value2features` to `values`? could have rank/const/mod here
                 self.features[feature].add(value)
                 self.values[value] = {
                     "feature": feature,
@@ -139,13 +151,32 @@ class PhonoModel:
                     "constraints": parse_constraints(row.get("CONSTRAINTS")),
                 }
 
+        # Check if all constraints refer to existing values; this cannot be done
+        # before the entire model is loaded
+        all_constr = set(
+            itertools.chain.from_iterable(
+                [
+                    list(value["constraints"]["presence"])
+                    + list(value["constraints"]["absence"])
+                    for value in self.values.values()
+                ]
+            )
+        )
+        missing_values = [value for value in all_constr if value not in self.values]
+        if missing_values:
+            raise ValueError("Contraints have undefined value(s): {missing_values}")
+
+    def _init_sounds(self, model_path):
         # Parse file with inventory, filling `.grapheme2values` and `.values2grapheme`
         # from uniform `value_keys` (tuples of the sorted values). We first load
         # all the data to perform checks.
-        # TODO: add imply checks, as a method of the Model
+        def _desc2valkey(description):
+            description = re.sub(r"\s+", " ", description.strip())
+            return tuple(sorted(description.split()))
+
         with open(model_path / "sounds.csv") as csvfile:
             _graphemes = {
-                row["GRAPHEME"].strip(): tuple(sorted(row["DESCRIPTION"].split()))
+                row["GRAPHEME"].strip(): _desc2valkey(row["DESCRIPTION"])
                 for row in csv.DictReader(csvfile)
             }
 
@@ -165,41 +196,89 @@ class PhonoModel:
                 )
 
         # Check for bad value names
-        _values = [
+        bad_model_values = [
             value
             for value in itertools.chain.from_iterable(_graphemes.values())
             if value not in self.values
         ]
-        if _values:
-            raise ValueError(f"Undefined values used {_values}")
+        if bad_model_values:
+            raise ValueError(f"Undefined values used {bad_model_values}")
 
-        # we build a feature tuple, alphabetically sorted,
-        # as a hasheable key
-        with open(model_path / "sounds.csv") as csvfile:
-            for row in csv.DictReader(csvfile):
-                value_key = tuple(sorted(row["DESCRIPTION"].split()))
-                self.grapheme2values[row["GRAPHEME"]] = value_key
-                self.values2grapheme[value_key] = row["GRAPHEME"]
+        # We can now add the sounds, using values as hasheable key, also checking if
+        # contranints are met
+        for grapheme, values in _graphemes.items():
+            # Check the grapheme constraints; we can adopt the walrus operator in
+            # the future
+            failed = self.fail_constraints(values)
+            if failed:
+                raise ValueError(
+                    f"Grapheme `{grapheme}` (model {self.name}) fails constraint check on {failed}"
+                )
 
-                # Check the grapheme constraints
-                if self.check_constraints(row['DESCRIPTION'].split()):
-                    print(self.check_constraints(row['DESCRIPTION'].split()))
-                    raise ValueError(f"Grapheme `{row['GRAPHEME']}` (model {self.name}) fails constraint check")
+            # Update the internal catalog
+            self.grapheme2values[grapheme] = values
+            self.values2grapheme[values] = grapheme
 
-    # TODO: This returns a list, but can be checked as boolean (if true)
-    def check_constraints(self, constraints):
+    def fail_constraints(self, sound_values):
+        """
+        Checks if a list of values has any constraint failure.
+
+        The method will check a list of values against the internal model, returning
+        the list of values that fail the constraint check. The list will be empty
+        if all values pass the checks; as empty lists are `False` by definition in
+        Python, a grapheme correctness can be checked with
+        `if model.fail_constraints(values)`. Note that, but definition, an empty list
+        of values will be consider valid (returning an empty list of failing values).
+
+        Parameters
+        ----------
+        sound_values : list
+            A list, or another iterable, of the string values to be checked, such as
+            those stored in `self.grapheme2values`.
+
+        Returns
+        -------
+        offending : list
+            A list of strings with the values that fail contraint check; will be
+            empty if all values pass the checks.
+        """
+
         offending = []
-        for value in constraints:
-            unmet_presence = [value for value in self.values[value]['constraints']['presence']
-            if value not in constraints]
-            unmet_absence = [valur for value in self.values[value]['constraints']['absence']
-            if value in constraints
+        for value in sound_values:
+            unmet_presence = [
+                value
+                for value in self.values[value]["constraints"]["presence"]
+                if value not in sound_values
+            ]
+            unmet_absence = [
+                value
+                for value in self.values[value]["constraints"]["absence"]
+                if value in sound_values
             ]
 
             if any([unmet_presence, unmet_absence]):
                 offending.append(value)
 
         return offending
+
+    # TODO: implement minimal_matrix from `distfeat`, including documentation
+    def minimal_matrix(self):
+        """
+        Compute the minimal feature matrix for a set of sounds.
+
+        Not implemented yet.
+        """
+        raise ValueError("Not implemented yet")
+
+    # TODO: implement class_features from `distfeat`, including documentation
+    def class_features(self):
+        """
+        Compute the class features for a set of sounds.
+
+        Not implemented yet.
+        """
+        raise ValueError("Not implemented yet")
+
 
 # Load default models
 IPA = PhonoModel("ipa")
