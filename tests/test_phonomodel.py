@@ -15,9 +15,6 @@ from pathlib import Path
 # Import the library itself
 import maniphono
 
-# Set home page, for loading resources, etc.
-HOME_PATH = Path(__file__).parent.parent.absolute()
-
 
 class TestPhonoModel(unittest.TestCase):
     """
@@ -33,7 +30,7 @@ class TestPhonoModel(unittest.TestCase):
         # Note that these will already be indirectly tested when running the other
         # tests, but it is still good to have a single test for this, doing
         # it "manually".
-        _ipa = maniphono.PhonoModel("ipa", HOME_PATH / "models" / "ipa")
+        _ipa = maniphono.PhonoModel("ipa")
 
         assert len(_ipa.features) == 15
         assert "length" in _ipa.features
@@ -50,7 +47,7 @@ class TestPhonoModel(unittest.TestCase):
         # Note that these will already be indirectly tested when running the other
         # tests, but it is still good to have a single test for this, doing
         # it "manually".
-        _tresoldi = maniphono.PhonoModel("tresoldi", HOME_PATH / "models" / "tresoldi")
+        _tresoldi = maniphono.PhonoModel("tresoldi")
 
         assert len(_tresoldi.features) == 30
         assert "anterior" in _tresoldi.features

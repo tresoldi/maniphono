@@ -15,9 +15,6 @@ from pathlib import Path
 # Import the library itself
 import maniphono
 
-# Set home page, for loading resources, etc.
-HOME_PATH = Path(__file__).parent.parent.absolute()
-
 # TODO: test more sounds
 
 

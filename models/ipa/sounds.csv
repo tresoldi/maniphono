@@ -9,16 +9,16 @@ b,voiced bilabial plosive consonant
 bv,voiced labio-dental non-sibilant affricate consonant
 bβ,voiced bilabial non-sibilant affricate consonant
 ʙ,voiced bilabial trill consonant
-ɓ,voiced bilabial implosive stop consonant
+ɓ,voiced bilabial implosive plosive consonant
 ç,voiceless palatal non-sibilant fricative consonant
 c,voiceless palatal plosive consonant
 cç,voiceless palatal non-sibilant affricate consonant
-cʼ,voiceless palatal ejective stop consonant
+cʼ,voiceless palatal ejective plosive consonant
 ɕ,voiceless palatal sibilant fricative consonant
 ɕʼ,voiceless palatal ejective fricative consonant
 d,voiced alveolar plosive consonant
-ð,voiced dental non-sibilant frication consonant
-db,voiced labio-alveolar stop consonant
+ð,voiced dental non-sibilant fricative consonant
+db,voiced labio-alveolar plosive consonant
 dð,voiced dental non-sibilant affricate consonant
 dɮ,voiced alveolar non-sibilant lateral affricate consonant
 dz,voiced alveolar sibilant affricate consonant
@@ -26,8 +26,8 @@ dʑ,voiced palatal sibilant affricate consonant
 dʒ,voiced post-alveolar sibilant affricate consonant
 ɖ,voiced retroflex plosive consonant
 ɖʐ,voiced retroflex sibilant affricate consonant
-ɗ,voiced alveolar implosive stop consonant
-ᶑ,voiced retroflex implosive stop consonant
+ɗ,voiced alveolar implosive plosive consonant
+ᶑ,voiced retroflex implosive plosive consonant
 e,close-mid front unrounded vowel
 ə,mid central vowel
 ɛ,open-mid front unrounded vowel
@@ -37,7 +37,7 @@ e,close-mid front unrounded vowel
 ɤ,close-mid back unrounded vowel
 f,voiceless labio-dental non-sibilant fricative consonant
 fʼ,voiceless labio-dental ejective fricative consonant
-gb,voiced labio-velar stop consonant
+gb,voiced labio-velar plosive consonant
 ɡ,voiced velar plosive consonant
 ɡɣ,voiced velar non-sibilant affricate consonant
 ɡǀ,voiced dental click consonant
@@ -46,8 +46,8 @@ gb,voiced labio-velar stop consonant
 ɡǃ,voiced alveolar click consonant
 ɡʘ,voiced bilabial click consonant
 ɢ,voiced uvular plosive consonant
-ɠ,voiced velar implosive stop consonant
-ʛ,voiced uvular implosive stop consonant
+ɠ,voiced velar implosive plosive consonant
+ʛ,voiced uvular implosive plosive consonant
 ɣ,voiced velar non-sibilant fricative consonant
 h,voiceless glottal non-sibilant fricative consonant
 ħ,voiceless pharyngeal non-sibilant fricative consonant
@@ -60,12 +60,12 @@ j,voiced palatal approximant consonant
 ʝ,voiced palatal non-sibilant fricative consonant
 ɟ,voiced palatal plosive consonant
 ɟʝ,voiced palatal non-sibilant affricate consonant
-ʄ,voiced palatal implosive stop consonant
+ʄ,voiced palatal implosive plosive consonant
 k,voiceless velar plosive consonant
-kp,voiceless labio-velar stop consonant
+kp,voiceless labio-velar plosive consonant
 kx,voiceless velar non-sibilant affricate consonant
 kxʼ,voiceless velar non-sibilant ejective affricate consonant
-kʼ,voiceless velar ejective stop consonant
+kʼ,voiceless velar ejective plosive consonant
 kǀ,voiceless dental click consonant
 kǁ,voiceless alveolar lateral click consonant
 kǂ,voiceless palatal click consonant
@@ -77,15 +77,15 @@ l,voiced alveolar lateral approximant consonant
 ɬ,voiceless alveolar lateral fricative consonant
 ɬʼ,voiceless alveolar ejective lateral fricative consonant
 ɭ,voiced retroflex lateral approximant consonant
-ɮ,voiced alveolar lateral frication consonant
+ɮ,voiced alveolar lateral fricative consonant
 ʎ,voiced palatal lateral approximant consonant
 m,voiced bilabial nasal consonant
 ɱ,voiced labio-dental nasal consonant
 n,voiced alveolar nasal consonant
-nm,voiced labio-coronal nasal stop consonant
+nm,voiced labio-coronal nasal plosive consonant
 ɴ,voiced uvular nasal consonant
 ɲ,voiced palatal nasal consonant
-ɲm,voiced labio-velar nasal stop consonant
+ɲm,voiced labio-velar nasal plosive consonant
 ɳ,voiced retroflex nasal consonant
 ŋ,voiced velar nasal consonant
 ŋǀ,voiced dental nasal click consonant
@@ -102,12 +102,12 @@ o,close-mid back rounded vowel
 p,voiceless bilabial plosive consonant
 pf,voiceless labio-dental non-sibilant affricate consonant
 pɸ,voiceless bilabial non-sibilant affricate consonant
-pʼ,voiceless bilabial ejective stop consonant
+pʼ,voiceless bilabial ejective plosive consonant
 ɸ,voiceless bilabial non-sibilant fricative consonant
 ɸʼ,voiceless bilabial ejective fricative consonant
 q,voiceless uvular plosive consonant
-qʼ,voiceless uvular ejective stop consonant
-qʡ,voiceless uvulo-epiglottal stop consonant
+qʼ,voiceless uvular ejective plosive consonant
+qʡ,voiceless uvulo-epiglottal plosive consonant
 qχ,voiceless uvular non-sibilant affricate consonant
 qχʼ,voiceless uvular non-sibilant ejective affricate consonant
 r,voiced alveolar trill consonant
@@ -118,7 +118,7 @@ r,voiced alveolar trill consonant
 ɽ,voiced retroflex flap consonant
 ɽr,voiced retroflex trill consonant
 ɾ,voiced alveolar flap consonant
-ʁ,voiced uvular non-sibilant frication consonant
+ʁ,voiced uvular non-sibilant fricative consonant
 s,voiceless alveolar sibilant fricative consonant
 sʼ,voiceless alveolar ejective fricative consonant
 ʂ,voiceless retroflex sibilant fricative consonant
@@ -129,17 +129,17 @@ t,voiceless alveolar plosive consonant
 tɕ,voiceless palatal sibilant affricate consonant
 tɬ,voiceless alveolar non-sibilant lateral affricate consonant
 tɬʼ,voiceless alveolar non-sibilant ejective affricate consonant
-tp,voiceless labio-alveolar stop consonant
+tp,voiceless labio-alveolar plosive consonant
 ts,voiceless alveolar sibilant affricate consonant
 tsʼ,voiceless alveolar sibilant ejective affricate consonant
 tʃ,voiceless post-alveolar sibilant affricate consonant
 tʃʼ,voiceless post-alveolar sibilant ejective affricate consonant
-tʼ,voiceless alveolar ejective stop consonant
+tʼ,voiceless alveolar ejective plosive consonant
 tθ,voiceless dental non-sibilant affricate consonant
 ʈ,voiceless retroflex plosive consonant
 ʈʂ,voiceless retroflex sibilant affricate consonant
 ʈʂʼ,voiceless retroflex sibilant ejective affricate consonant
-ʈʼ,voiceless retroflex ejective stop consonant
+ʈʼ,voiceless retroflex ejective plosive consonant
 u,close back rounded vowel
 ʉ,close central rounded vowel
 ɥ,voiced labio-palatal approximant consonant
@@ -162,9 +162,9 @@ z,voiced alveolar sibilant fricative consonant
 ʒ,voiced post-alveolar sibilant fricative consonant
 ʔ,voiceless glottal plosive consonant
 ʔh,voiceless glottal non-sibilant affricate consonant
-ʕ,voiced pharyngeal non-sibilant frication consonant
+ʕ,voiced pharyngeal non-sibilant fricative consonant
 ʡ,voiceless pharyngeal plosive consonant
-ʡʼ,voiceless pharyngeal ejective stop consonant
+ʡʼ,voiceless pharyngeal ejective plosive consonant
 ʡʢ,voiced epiglottal non-sibilant affricate consonant
 ʢ,voiced pharyngeal trill consonant
 β,voiced bilabial non-sibilant fricative consonant
