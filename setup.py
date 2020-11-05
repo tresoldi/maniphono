@@ -32,7 +32,7 @@ setup(
     long_description=README_FILE,
     name="maniphono",
     package_dir={"": "src"},
-    package_data={'': ['models']},
+    package_data={'models': ['models/*.csv']},
     packages=find_packages(where="src"),
     python_requires=">=3.7",
     test_suite="tests",
