@@ -1,5 +1,4 @@
 include README.md
 include AUTHORS
 include LICENSE
-include models/ipa/*
-include models/tresoldi/*
+recursive-include models *.csv *.tsv
