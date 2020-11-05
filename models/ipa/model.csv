@@ -54,8 +54,8 @@ place,uvulo-epiglottal,4,,,consonant
 place,velar,4,,,consonant
 roundness,rounded,4,,,vowel
 roundness,unrounded,4,,,vowel
-sibilancy,non-sibilant,4,,,fricative
-sibilancy,sibilant,4,,,fricative
+sibilancy,non-sibilant,4,,,consonant
+sibilancy,sibilant,4,,,consonant
 type,consonant,1,,,
 type,vowel,1,,,
 uvularization,uvularized,7,,ʶ,consonant

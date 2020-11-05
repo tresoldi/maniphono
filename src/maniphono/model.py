@@ -1,5 +1,6 @@
 # TODO: check if constrainst refer to valid values (can only be done after loading everything)
 # TODO: preprocessing with double space removal and strip, at least for description
+# TODO: option to unicode normalize graphemes
 
 import itertools
 from collections import defaultdict, Counter
@@ -175,14 +176,31 @@ class PhonoModel:
         # we build a feature tuple, alphabetically sorted,
         # as a hasheable key
         # TODO: add checks: feature/value, implies, duplicates
-        # TODO: normalize description string and grapheme
-        # TODO: are descriptions unique as well?
         with open(model_path / "sounds.csv") as csvfile:
             for row in csv.DictReader(csvfile):
                 value_key = tuple(sorted(row["DESCRIPTION"].split()))
                 self.grapheme2values[row["GRAPHEME"]] = value_key
                 self.values2grapheme[value_key] = row["GRAPHEME"]
 
+                # Check the grapheme constrains
+                if self.check_constrains(row['DESCRIPTION'].split()):
+                    print(self.check_constrains(row['DESCRIPTION'].split()))
+                    raise ValueError(f"Grapheme `{row['GRAPHEME']}` (model {self.name}) fails constrain check")
+
+    # TODO: This returns a list, but can be checked as boolean (if true)
+    def check_constrains(self, constrains):
+        offending = []
+        for value in constrains:
+            unmet_presence = [value for value in self.values[value]['constrains']['presence']
+            if value not in constrains]
+            unmet_absence = [valur for value in self.values[value]['constrains']['absence']
+            if value in constrains
+            ]
+
+            if any([unmet_presence, unmet_absence]):
+                offending.append(value)
+
+        return offending
 
 # Load default models
 IPA = PhonoModel("ipa")
