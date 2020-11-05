@@ -39,7 +39,7 @@ class TestPhonoModel(unittest.TestCase):
         assert "length" in _ipa.features
         assert "long" in _ipa.features["length"]
 
-        assert _ipa.weights["vowel"] == 1
+        assert _ipa.values["vowel"]["rank"] == 1
 
     # TODO add more TRESOLDI assertions, including sounds
     def test_tresoldi(self):
@@ -56,7 +56,7 @@ class TestPhonoModel(unittest.TestCase):
         assert "anterior" in _tresoldi.features
         assert "non-anterior" in _tresoldi.features["anterior"]
 
-        assert _tresoldi.weights["click"] == 12
+        assert _tresoldi.values["click"]["rank"] == 12
 
 
 if __name__ == "__main__":

@@ -1,4 +1,4 @@
-FEATURE,VALUE,WEIGHT,PREFIX,SUFFIX,IMPLIES
+FEATURE,VALUE,RANK,PREFIX,SUFFIX,CONSTRAINS
 centrality,back,2,,,vowel
 centrality,central,2,,,vowel
 centrality,front,2,,,vowel

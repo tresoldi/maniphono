@@ -1,4 +1,4 @@
-FEATURE,VALUE,WEIGHT,IMPLIES,PREFIX,SUFFIX
+FEATURE,VALUE,RANK,CONSTRAINS,PREFIX,SUFFIX
 preaspirated,non-preaspirated,30,,,
 preaspirated,preaspirated,30,,,
 preglottalized,non-preglottalized,29,,,

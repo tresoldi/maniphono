@@ -1,6 +1,9 @@
+# TODO: default to grapheme, description secondary
+
 # TODO: overload operators
 # TODO: allow to initialize a sound from a grapheme in the model (including modifiers)
 # TODO: build implies -> e.g., all plosives will be consonants automatically
+# TODO: use unidecode? other normalizations?
 class Sound:
     """
     Class representing a bundle of phonetic features according to a model.
@@ -23,7 +26,7 @@ class Sound:
             if description:
                 self.set_description(description)
             else:
-                self.set_description(model.graph2feats[grapheme])
+                self.set_description(model.grapheme2values[grapheme])
 
     # TODO: check the implies, at the end
     # TODO: cache grapheme at the end
@@ -45,7 +48,7 @@ class Sound:
     def add_value(self, value):
         # Get the feature related to the value, remove all values for that feature,
         # and add the new feature
-        feature = self.model.value2feature[value]
+        feature = self.model.values[value]["feature"]
         self.values = [
             _value
             for _value in self.values
@@ -60,7 +63,7 @@ class Sound:
         # the model. If not, we look for the closest match...
         # TODO: add a cache in the model
         feat_tuple = tuple(sorted(self.values))
-        grapheme = self.model.feats2graph.get(feat_tuple, None)
+        grapheme = self.model.values2grapheme.get(feat_tuple, None)
         if not grapheme:
             # Compute a similarity score based on inverse value weight for all
             # graphemes, building a string with the representation if we hit a
@@ -96,7 +99,9 @@ class Sound:
         # TODO: build in order, something which probably should be cached
         # TODO: what about same weight values, like palatalization and velarization? alphabetical?
         return " ".join(
-            sorted(self.values, reverse=True, key=lambda v: self.model.weights[v])
+            sorted(
+                self.values, reverse=True, key=lambda v: self.model.values[v]["rank"]
+            )
         )
 
     def __str__(self):

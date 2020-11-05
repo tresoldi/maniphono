@@ -1,174 +1,174 @@
 GRAPHEME,DESCRIPTION
-m,voiced bilabial nasal consonant
-p,voiceless bilabial plosive consonant
+ä,open central unrounded vowel
+a,open front unrounded vowel
+æ,near-open front unrounded vowel
+ɐ,near-open central vowel
+ɑ,open back unrounded vowel
+ɒ,open back rounded vowel
 b,voiced bilabial plosive consonant
-ɸ,voiceless bilabial non-sibilant fricative consonant
-β,voiced bilabial non-sibilant fricative consonant
+bv,voiced labio-dental non-sibilant affricate consonant
+bβ,voiced bilabial non-sibilant affricate consonant
 ʙ,voiced bilabial trill consonant
-ɱ,voiced labio-dental nasal consonant
-f,voiceless labio-dental non-sibilant fricative consonant
-v,voiced labio-dental non-sibilant fricative consonant
-ʋ,voiced labio-dental approximant consonant
-ⱱ,voiced labio-dental flap consonant
-n,voiced alveolar nasal consonant
-t,voiceless alveolar plosive consonant
+ɓ,voiced bilabial implosive stop consonant
+ç,voiceless palatal non-sibilant fricative consonant
+c,voiceless palatal plosive consonant
+cç,voiceless palatal non-sibilant affricate consonant
+cʼ,voiceless palatal ejective stop consonant
+ɕ,voiceless palatal sibilant fricative consonant
+ɕʼ,voiceless palatal ejective fricative consonant
 d,voiced alveolar plosive consonant
-s,voiceless alveolar sibilant fricative consonant
-z,voiced alveolar sibilant fricative consonant
-ʃ,voiceless post-alveolar sibilant fricative consonant
-ʒ,voiced post-alveolar sibilant fricative consonant
-θ,voiceless dental non-sibilant fricative consonant
 ð,voiced dental non-sibilant frication consonant
-ɹ,voiced alveolar approximant consonant
-ɾ,voiced alveolar flap consonant
-r,voiced alveolar trill consonant
-ɬ,voiceless alveolar lateral fricative consonant
-ɮ,voiced alveolar lateral frication consonant
-l,voiced alveolar lateral approximant consonant
-ɺ,voiced alveolar lateral flap consonant
-ɳ,voiced retroflex nasal consonant
-ʈ,voiceless retroflex plosive consonant
+db,voiced labio-alveolar stop consonant
+dð,voiced dental non-sibilant affricate consonant
+dɮ,voiced alveolar non-sibilant lateral affricate consonant
+dz,voiced alveolar sibilant affricate consonant
+dʑ,voiced palatal sibilant affricate consonant
+dʒ,voiced post-alveolar sibilant affricate consonant
 ɖ,voiced retroflex plosive consonant
-ʂ,voiceless retroflex sibilant fricative consonant
-ʐ,voiced retroflex sibilant fricative consonant
+ɖʐ,voiced retroflex sibilant affricate consonant
+ɗ,voiced alveolar implosive stop consonant
+ᶑ,voiced retroflex implosive stop consonant
+e,close-mid front unrounded vowel
+ə,mid central vowel
+ɛ,open-mid front unrounded vowel
+ɘ,close-mid central unrounded vowel
+ɜ,open-mid central unrounded vowel
+ɞ,open-mid central rounded vowel
+ɤ,close-mid back unrounded vowel
+f,voiceless labio-dental non-sibilant fricative consonant
+fʼ,voiceless labio-dental ejective fricative consonant
+gb,voiced labio-velar stop consonant
+ɡ,voiced velar plosive consonant
+ɡɣ,voiced velar non-sibilant affricate consonant
+ɡǀ,voiced dental click consonant
+ɡǁ,voiced alveolar lateral click consonant
+ɡǂ,voiced palatal click consonant
+ɡǃ,voiced alveolar click consonant
+ɡʘ,voiced bilabial click consonant
+ɢ,voiced uvular plosive consonant
+ɠ,voiced velar implosive stop consonant
+ʛ,voiced uvular implosive stop consonant
+ɣ,voiced velar non-sibilant fricative consonant
+h,voiceless glottal non-sibilant fricative consonant
+ħ,voiceless pharyngeal non-sibilant fricative consonant
+ʜ,voiceless pharyngeal trill consonant
+ɦ,voiced glottal non-sibilant fricative consonant
+i,close front unrounded vowel
+ɪ,near-close front unrounded vowel
+ɨ,close central unrounded vowel
+j,voiced palatal approximant consonant
+ʝ,voiced palatal non-sibilant fricative consonant
+ɟ,voiced palatal plosive consonant
+ɟʝ,voiced palatal non-sibilant affricate consonant
+ʄ,voiced palatal implosive stop consonant
+k,voiceless velar plosive consonant
+kp,voiceless labio-velar stop consonant
+kx,voiceless velar non-sibilant affricate consonant
+kxʼ,voiceless velar non-sibilant ejective affricate consonant
+kʼ,voiceless velar ejective stop consonant
+kǀ,voiceless dental click consonant
+kǁ,voiceless alveolar lateral click consonant
+kǂ,voiceless palatal click consonant
+kǃ,voiceless alveolar click consonant
+kʘ,voiceless bilabial click consonant
+l,voiced alveolar lateral approximant consonant
+ʟ,voiced velar lateral approximant consonant
+ɫ,voiced velarized alveolar lateral approximant consonant
+ɬ,voiceless alveolar lateral fricative consonant
+ɬʼ,voiceless alveolar ejective lateral fricative consonant
+ɭ,voiced retroflex lateral approximant consonant
+ɮ,voiced alveolar lateral frication consonant
+ʎ,voiced palatal lateral approximant consonant
+m,voiced bilabial nasal consonant
+ɱ,voiced labio-dental nasal consonant
+n,voiced alveolar nasal consonant
+nm,voiced labio-coronal nasal stop consonant
+ɴ,voiced uvular nasal consonant
+ɲ,voiced palatal nasal consonant
+ɲm,voiced labio-velar nasal stop consonant
+ɳ,voiced retroflex nasal consonant
+ŋ,voiced velar nasal consonant
+ŋǀ,voiced dental nasal click consonant
+ŋǁ,voiced alveolar lateral nasal click consonant
+ŋǂ,voiced palatal nasal click consonant
+ŋǃ,voiced alveolar nasal click consonant
+ŋʘ,voiced bilabial nasal click consonant
+o,close-mid back rounded vowel
+ø,close-mid front rounded vowel
+œ,open-mid front rounded vowel
+ɶ,open front rounded vowel
+ɔ,open-mid back rounded vowel
+ɵ,close-mid central rounded vowel
+p,voiceless bilabial plosive consonant
+pf,voiceless labio-dental non-sibilant affricate consonant
+pɸ,voiceless bilabial non-sibilant affricate consonant
+pʼ,voiceless bilabial ejective stop consonant
+ɸ,voiceless bilabial non-sibilant fricative consonant
+ɸʼ,voiceless bilabial ejective fricative consonant
+q,voiceless uvular plosive consonant
+qʼ,voiceless uvular ejective stop consonant
+qʡ,voiceless uvulo-epiglottal stop consonant
+qχ,voiceless uvular non-sibilant affricate consonant
+qχʼ,voiceless uvular non-sibilant ejective affricate consonant
+r,voiced alveolar trill consonant
+ʀ,voiced uvular trill consonant
+ɹ,voiced alveolar approximant consonant
+ɺ,voiced alveolar lateral flap consonant
 ɻ,voiced retroflex approximant consonant
 ɽ,voiced retroflex flap consonant
 ɽr,voiced retroflex trill consonant
-ɭ,voiced retroflex lateral approximant consonant
-ɲ,voiced palatal nasal consonant
-c,voiceless palatal plosive consonant
-ɟ,voiced palatal plosive consonant
-ɕ,voiceless palatal sibilant fricative consonant
-ʑ,voiced palatal sibilant fricative	consonant
-ç,voiceless palatal non-sibilant fricative consonant
-ʝ,voiced palatal non-sibilant fricative consonant
-j,voiced palatal approximant consonant
-ʎ,voiced palatal lateral approximant consonant
-ŋ,voiced velar nasal consonant
-k,voiceless velar plosive consonant
-ɡ,voiced velar plosive consonant
-x,voiceless velar non-sibilant fricative consonant
-ɣ,voiced velar non-sibilant fricative consonant
-ɰ,voiced velar approximant consonant
-ʟ,voiced velar lateral approximant consonant
-ɴ,voiced uvular nasal consonant
-q,voiceless uvular plosive consonant
-ɢ,voiced uvular plosive consonant
-χ,voiceless uvular non-sibilant fricative consonant
+ɾ,voiced alveolar flap consonant
 ʁ,voiced uvular non-sibilant frication consonant
-ʀ,voiced uvular trill consonant
-ʡ,voiceless pharyngeal plosive consonant
-ħ,voiceless pharyngeal non-sibilant fricative consonant
-ʕ,voiced pharyngeal non-sibilant frication consonant
-ʜ,voiceless pharyngeal trill consonant
-ʢ,voiced pharyngeal trill consonant
-ʔ,voiceless glottal plosive consonant
-h,voiceless glottal non-sibilant fricative consonant
-ɦ,voiced glottal non-sibilant fricative consonant
-i,close front unrounded vowel
-y,close front rounded vowel
-ɨ,close central unrounded vowel
-ʉ,close central rounded vowel
-ɯ,close back unrounded vowel
-u,close back rounded vowel
-ɪ,near-close front unrounded vowel
-ʏ,near-close front rounded vowel
-ʊ,near-close back rounded vowel
-e,close-mid front unrounded vowel
-ø,close-mid front rounded vowel
-ɘ,close-mid central unrounded vowel
-ɵ,close-mid central rounded vowel
-ɤ,close-mid back unrounded vowel
-o,close-mid back rounded vowel
-ə,mid central vowel
-ɛ,open-mid front unrounded vowel
-œ,open-mid front rounded vowel
-ɜ,open-mid central unrounded vowel
-ɞ,open-mid central rounded vowel
-ʌ,open-mid back unrounded vowel
-ɔ,open-mid back rounded vowel
-æ,near-open front unrounded vowel
-ɐ,near-open central vowel
-a,open front unrounded vowel
-ɶ,open front rounded vowel
-ä,open central unrounded vowel
-ɑ,open back unrounded vowel
-ɒ,open back rounded vowel
-pʼ,voiceless bilabial ejective stop consonant
-tʼ,voiceless alveolar ejective stop consonant
-ʈʼ,voiceless retroflex ejective stop consonant
-cʼ,voiceless palatal ejective stop consonant
-kʼ,voiceless palatal ejective stop consonant
-qʼ,voiceless uvular ejective stop consonant
-ʡʼ,voiceless pharyngeal ejective stop consonant
-ɸʼ,voiceless bilabial ejective fricative consonant
-fʼ,voiceless labio-dental ejective fricative consonant
-θʼ,voiceless dental ejective fricative consonant
+s,voiceless alveolar sibilant fricative consonant
 sʼ,voiceless alveolar ejective fricative consonant
-ʃʼ,voiceless post-alveolar ejective fricative consonant
+ʂ,voiceless retroflex sibilant fricative consonant
 ʂʼ,voiceless retroflex ejective fricative consonant
-ɕʼ,voiceless palatal ejective fricative consonant
-xʼ,voiceless velar ejective fricative consonant
-χʼ,voiceless uvular ejective fricative consonant
-ɬʼ,voiceless alveolar ejective lateral fricative consonant
-ɓ,voiced bilabial implosive stop consonant
-ɗ,voiced alveolar implosive stop consonant
-ᶑ,voiced retroflex implosive stop consonant
-ʄ,voiced palatal implosive stop consonant
-ɠ,voiced velar implosive stop consonant
-ʛ,voiced uvular implosive stop consonant
-kʘ,voiceless bilabial click consonant
-kǀ,voiceless dental click consonant
-kǃ,voiceless alveolar click consonant
-kǂ,voiceless palatal click consonant
-ɡʘ,voiced bilabial click consonant
-ɡǀ,voiced dental click consonant
-ɡǃ,voiced alveolar click consonant
-ɡǂ,voiced palatal click consonant
-ŋʘ,voiced bilabial nasal click consonant
-ŋǀ,voiced dental nasal click consonant
-ŋǃ,voiced alveolar nasal click consonant
-ŋǂ,voiced palatal nasal click consonant
-kǁ,voiceless alveolar lateral click consonant
-ɡǁ,voiced alveolar lateral click consonant
-ŋǁ,voiced alveolar lateral nasal click consonant
-pɸ,voiceless bilabial non-sibilant affricate consonant
-bβ,voiced bilabial non-sibilant affricate consonant
-pf,voiceless labio-dental non-sibilant affricate consonant
-bv,voiced labio-dental non-sibilant affricate consonant
-tθ,voiceless dental non-sibilant affricate consonant
-dð,voiced dental non-sibilant affricate consonant
-ts,voiceless alveolar sibilant affricate consonant
-dz,voiced alveolar sibilant affricate consonant
-tʃ,voiceless post-alveolar sibilant affricate consonant
-dʒ,voiced post-alveolar sibilant affricate consonant
-ʈʂ,voiceless retroflex sibilant affricate consonant
-ɖʐ,voiced retroflex sibilant affricate consonant
+ʃ,voiceless post-alveolar sibilant fricative consonant
+ʃʼ,voiceless post-alveolar ejective fricative consonant
+t,voiceless alveolar plosive consonant
 tɕ,voiceless palatal sibilant affricate consonant
-dʑ,voiced palatal sibilant affricate consonant
-cç,voiceless palatal non-sibilant affricate consonant
-ɟʝ,voiced palatal non-sibilant affricate consonant
-kx,voiceless velar non-sibilant affricate consonant
-ɡɣ,voiced velar non-sibilant affricate consonant
-qχ,voiceless uvular non-sibilant affricate consonant
-ʡʢ,voiced epiglottal non-sibilant affricate consonant
-ʔh,voiceless glottal non-sibilant affricate consonant
 tɬ,voiceless alveolar non-sibilant lateral affricate consonant
-dɮ,voiced alveolar non-sibilant lateral affricate consonant
-tsʼ,voiceless alveolar sibilant ejective affricate consonant
-tʃʼ,voiceless post-alveolar sibilant ejective affricate consonant
-ʈʂʼ,voiceless retroflex sibilant ejective affricate consonant
-kxʼ,voiceless velar non-sibilant ejective affricate consonant
-qχʼ,voiceless uvular non-sibilant ejective affricate consonant
 tɬʼ,voiceless alveolar non-sibilant ejective affricate consonant
-nm,voiced labio-coronal nasal stop consonant
-ɲm,voiced labio-velar nasal stop consonant
 tp,voiceless labio-alveolar stop consonant
-db,voiced labio-alveolar stop consonant
-kp,voiceless labio-velar stop consonant
-gb,voiced labio-velar stop consonant
-qʡ,voiceless uvulo-epiglottal stop consonant
+ts,voiceless alveolar sibilant affricate consonant
+tsʼ,voiceless alveolar sibilant ejective affricate consonant
+tʃ,voiceless post-alveolar sibilant affricate consonant
+tʃʼ,voiceless post-alveolar sibilant ejective affricate consonant
+tʼ,voiceless alveolar ejective stop consonant
+tθ,voiceless dental non-sibilant affricate consonant
+ʈ,voiceless retroflex plosive consonant
+ʈʂ,voiceless retroflex sibilant affricate consonant
+ʈʂʼ,voiceless retroflex sibilant ejective affricate consonant
+ʈʼ,voiceless retroflex ejective stop consonant
+u,close back rounded vowel
+ʉ,close central rounded vowel
 ɥ,voiced labio-palatal approximant consonant
-ʍ,voiceless labio-velar approximant consonant
+ɯ,close back unrounded vowel
+ɰ,voiced velar approximant consonant
+ʊ,near-close back rounded vowel
+v,voiced labio-dental non-sibilant fricative consonant
+ʋ,voiced labio-dental approximant consonant
+ⱱ,voiced labio-dental flap consonant
+ʌ,open-mid back unrounded vowel
 w,voiced labio-velar approximant consonant
-ɫ,voiced velarized alveolar lateral approximant consonant
+ʍ,voiceless labio-velar approximant consonant
+x,voiceless velar non-sibilant fricative consonant
+xʼ,voiceless velar ejective fricative consonant
+y,close front rounded vowel
+ʏ,near-close front rounded vowel
+z,voiced alveolar sibilant fricative consonant
+ʐ,voiced retroflex sibilant fricative consonant
+ʑ,voiced palatal sibilant fricative	consonant
+ʒ,voiced post-alveolar sibilant fricative consonant
+ʔ,voiceless glottal plosive consonant
+ʔh,voiceless glottal non-sibilant affricate consonant
+ʕ,voiced pharyngeal non-sibilant frication consonant
+ʡ,voiceless pharyngeal plosive consonant
+ʡʼ,voiceless pharyngeal ejective stop consonant
+ʡʢ,voiced epiglottal non-sibilant affricate consonant
+ʢ,voiced pharyngeal trill consonant
+β,voiced bilabial non-sibilant fricative consonant
+θ,voiceless dental non-sibilant fricative consonant
+θʼ,voiceless dental ejective fricative consonant
+χ,voiceless uvular non-sibilant fricative consonant
+χʼ,voiceless uvular ejective fricative consonant
