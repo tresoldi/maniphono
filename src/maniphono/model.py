@@ -14,8 +14,8 @@ import itertools
 import re
 
 # Define regular expression for accepting names
-RE_FEATURE = re.compile(r"[a-z][-a-z]*")
-RE_VALUE = re.compile(r"[a-z][-a-z]*")
+RE_FEATURE = re.compile(r"^[a-z][-a-z]*$")
+RE_VALUE = re.compile(r"^[a-z][-a-z]*$")
 
 
 def parse_constraints(constraints_str):
@@ -75,7 +75,7 @@ def parse_constraints(constraints_str):
 
             presence.append(constr[1:])
         else:
-            if not re.match(RE_VALUE, constr[1:]):
+            if not re.match(RE_VALUE, constr):
                 raise ValueError(f"Invalid value name `{constr}` in constraint")
 
             presence.append(constr)

@@ -1,9 +1,11 @@
 # TODO: default to grapheme, description secondary
 
 # TODO: overload operators
-# TODO: allow to initialize a sound from a grapheme in the model (including modifiers)
 # TODO: build implies -> e.g., all plosives will be consonants automatically
 # TODO: use unidecode? other normalizations?
+# TODO: cache grapheme at the end of add_value/add_values
+
+
 class Sound:
     """
     Class representing a bundle of phonetic features according to a model.
@@ -19,26 +21,24 @@ class Sound:
         self.model = model
         self.values = []
 
+        # Initialize/empty the cache
+        self._empty_cache()
+
         # Either a description or a grapheme must be provided
         if all([grapheme, description]) or not any([grapheme, description]):
             raise ValueError("Either a `grapheme` or a `description` must be provided.")
         else:
             if grapheme:
-                self.set_description(model.grapheme2values[grapheme])
+                self.add_values(model.grapheme2values[grapheme])
             else:
-                self.set_description(description)
+                self.add_values(description)
 
-    # TODO: check the implies, at the end
-    # TODO: cache grapheme at the end
-    def set_description(self, descriptors):
-        # If descriptors is a string, we assume it is space-separated list of
-        # descriptors. Note that this allows to use a string with a single descriptor
-        # without any special treatment.
-        if isinstance(descriptors, str):
-            descriptors = descriptors.split()
+    def _empty_cache(self):
+        """
+        Internal function for creating/clearning the cache.
+        """
 
-        # Add descriptors; note that this will run constraint checking
-        self.add_values(descriptors)
+        self._cache = {"grapheme": None, "description": None}
 
     def add_value(self, value, check=True):
         """
@@ -63,10 +63,13 @@ class Sound:
             a value for the corresponding feature).
         """
 
-        # If the value is already set, not need to do the whole operation, just return
-        # to confirm
+        # If the value is already set, not need to do the whole operation, including
+        # clearning the cache, so just return to confirm
         if value in self.values:
             return value
+
+        # Clear the cache
+        self._empty_cache()
 
         # Get the feature related to the value, cache its previous value (if any),
         # and remove it
@@ -98,8 +101,9 @@ class Sound:
 
         Parameters
         ----------
-        values : list
-            A list of strings with the values to be added to the sound.
+        values : list or str
+            A list of strings with the values to be added to the sound, a string
+            with values separated by spaces.
         check : bool
             Whether to run constraints check after adding the new values (default: True).
 
@@ -109,6 +113,16 @@ class Sound:
             A list of strings with the values that were replaced, in no particular
             order.
         """
+
+        # Note that we don't need to empty the cache, as it will be done repeatedly
+        # by `.add_value()` in this implementation (a small price to pay)
+
+        # If `values` is a string, we assume it is space-separated list of
+        # `values`, which can preprocess a bit. Note that this allows to use a
+        # string with a single descriptor without any special treatment.
+        # TODO: preprocessing
+        if isinstance(values, str):
+            values = values.split()
 
         # Add all values, collecting the replacements which are stripped of Nones
         replaced = [self.add_value(value, check=False) for value in values]
@@ -123,7 +137,9 @@ class Sound:
         return replaced
 
     def grapheme(self):
-        # get the grapheme from the model
+        # get the grapheme from the cache, if it exists
+        if self._cache["grapheme"]:
+            return self._cache["grapheme"]
 
         # We first build a feature tuple and check if there is a perfect match in
         # the model. If not, we look for the closest match...
@@ -158,16 +174,28 @@ class Sound:
             if leftover:
                 grapheme = f"{grapheme}[{','.join(leftover)}]"
 
+        # Store in the cache and return
+        self._cache["grapheme"] = grapheme
+
         return grapheme
 
     def __repr__(self):
-        # TODO: build in order, something which probably should be cached
+        # Return the cache description, if it exists
+        if self._cache["description"]:
+            return self._cache["description"]
+
+        # Build the description following the rank
         # TODO: what about same weight values, like palatalization and velarization? alphabetical?
-        return " ".join(
+        desc = " ".join(
             sorted(
                 self.values, reverse=True, key=lambda v: self.model.values[v]["rank"]
             )
         )
+
+        # Store the description in the cache and return
+        self._cache["description"] = desc
+
+        return desc
 
     def __str__(self):
         return self.grapheme()

@@ -21,6 +21,39 @@ class TestPhonoModel(unittest.TestCase):
     Suite of tests for phonological models.
     """
 
+    def test_parse_constraints(self):
+        """
+        Test constraint parsing and exceptions.
+        """
+
+        # Test single value
+        ret = maniphono.model.parse_constraints("consonant")
+        assert ret["presence"] == {"consonant"}
+        assert len(ret["absence"]) == 0
+
+        # Test multiple values with positive and negative
+        ret = maniphono.model.parse_constraints("+cons;plos/-voiceless;!front")
+        assert tuple(sorted(ret["presence"])) == ("cons", "plos")
+        assert tuple(sorted(ret["absence"])) == ("front", "voiceless")
+
+        # Test invalid value names
+        with self.assertRaises(ValueError):
+            maniphono.model.parse_constraints("a123")
+        with self.assertRaises(ValueError):
+            maniphono.model.parse_constraints("+a123")
+        with self.assertRaises(ValueError):
+            maniphono.model.parse_constraints("-a123")
+
+        # Test duplicates
+        with self.assertRaises(ValueError):
+            maniphono.model.parse_constraints("abc/+abc")
+        with self.assertRaises(ValueError):
+            maniphono.model.parse_constraints("-abc/!abc")
+
+        # Test inconsistency
+        with self.assertRaises(ValueError):
+            maniphono.model.parse_constraints("abc/-abc")
+
     # TODO add more IPA assertions, including sounds
     def test_ipa(self):
         """
