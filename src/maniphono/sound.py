@@ -37,47 +37,8 @@ class Sound:
         if isinstance(descriptors, str):
             descriptors = descriptors.split()
 
-        # Add each descriptor
-        # TODO: multiple
-        for descriptor in descriptors:
-            # Get the feature for the value, remove all conflicting values,
-            # and add the current one
-            self.add_value(descriptor, check=False)
-
-    # TODO: Instead of wrapping, we can do everything here, also smarter (setting constr)
-    # TODO: check inconsistencies
-    def add_values(self, values, check=True):
-        """
-        Add multiple values to the sound.
-
-        The method will remove all conflicting values before setting the new ones.
-        Currently, this method acts as a wrapper to `.add_value()`
-
-        Parameters
-        ----------
-        values : list
-            A list of strings with the values to be added to the sound.
-        check : bool
-            Whether to run constraints check after adding the new values (default: True).
-
-        Returns
-        -------
-        replaced : list
-            A list of strings with the values that were replaced, in no particular
-            order.
-        """
-
-        # Add all values, collecting the replacements which are stripped of Nones
-        replaced = [self.add_value(value, check=False) for value in values]
-        replaced = [value for value in replaces if value]
-
-        # Run a check if so requested (default)
-        if check:
-            offending = self.model.fail_constraints(self.values)
-            if offending:
-                raise ValueError(f"At least one constraint unsatisfied by {offending}")
-
-        return replaced
+        # Add descriptors; note that this will run constraint checking
+        self.add_values(descriptors)
 
     def add_value(self, value, check=True):
         """
@@ -127,23 +88,56 @@ class Sound:
 
         return prev_value
 
+    # TODO: Instead of wrapping, we can do everything here, also smarter (setting constr)
+    def add_values(self, values, check=True):
+        """
+        Add multiple values to the sound.
+
+        The method will remove all conflicting values before setting the new ones.
+        Currently, this method acts as a wrapper to `.add_value()`
+
+        Parameters
+        ----------
+        values : list
+            A list of strings with the values to be added to the sound.
+        check : bool
+            Whether to run constraints check after adding the new values (default: True).
+
+        Returns
+        -------
+        replaced : list
+            A list of strings with the values that were replaced, in no particular
+            order.
+        """
+
+        # Add all values, collecting the replacements which are stripped of Nones
+        replaced = [self.add_value(value, check=False) for value in values]
+        replaced = [value for value in replaced if value]
+
+        # Run a check if so requested (default)
+        if check:
+            offending = self.model.fail_constraints(self.values)
+            if offending:
+                raise ValueError(f"At least one constraint unsatisfied by {offending}")
+
+        return replaced
+
     def grapheme(self):
         # get the grapheme from the model
 
         # We first build a feature tuple and check if there is a perfect match in
         # the model. If not, we look for the closest match...
-        # TODO: add a cache in the model
         feat_tuple = tuple(sorted(self.values))
         grapheme = self.model.values2grapheme.get(feat_tuple, None)
         if not grapheme:
-            # Compute a similarity score based on inverse value weight for all
+            # Compute a similarity score based on inverse rank for all
             # graphemes, building a string with the representation if we hit a
             # `best_score`
             best_score = 0.0
             best_features = None
             for candidate_f, candidate_g in self.model.feats2graph.items():
                 common = [value for value in feat_tuple if value in candidate_f]
-                score = sum([1 / self.model.weights[value] for value in common])
+                score = sum([1 / self.model[value]['rank'] for value in common])
                 if score > best_score:
                     best_score = score
                     best_features = candidate_f
@@ -154,8 +148,8 @@ class Sound:
             leftover = []
             for value in not_common:
                 # If there is no prefix or no suffix
-                prefix = self.model.modifiers[value]["prefix"]
-                suffix = self.model.modifiers[value]["suffix"]
+                prefix = self.model.values[value]["prefix"]
+                suffix = self.model.values[value]["suffix"]
                 if not any([prefix, suffix]):
                     leftover.append(value)
                 else:
