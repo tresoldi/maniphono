@@ -1,4 +1,4 @@
-FEATURE,VALUE,RANK,PREFIX,SUFFIX,CONSTRAINS
+FEATURE,VALUE,RANK,PREFIX,SUFFIX,CONSTRAINTS
 sonorant,sonorant,1,,,
 sonorant,non-sonorant,1,,,
 continuant,continuant,2,,,

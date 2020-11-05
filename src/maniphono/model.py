@@ -13,36 +13,36 @@ import re
 RE_FEATURE = re.compile(r"[-a-z]+")
 RE_VALUE = re.compile(r"[-a-z]+")
 
-# TODO: future version, disjoint constrains?
-# TODO: cascading of constrains? explain it
-def parse_constrains(constrains_str):
+# TODO: future version, disjoint constraints?
+# TODO: cascading of constraints? explain it
+def parse_constraints(constraints_str):
     """
-    Parse a list of value constrains.
+    Parse a list of value constraints.
 
-    A list of value constrains is given as a forward slash ("/") or semicolon (";")
+    A list of value constraints is given as a forward slash ("/") or semicolon (";")
     delimited list of values that can be constrained for either presence or
-    absence. A "presence" constrain indicates a root value that must be set for
-    a child value to be allowed, such as "consonant" as a presence constrain for
-    "fricative" in most models. An "absence" constrain indicates a root value that
+    absence. A "presence" constraint indicates a root value that must be set for
+    a child value to be allowed, such as "consonant" as a presence constraint for
+    "fricative" in most models. An "absence" constraint indicates a root value that
     must not be set for a child value to be allowed, such as "vowel" as an absence
-    constrain for "stop" in most models.
+    constraint for "stop" in most models.
 
-    Absence constrains are indicated by a preceding minus sign ("-") or exclamation
-    mark ("!"), such as "-consonant" or "!consonant". Presence constrains are
+    Absence constraints are indicated by a preceding minus sign ("-") or exclamation
+    mark ("!"), such as "-consonant" or "!consonant". Presence constraints are
     indicated by a preceding plus sign ("+") or no mark, such as "+consonant"
     or just "consonant".
 
     The function takes care of checking for duplicates (two or more instances of
-    the same value in the same constrain) and inconsistencies (the same value
-    listed as both a presence and an absance constrain), as well as for valid
+    the same value in the same constraint) and inconsistencies (the same value
+    listed as both a presence and an absance constraint), as well as for valid
     value identifiers. Note that it does not check if a value identifier is
     actually found in the model (a task carried by the PhonoModel object), nor
-    deeper levels of constrains.
+    deeper levels of constraints.
 
     Parameters
     ----------
-    constrains_str : str
-        A string with a list of constrains, separated by forward slashes or semicolons.
+    constraints_str : str
+        A string with a list of constraints, separated by forward slashes or semicolons.
 
     Returns
     -------
@@ -51,43 +51,43 @@ def parse_constrains(constrains_str):
     """
 
     # Return default if empty or non-existent string
-    if not constrains_str:
+    if not constraints_str:
         return {"presence": set(), "absence": set()}
 
     # Preprocess, also setting a single delimiter
-    constrains_str = constrains_str.replace(" ", "")
-    constrians_str = constrains_str.replace(";", "/")
+    constraints_str = constraints_str.replace(" ", "")
+    constraints_str = constraints_str.replace(";", "/")
 
-    # Split the various constrains in presence and absence
+    # Split the various constraints in presence and absence
     presence, absence = [], []
-    for constr in constrains_str.split("/"):
+    for constr in constraints_str.split("/"):
         if constr[0] == "-" or constr[0] == "!":
             if not re.match(RE_VALUE, constr[1:]):
-                raise ValueError(f"Invalid value name `{constr[1:]}` in constrain")
+                raise ValueError(f"Invalid value name `{constr[1:]}` in constraint")
 
             absence.append(constr[1:])
         elif constr[0] == "+":
             if not re.match(RE_VALUE, constr[1:]):
-                raise ValueError(f"Invalid value name `{constr[1:]}` in constrain")
+                raise ValueError(f"Invalid value name `{constr[1:]}` in constraint")
 
             presence.append(constr[1:])
         else:
             if not re.match(RE_VALUE, constr[1:]):
-                raise ValueError(f"Invalid value name `{constr}` in constrain")
+                raise ValueError(f"Invalid value name `{constr}` in constraint")
 
             presence.append(constr)
 
     # Check for duplicates
     if len(presence) != len(set(presence)):
-        raise ValueError("Duplicate value name in `presence` constrains")
+        raise ValueError("Duplicate value name in `presence` constraints")
     if len(absence) != len(set(absence)):
-        raise ValueError("Duplicate value name in `absence` constrains")
+        raise ValueError("Duplicate value name in `absence` constraints")
 
     # Check for inconsistencies
     inconsistent = [value for value in presence if value in absence]
     if inconsistent:
         value_str = "/".join([sorted(inconsistent)])
-        raise ValueError("Inconsistent constrains ({value_str})")
+        raise ValueError("Inconsistent constraints ({value_str})")
 
     return {"presence": set(presence), "absence": set(absence)}
 
@@ -136,7 +136,7 @@ class PhonoModel:
                     "rank": rank,
                     "prefix": row["PREFIX"],
                     "suffix": row["SUFFIX"],
-                    "constrains": parse_constrains(row.get("CONSTRAINS")),
+                    "constraints": parse_constraints(row.get("CONSTRAINTS")),
                 }
 
         # Parse file with inventory, filling `.grapheme2values` and `.values2grapheme`
@@ -175,26 +175,25 @@ class PhonoModel:
 
         # we build a feature tuple, alphabetically sorted,
         # as a hasheable key
-        # TODO: add checks: feature/value, implies, duplicates
         with open(model_path / "sounds.csv") as csvfile:
             for row in csv.DictReader(csvfile):
                 value_key = tuple(sorted(row["DESCRIPTION"].split()))
                 self.grapheme2values[row["GRAPHEME"]] = value_key
                 self.values2grapheme[value_key] = row["GRAPHEME"]
 
-                # Check the grapheme constrains
-                if self.check_constrains(row['DESCRIPTION'].split()):
-                    print(self.check_constrains(row['DESCRIPTION'].split()))
-                    raise ValueError(f"Grapheme `{row['GRAPHEME']}` (model {self.name}) fails constrain check")
+                # Check the grapheme constraints
+                if self.check_constraints(row['DESCRIPTION'].split()):
+                    print(self.check_constraints(row['DESCRIPTION'].split()))
+                    raise ValueError(f"Grapheme `{row['GRAPHEME']}` (model {self.name}) fails constraint check")
 
     # TODO: This returns a list, but can be checked as boolean (if true)
-    def check_constrains(self, constrains):
+    def check_constraints(self, constraints):
         offending = []
-        for value in constrains:
-            unmet_presence = [value for value in self.values[value]['constrains']['presence']
-            if value not in constrains]
-            unmet_absence = [valur for value in self.values[value]['constrains']['absence']
-            if value in constrains
+        for value in constraints:
+            unmet_presence = [value for value in self.values[value]['constraints']['presence']
+            if value not in constraints]
+            unmet_absence = [valur for value in self.values[value]['constraints']['absence']
+            if value in constraints
             ]
 
             if any([unmet_presence, unmet_absence]):
