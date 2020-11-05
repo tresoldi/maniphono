@@ -46,10 +46,10 @@ class TestSound(unittest.TestCase):
         assert repr(snd1) == "voiceless bilabial plosive consonant"
         assert (
             repr(snd2)
-            == "non-high non-back low non-strident non-sibilant "
-            + "distributed anterior non-spread non-constricted voice dorsal "
-            + "non-labial non-click coronal sonorant continuant approximant "
-            + "non-nasal non-consonantal tense syllabic laryngeal non-lateral place"
+            == "low non-back non-high non-sibilant non-strident distributed "
+            + "anterior non-constricted non-spread voice dorsal non-labial non-click "
+            + "coronal place non-lateral laryngeal syllabic tense non-consonantal "
+            + "non-nasal approximant continuant sonorant"
         )
 
     def test_add_value(self):

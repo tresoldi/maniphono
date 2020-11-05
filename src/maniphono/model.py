@@ -169,9 +169,9 @@ class PhonoModel:
             for value in itertools.chain.from_iterable(_graphemes.values())
             if value not in self.values
         ]
-        import pprint
-        pprint.pprint(self.values)
-        print(_values)
+        #        import pprint
+        #        pprint.pprint(self.values)
+        #        print(_values)
 
         # we build a feature tuple, alphabetically sorted,
         # as a hasheable key
