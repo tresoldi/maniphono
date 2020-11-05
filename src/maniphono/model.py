@@ -14,8 +14,8 @@ import itertools
 import re
 
 # Define regular expression for accepting names
-RE_FEATURE = re.compile(r"^[a-z][-a-z]*$")
-RE_VALUE = re.compile(r"^[a-z][-a-z]*$")
+RE_FEATURE = re.compile(r"^[a-z][-_a-z]*$")
+RE_VALUE = re.compile(r"^[a-z][-_a-z]*$")
 
 
 def parse_constraints(constraints_str):
