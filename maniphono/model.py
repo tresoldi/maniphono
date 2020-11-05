@@ -112,7 +112,7 @@ class PhonoModel:
         # Build a path for reading the model; if it was not provided, assume it lives in
         # the `model/` directory
         if not model_path:
-            model_path = Path(__file__).parent.parent.parent / "models" / name
+            model_path = Path(__file__).parent.parent / "models" / name
         else:
             model_path = Path(model_path).absolute()
 
