@@ -8,6 +8,7 @@ import csv
 import re
 
 # Define regular expression for accepting names
+# TODO: cannot start with "-"
 RE_FEATURE = re.compile(r"[-a-z]+")
 RE_VALUE = re.compile(r"[-a-z]+")
 
@@ -168,6 +169,8 @@ class PhonoModel:
             for value in itertools.chain.from_iterable(_graphemes.values())
             if value not in self.values
         ]
+        import pprint
+        pprint.pprint(self.values)
         print(_values)
 
         # we build a feature tuple, alphabetically sorted,
