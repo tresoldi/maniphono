@@ -23,22 +23,9 @@ class TestSound(unittest.TestCase):
     Suite of tests for sounds.
     """
 
-    def test_from_description(self):
-        snd1 = maniphono.Sound(maniphono.IPA, "voiceless bilabial plosive consonant")
-        snd2 = maniphono.Sound(
-            maniphono.Tresoldi,
-            "anterior approximant non-back non-click non-consonantal "
-            "non-constricted continuant coronal distributed dorsal non-high "
-            "non-labial laryngeal non-lateral low non-nasal place non-sibilant "
-            "sonorant non-spread non-strident syllabic tense voice",
-        )
-
-        assert str(snd1) == "p"
-        assert str(snd2) == "a"
-
     def test_from_grapheme(self):
-        snd1 = maniphono.Sound(maniphono.IPA, grapheme="p")
-        snd2 = maniphono.Sound(maniphono.Tresoldi, grapheme="a")
+        snd1 = maniphono.Sound(maniphono.IPA, "p")
+        snd2 = maniphono.Sound(maniphono.Tresoldi, "a")
 
         assert repr(snd1) == "voiceless bilabial plosive consonant"
         assert (
@@ -49,6 +36,22 @@ class TestSound(unittest.TestCase):
             + "non-nasal approximant continuant sonorant"
         )
 
+    def test_from_description(self):
+        snd1 = maniphono.Sound(
+            maniphono.IPA, description="voiceless bilabial plosive consonant"
+        )
+        snd2 = maniphono.Sound(
+            maniphono.Tresoldi,
+            description="anterior approximant non-back non-click non-consonantal "
+            "non-constricted continuant coronal distributed dorsal non-high "
+            "non-labial laryngeal non-lateral low non-nasal place non-sibilant "
+            "sonorant non-spread non-strident syllabic tense voice",
+        )
+
+        assert str(snd1) == "p"
+        assert str(snd2) == "a"
+
+    # TODO: test add_value return
     def test_add_value(self):
         snd1 = maniphono.Sound(maniphono.IPA, grapheme="p")
         snd1.add_value("voiced")
