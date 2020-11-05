@@ -141,10 +141,11 @@ class Sound:
         if self._cache["grapheme"]:
             return self._cache["grapheme"]
 
-        # We first build a feature tuple and check if there is a perfect match in
-        # the model. If not, we look for the closest match...
+        # We first build a feature tuple and check if there is a model match...
         feat_tuple = tuple(sorted(self.values))
         grapheme = self.model.values2grapheme.get(feat_tuple, None)
+
+        # If no match, we look for the closest one
         if not grapheme:
             # Compute a similarity score based on inverse rank for all
             # graphemes, building a string with the representation if we hit a
@@ -159,7 +160,9 @@ class Sound:
                     best_features = candidate_f
                     grapheme = candidate_g
 
-            # Build grapheme
+            # Build grapheme, adding prefixes/suffixes for all missing values;
+            # we also build a `leftover` list of values that could not be expressed
+            # with affixes and which will be added later
             not_common = [value for value in feat_tuple if value not in best_features]
             leftover = []
             for value in not_common:
@@ -172,7 +175,7 @@ class Sound:
                     grapheme = f"{prefix}{grapheme}{suffix}"
 
             if leftover:
-                grapheme = f"{grapheme}[{','.join(leftover)}]"
+                grapheme = f"{grapheme}[{','.join(sorted(leftover))}]"
 
         # Store in the cache and return
         self._cache["grapheme"] = grapheme
