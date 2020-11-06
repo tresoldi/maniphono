@@ -1,0 +1,12 @@
+FEATURE,VALUE,RANK,PREFIX,SUFFIX,CONSTRAINTS
+type,vowel,1,,,
+type,consonant,1,,,
+height,open,2,,,invalid_name
+height,mid,2,,,vowel
+height,close,2,,,vowel
+place,labial,2,,,consonant
+place,coronal,2,,,consonant
+manner,stop,3,,,consonant
+manner,fricative,3,,,consonant
+voiceness,voiceless,4,,,consonant
+voiceness,voiced,4,,,consonant
