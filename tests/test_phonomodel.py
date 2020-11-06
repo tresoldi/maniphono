@@ -67,7 +67,7 @@ class TestPhonoModel(unittest.TestCase):
         # it "manually".
         _ipa = maniphono.PhonoModel("ipa")
 
-        assert len(_ipa.features) == 17
+        assert len(_ipa.features) == 18
         assert "length" in _ipa.features
         assert "long" in _ipa.features["length"]
 

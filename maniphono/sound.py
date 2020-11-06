@@ -1,3 +1,4 @@
+# TODO: unicode escaper -- as utils?
 # TODO: allow initialization from description to be a list and not only a stirng,
 #       making __add__ and __sub__ easier for example
 # TODO: allow " and " as separator for adding and removing features
@@ -8,6 +9,8 @@
 # TODO: build implies -> e.g., all plosives will be consonants automatically
 # TODO: use unidecode? other normalizations?
 # TODO: cache grapheme at the end of add_value/add_values
+
+import unicodedata
 
 
 class Sound:
@@ -182,6 +185,9 @@ class Sound:
 
             if leftover:
                 grapheme = f"{grapheme}[{','.join(sorted(leftover))}]"
+
+        # Unicode and other normalizations
+        grapheme = unicodedata.normalize("NFC", grapheme)
 
         # Store in the cache and return
         self._cache["grapheme"] = grapheme

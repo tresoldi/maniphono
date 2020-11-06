@@ -28,7 +28,7 @@ manner,nasal,2,,,consonant
 manner,plosive,2,,,consonant
 manner,trill,2,,,consonant
 palatalization,palatalized,7,,ʲ,consonant
-pharyngealization,pharyngealized,7,,ˤ,consonant
+pharyngealization,pharyngealized,7,,ˤ,
 phonation,voiced,5,,,consonant
 phonation,voiceless,5,,,consonant
 place,alveolar,4,,,consonant
@@ -60,3 +60,5 @@ type,consonant,1,,,
 type,vowel,1,,,
 uvularization,uvularized,7,,ʶ,consonant
 velarization,velarized,7,,ˠ,consonant
+syllabicity,syllabic,8,,,consonant
+syllabicity,non-syllabic,8,,,consonant

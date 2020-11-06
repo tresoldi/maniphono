@@ -67,7 +67,6 @@ class TestSound(unittest.TestCase):
         """
         snd = maniphono.Sound(maniphono.IPA, "p")
         snd += "voiced;aspirated"
-
         assert str(snd) == "bʰ"
 
     def test_sub_operator(self):
@@ -81,13 +80,35 @@ class TestSound(unittest.TestCase):
             maniphono.IPA, description="voiced bilabial aspirated plosive consonant"
         )
         snd -= "aspirated"
-
-        print(snd.values)
-
         assert str(snd) == "b"
 
     def test_operation(self):
-        pass
+        ADD_TESTS = [
+            ["p", "voiced", "b"],
+            ["p", "voiced,aspirated", "bʰ"],
+            ["m", "alveolar", "n"],
+            ["ɴ", "voiceless", "ɴ[voiceless]"],
+            ["t", "ejective,retroflex", "ʈʼ"],
+            ["ɹ", "lateral", "l"],
+            ["s", "non-sibilant", "ç[alveolar]"],
+            ["i", "back", "ɯ"],
+            ["ɜ", "rounded", "ɞ"],
+            ["n", "syllabic", "n[syllabic]"],
+            ["t", "aspirated", "tʰ"],
+            ["d", "dental", "b[dental]"],
+            ["d", "labialized", "dʷ"],
+            ["d", "velarized", "dˠ"],
+            ["a", "pharyngealized", "aˤ"],
+            #            ["e", "nasalized", "ẽ"],
+            ["d", "palatalized", "dʲ"],
+            ["t", "aspirated,labialized", "tʰʷ"],
+        ]
+
+        for test in ADD_TESTS:
+            source, values, target = test
+            snd1 = maniphono.Sound(maniphono.IPA, source)
+            snd2 = snd1 + values
+            assert target == str(snd2)
 
 
 if __name__ == "__main__":
