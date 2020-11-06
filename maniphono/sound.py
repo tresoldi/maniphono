@@ -1,5 +1,9 @@
-# TODO: default to grapheme, description secondary
-
+# TODO: allow initialization from description to be a list and not only a stirng,
+#       making __add__ and __sub__ easier for example
+# TODO: allow " and " as separator for adding and removing features
+# TODO: add __hash__ and comparison
+# TODO: getattribute and set attribute can work on features
+# TODO: investigate __slots__
 # TODO: overload operators
 # TODO: build implies -> e.g., all plosives will be consonants automatically
 # TODO: use unidecode? other normalizations?
@@ -103,7 +107,7 @@ class Sound:
         ----------
         values : list or str
             A list of strings with the values to be added to the sound, a string
-            with values separated by spaces.
+            with values separated by spaces, commas, or semicolons.
         check : bool
             Whether to run constraints check after adding the new values (default: True).
 
@@ -122,6 +126,8 @@ class Sound:
         # string with a single descriptor without any special treatment.
         # TODO: preprocessing
         if isinstance(values, str):
+            values = values.replace(",", " ")
+            values = values.replace(";", " ")
             values = values.split()
 
         # Add all values, collecting the replacements which are stripped of Nones
@@ -152,9 +158,9 @@ class Sound:
             # `best_score`
             best_score = 0.0
             best_features = None
-            for candidate_f, candidate_g in self.model.feats2graph.items():
+            for candidate_f, candidate_g in self.model.values2grapheme.items():
                 common = [value for value in feat_tuple if value in candidate_f]
-                score = sum([1 / self.model[value]["rank"] for value in common])
+                score = sum([1 / self.model.values[value]["rank"] for value in common])
                 if score > best_score:
                     best_score = score
                     best_features = candidate_f
@@ -202,3 +208,14 @@ class Sound:
 
     def __str__(self):
         return self.grapheme()
+
+    def __add__(self, other):
+        _snd = Sound(self.model, description=" ".join(self.values))
+        _snd.add_values(other)
+        return _snd
+
+    def __sub__(self, other):
+        other = other.replace(",", " ")
+        other = other.replace(";", " ")
+        values = [value for value in self.values if value not in other.split()]
+        return Sound(self.model, description=" ".join(values))

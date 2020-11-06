@@ -53,10 +53,41 @@ class TestSound(unittest.TestCase):
 
     # TODO: test add_value return
     def test_add_value(self):
-        snd1 = maniphono.Sound(maniphono.IPA, grapheme="p")
+        snd1 = maniphono.Sound(maniphono.IPA, "p")
         snd1.add_value("voiced")
 
         assert str(snd1) == "b"
+
+    def test_add_operator(self):
+        """
+        Single test of the `add` operator.
+
+        This only tests the method; tests of good results are performed in
+        `test_operation()`.
+        """
+        snd = maniphono.Sound(maniphono.IPA, "p")
+        snd += "voiced;aspirated"
+
+        assert str(snd) == "bʰ"
+
+    def test_sub_operator(self):
+        """
+        Single test of the `sub` operator.
+
+        This only tests the method; tests of good results are performed in
+        `test_operation()`.
+        """
+        snd = maniphono.Sound(
+            maniphono.IPA, description="voiced bilabial aspirated plosive consonant"
+        )
+        snd -= "aspirated"
+
+        print(snd.values)
+
+        assert str(snd) == "b"
+
+    def test_operation(self):
+        pass
 
 
 if __name__ == "__main__":

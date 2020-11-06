@@ -31,7 +31,7 @@ setup(
     long_description_content_type="text/markdown",
     long_description=README_FILE,
     name="maniphono",
-    packages=['maniphono', 'models'],
+    packages=["maniphono", "models"],
     python_requires=">=3.7",
     test_suite="tests",
     tests_require=[],
