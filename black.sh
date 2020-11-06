@@ -1,3 +1,3 @@
 black *.py
-black src/maniphono/*.py
+black maniphono/*.py
 black tests/*.py
