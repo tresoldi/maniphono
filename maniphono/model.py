@@ -13,6 +13,9 @@ import csv
 import itertools
 import re
 
+# Import local modules
+from .utils import replace_codepoints
+
 # Define regular expression for accepting names
 RE_FEATURE = re.compile(r"^[a-z][-_a-z]*$")
 RE_VALUE = re.compile(r"^[a-z][-_a-z]*$")
@@ -146,8 +149,8 @@ class PhonoModel:
                 self.values[value] = {
                     "feature": feature,
                     "rank": rank,
-                    "prefix": row["PREFIX"],
-                    "suffix": row["SUFFIX"],
+                    "prefix": replace_codepoints(row["PREFIX"]),
+                    "suffix": replace_codepoints(row["SUFFIX"]),
                     "constraints": parse_constraints(row.get("CONSTRAINTS")),
                 }
 

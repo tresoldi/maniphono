@@ -21,9 +21,10 @@ class TestUtils(unittest.TestCase):
     """
 
     def test_codepoint2glyph(self):
-        assert maniphono.codepoint2glyph("0283") == "ʃ"
-        assert maniphono.codepoint2glyph("u0283") == "ʃ"
-        assert maniphono.codepoint2glyph("X+0283") == "ʃ"
+        assert maniphono.codepoint2glyph("U+0283") == "ʃ"
+
+    def test_replace_codepoints(self):
+        assert maniphono.replace_codepoints("aU+0283o") == "aʃo"
 
 
 if __name__ == "__main__":

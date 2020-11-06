@@ -2,6 +2,11 @@
 Utility functions for `maniphono`.
 """
 
+import re
+
+# Pattern for unicode codepoint replacement
+RE_CODEPOINT = re.compile("U\+[0-9A-F]{4}")
+
 
 def codepoint2glyph(codepoint):
     """
@@ -10,7 +15,8 @@ def codepoint2glyph(codepoint):
     Parameters
     ----------
     codepoint : str
-        A string with the codepoint, such as "U+0283", "u+0283", "u0283", or "0283".
+        A string with the codepoint in the format "U+XXXX", such
+        as "U+0283".
 
     Returns
     -------
@@ -27,3 +33,28 @@ def codepoint2glyph(codepoint):
         value = int(codepoint, 16)
 
     return chr(value)
+
+
+def replace_codepoints(text):
+    """
+    Replaces Unicode codepoints in a string with the corresponding glyphs.
+
+    Multiple codepoints can be specified in the same string. Characters
+    which are not part of codepoint annotation are kept.
+
+    Parameters
+    ----------
+    text : str
+        The text with codepoint annotations to be replaced.
+
+    Returns
+    -------
+    ret : str
+        The text with codepoint annotations replaced.
+    """
+
+    # Internal function used for calling codepoint2glyph() on a match
+    def _match_repr(match):
+        return codepoint2glyph(match.group())
+
+    return RE_CODEPOINT.sub(_match_repr, text)

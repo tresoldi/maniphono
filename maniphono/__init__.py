@@ -14,4 +14,4 @@ from maniphono.model import PhonoModel, IPA, Tresoldi
 from maniphono.sound import Sound
 from maniphono.segment import Segment
 from maniphono.sequence import Sequence
-from maniphono.utils import codepoint2glyph
+from maniphono.utils import codepoint2glyph, replace_codepoints
