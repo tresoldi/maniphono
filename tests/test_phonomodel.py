@@ -23,6 +23,7 @@ class TestPhonoModel(unittest.TestCase):
     Suite of tests for phonological models.
     """
 
+    # TODO: add test with disjunctions, fix other tests
     def test_parse_constraints(self):
         """
         Test constraint parsing and exceptions.
@@ -30,13 +31,15 @@ class TestPhonoModel(unittest.TestCase):
 
         # Test single value
         ret = maniphono.model.parse_constraints("consonant")
-        assert ret["presence"] == {"consonant"}
-        assert len(ret["absence"]) == 0
+        assert len(ret) == 1
+        assert len(ret[0]) == 1
+        assert ret[0][0] == {"type": "presence", "value": "consonant"}
 
         # Test multiple values with positive and negative
         ret = maniphono.model.parse_constraints("+cons;plos/-voiceless;!front")
-        assert tuple(sorted(ret["presence"])) == ("cons", "plos")
-        assert tuple(sorted(ret["absence"])) == ("front", "voiceless")
+        assert len(ret) == 4
+        assert len(ret[0]) == 1
+        assert ret[3][0] == {"type": "absence", "value": "front"}
 
         # Test invalid value names
         with self.assertRaises(ValueError):
@@ -45,16 +48,6 @@ class TestPhonoModel(unittest.TestCase):
             maniphono.model.parse_constraints("+a123")
         with self.assertRaises(ValueError):
             maniphono.model.parse_constraints("-a123")
-
-        # Test duplicates
-        with self.assertRaises(ValueError):
-            maniphono.model.parse_constraints("abc/+abc")
-        with self.assertRaises(ValueError):
-            maniphono.model.parse_constraints("-abc/!abc")
-
-        # Test inconsistency
-        with self.assertRaises(ValueError):
-            maniphono.model.parse_constraints("abc/-abc")
 
     # TODO add more IPA assertions, including sounds
     def test_ipa(self):
@@ -67,7 +60,7 @@ class TestPhonoModel(unittest.TestCase):
         # it "manually".
         _ipa = maniphono.PhonoModel("ipa")
 
-        assert len(_ipa.features) == 18
+        assert len(_ipa.features) == 19
         assert "length" in _ipa.features
         assert "long" in _ipa.features["length"]
 

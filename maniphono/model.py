@@ -20,81 +20,44 @@ from .utils import replace_codepoints
 RE_FEATURE = re.compile(r"^[a-z][-_a-z]*$")
 RE_VALUE = re.compile(r"^[a-z][-_a-z]*$")
 
-
+# TODO: dont use `presence` and `absence` strings
 def parse_constraints(constraints_str):
-    """
-    Parse a list of value constraints.
+    # Prepare constraint string for manipulation
+    for delimiter in [",", ";", "/"]:
+        constraints_str = constraints_str.replace(delimiter, " ")
+    constraints_str = re.sub(r"\s+", " ", constraints_str.strip())
 
-    A list of value constraints is given as a forward slash ("/") or semicolon (";")
-    delimited list of values that can be constrained for either presence or
-    absence. A "presence" constraint indicates a root value that must be set for
-    a child value to be allowed, such as "consonant" as a presence constraint for
-    "fricative" in most models. An "absence" constraint indicates a root value that
-    must not be set for a child value to be allowed, such as "vowel" as an absence
-    constraint for "stop" in most models.
+    # Obtain all constraints and check for disjunctions
+    constraints = []
+    for constr_str in constraints_str.split():
+        constr_group = []
+        for constr in constr_str.split("|"):
+            if constr[0] == "-" or constr[0] == "!":
+                if not re.match(RE_VALUE, constr[1:]):
+                    raise ValueError(f"Invalid value name `{constr[1:]}` in constraint")
 
-    Absence constraints are indicated by a preceding minus sign ("-") or exclamation
-    mark ("!"), such as "-consonant" or "!consonant". Presence constraints are
-    indicated by a preceding plus sign ("+") or no mark, such as "+consonant"
-    or just "consonant".
+                constr_group.append({"type": "absence", "value": constr[1:]})
 
-    The function takes care of checking for duplicates (two or more instances of
-    the same value in the same constraint) and inconsistencies (the same value
-    listed as both a presence and an absance constraint), as well as for valid
-    value identifiers. Note that it does not check if a value identifier is
-    actually found in the model (a task carried by the PhonoModel object), nor
-    deeper levels of constraints.
+            elif constr[0] == "+":
+                if not re.match(RE_VALUE, constr[1:]):
+                    raise ValueError(f"Invalid value name `{constr[1:]}` in constraint")
 
-    Parameters
-    ----------
-    constraints_str : str
-        A string with a list of constraints, separated by forward slashes or semicolons.
+                constr_group.append({"type": "presence", "value": constr[1:]})
 
-    Returns
-    -------
-    contrains : dict
-        A dictionary of sets with `presence` and `absence` value identifiers.
-    """
+            else:
+                if not re.match(RE_VALUE, constr):
+                    raise ValueError(f"Invalid value name `{constr}` in constraint")
 
-    # Return default if empty or non-existent string
-    if not constraints_str:
-        return {"presence": set(), "absence": set()}
+                constr_group.append({"type": "presence", "value": constr})
 
-    # Preprocess, also setting a single delimiter
-    constraints_str = constraints_str.replace(" ", "")
-    constraints_str = constraints_str.replace(";", "/")
+        # Collect constraint group
+        constraints.append(constr_group)
 
-    # Split the various constraints in presence and absence
-    presence, absence = [], []
-    for constr in constraints_str.split("/"):
-        if constr[0] == "-" or constr[0] == "!":
-            if not re.match(RE_VALUE, constr[1:]):
-                raise ValueError(f"Invalid value name `{constr[1:]}` in constraint")
+    # Check for duplicates/inconsistent
+    # TODO: we can have a simple check for duplicates when groups have only
+    # one entry, but it would be difficult to check when allowing disjunction
 
-            absence.append(constr[1:])
-        elif constr[0] == "+":
-            if not re.match(RE_VALUE, constr[1:]):
-                raise ValueError(f"Invalid value name `{constr[1:]}` in constraint")
-
-            presence.append(constr[1:])
-        else:
-            if not re.match(RE_VALUE, constr):
-                raise ValueError(f"Invalid value name `{constr}` in constraint")
-
-            presence.append(constr)
-
-    # Check for duplicates
-    if len(presence) != len(set(presence)):
-        raise ValueError("Duplicate value name in `presence` constraints")
-    if len(absence) != len(set(absence)):
-        raise ValueError("Duplicate value name in `absence` constraints")
-
-    # Check for inconsistencies
-    inconsistent = [value for value in presence if value in absence]
-    if inconsistent:
-        raise ValueError("Inconsistent constraints ({sorted(inconsistent)})")
-
-    return {"presence": set(presence), "absence": set(absence)}
+    return constraints
 
 
 class PhonoModel:
@@ -146,28 +109,32 @@ class PhonoModel:
 
                 # Store features (also as reverse map) and ranks
                 self.features[feature].add(value)
+
+                constraint_str = row.get("CONSTRAINTS")
+                if constraint_str:
+                    constr = parse_constraints(constraint_str)
+                else:
+                    constr = []
+
                 self.values[value] = {
                     "feature": feature,
                     "rank": rank,
                     "prefix": replace_codepoints(row["PREFIX"]),
                     "suffix": replace_codepoints(row["SUFFIX"]),
-                    "constraints": parse_constraints(row.get("CONSTRAINTS")),
+                    "constraints": constr,
                 }
 
         # Check if all constraints refer to existing values; this cannot be done
         # before the entire model is loaded
-        all_constr = set(
-            itertools.chain.from_iterable(
-                [
-                    list(value["constraints"]["presence"])
-                    + list(value["constraints"]["absence"])
-                    for value in self.values.values()
-                ]
-            )
-        )
+        all_constr = set()
+        for value in self.values.values():
+            for c_group in value["constraints"]:
+                values = [entry["value"] for entry in c_group]
+                all_constr |= set(values)
+
         missing_values = [value for value in all_constr if value not in self.values]
         if missing_values:
-            raise ValueError("Contraints have undefined value(s): {missing_values}")
+            raise ValueError(f"Contraints have undefined value(s): {missing_values}")
 
     def _init_sounds(self, model_path):
         # Parse file with inventory, filling `.grapheme2values` and `.values2grapheme`
@@ -248,19 +215,16 @@ class PhonoModel:
 
         offending = []
         for value in sound_values:
-            unmet_presence = [
-                value
-                for value in self.values[value]["constraints"]["presence"]
-                if value not in sound_values
-            ]
-            unmet_absence = [
-                value
-                for value in self.values[value]["constraints"]["absence"]
-                if value in sound_values
-            ]
-
-            if any([unmet_presence, unmet_absence]):
-                offending.append(value)
+            # Get a vector for each group
+            for group in self.values[value]["constraints"]:
+                z = [
+                    constr["value"] in sound_values
+                    if constr["type"] == "presence"
+                    else constr["value"] not in sound_values
+                    for constr in group
+                ]
+                if not any(z):
+                    offending.append(value)
 
         return offending
 

@@ -79,15 +79,15 @@ l,voiced alveolar lateral approximant consonant
 ɭ,voiced retroflex lateral approximant consonant
 ɮ,voiced alveolar lateral fricative consonant
 ʎ,voiced palatal lateral approximant consonant
-m,voiced bilabial nasal consonant
-ɱ,voiced labio-dental nasal consonant
-n,voiced alveolar nasal consonant
+m,voiced bilabial nasal plosive consonant
+ɱ,voiced labio-dental nasal plosive consonant
+n,voiced alveolar nasal plosive consonant
 nm,voiced labio-coronal nasal plosive consonant
-ɴ,voiced uvular nasal consonant
-ɲ,voiced palatal nasal consonant
+ɴ,voiced uvular nasal plosive consonant
+ɲ,voiced palatal nasal plosive consonant
 ɲm,voiced labio-velar nasal plosive consonant
-ɳ,voiced retroflex nasal consonant
-ŋ,voiced velar nasal consonant
+ɳ,voiced retroflex nasal plosive consonant
+ŋ,voiced velar nasal plosive consonant
 ŋǀ,voiced dental nasal click consonant
 ŋǁ,voiced alveolar lateral nasal click consonant
 ŋǂ,voiced palatal nasal click consonant
@@ -172,3 +172,12 @@ z,voiced alveolar sibilant fricative consonant
 θʼ,voiceless dental ejective fricative consonant
 χ,voiceless uvular non-sibilant fricative consonant
 χʼ,voiceless uvular ejective fricative consonant
+θ̼,voiceless linguo-labial non-sibilant fricative consonant
+ð̼,voiced linguo-labial non-sibilant fricative consonant
+θ̠,voiceless alveolar non-sibilant fricative consonant
+ð̠,voiced alveolar non-sibilant fricative consonant
+s̪,voiceless dental sibilant fricative consonant
+z̪,voiced dental sibilant fricative consonant
+t̪,voiceless dental plosive consonant
+d̪,voiced dental plosive consonant
+n̪,voiced dental nasal plosive consonant
