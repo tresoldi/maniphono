@@ -40,3 +40,5 @@ voiceless bilabial plosive consonant
 
 Version 0.2:
   - Added support for disjunction in constraints
+  - Renamed default model to MIPA ("Modified IPA"), expanded in number of sounds
+    hard-coded and constraints to features and values

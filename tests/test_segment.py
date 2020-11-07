@@ -23,9 +23,9 @@ class TestSegment(unittest.TestCase):
 
     def test_from_sounds(self):
         # Define the sounds that will be used
-        snd0 = maniphono.Sound(maniphono.IPA, "w")
-        snd1 = maniphono.Sound(maniphono.IPA, "a")
-        snd2 = maniphono.Sound(maniphono.Tresoldi, "j")
+        snd0 = maniphono.Sound("w")
+        snd1 = maniphono.Sound("a")
+        snd2 = maniphono.Sound("j", model=maniphono.model_tresoldi)
 
         # Test single-sound segment
         seg1 = maniphono.Segment(snd1)

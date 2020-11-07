@@ -23,9 +23,9 @@ class TestSequence(unittest.TestCase):
 
     def test_from_segments(self):
         # Define the sounds that will be used
-        snd1 = maniphono.Sound(maniphono.IPA, "p")
-        snd2 = maniphono.Sound(maniphono.IPA, "a")
-        snd3 = maniphono.Sound(maniphono.IPA, "w")
+        snd1 = maniphono.Sound("p")
+        snd2 = maniphono.Sound("a")
+        snd3 = maniphono.Sound("w")
 
         # Define the segments that will be used
         seg1 = maniphono.Segment(snd1)

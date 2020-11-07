@@ -248,5 +248,5 @@ class PhonoModel:
 
 
 # Load default models
-IPA = PhonoModel("ipa")
-Tresoldi = PhonoModel("tresoldi")
+model_mipa = PhonoModel("mipa")
+model_tresoldi = PhonoModel("tresoldi")

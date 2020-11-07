@@ -30,24 +30,24 @@ class TestPhonoModel(unittest.TestCase):
         """
 
         # Test single value
-        ret = maniphono.model.parse_constraints("consonant")
+        ret = maniphono.phonomodel.parse_constraints("consonant")
         assert len(ret) == 1
         assert len(ret[0]) == 1
         assert ret[0][0] == {"type": "presence", "value": "consonant"}
 
         # Test multiple values with positive and negative
-        ret = maniphono.model.parse_constraints("+cons;plos/-voiceless;!front")
+        ret = maniphono.phonomodel.parse_constraints("+cons;plos/-voiceless;!front")
         assert len(ret) == 4
         assert len(ret[0]) == 1
         assert ret[3][0] == {"type": "absence", "value": "front"}
 
         # Test invalid value names
         with self.assertRaises(ValueError):
-            maniphono.model.parse_constraints("a123")
+            maniphono.phonomodel.parse_constraints("a123")
         with self.assertRaises(ValueError):
-            maniphono.model.parse_constraints("+a123")
+            maniphono.phonomodel.parse_constraints("+a123")
         with self.assertRaises(ValueError):
-            maniphono.model.parse_constraints("-a123")
+            maniphono.phonomodel.parse_constraints("-a123")
 
     # TODO add more IPA assertions, including sounds
     def test_ipa(self):
@@ -58,13 +58,13 @@ class TestPhonoModel(unittest.TestCase):
         # Note that these will already be indirectly tested when running the other
         # tests, but it is still good to have a single test for this, doing
         # it "manually".
-        _ipa = maniphono.PhonoModel("ipa")
+        _mipa = maniphono.PhonoModel("mipa")
 
-        assert len(_ipa.features) == 20
-        assert "length" in _ipa.features
-        assert "long" in _ipa.features["length"]
+        assert len(_mipa.features) == 20
+        assert "length" in _mipa.features
+        assert "long" in _mipa.features["length"]
 
-        assert _ipa.values["vowel"]["rank"] == 1
+        assert _mipa.values["vowel"]["rank"] == 1
 
     # TODO add more TRESOLDI assertions, including sounds
     def test_tresoldi(self):

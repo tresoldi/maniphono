@@ -24,8 +24,8 @@ class TestSound(unittest.TestCase):
     """
 
     def test_from_grapheme(self):
-        snd1 = maniphono.Sound(maniphono.IPA, "p")
-        snd2 = maniphono.Sound(maniphono.Tresoldi, "a")
+        snd1 = maniphono.Sound("p")
+        snd2 = maniphono.Sound("a", model=maniphono.model_tresoldi)
 
         assert repr(snd1) == "voiceless bilabial plosive consonant"
         assert (
@@ -37,15 +37,13 @@ class TestSound(unittest.TestCase):
         )
 
     def test_from_description(self):
-        snd1 = maniphono.Sound(
-            maniphono.IPA, description="voiceless bilabial plosive consonant"
-        )
+        snd1 = maniphono.Sound(description="voiceless bilabial plosive consonant")
         snd2 = maniphono.Sound(
-            maniphono.Tresoldi,
             description="anterior approximant non-back non-click non-consonantal "
             "non-constricted continuant coronal distributed dorsal non-high "
             "non-labial laryngeal non-lateral low non-nasal place non-sibilant "
             "sonorant non-spread non-strident syllabic tense voice",
+            model=maniphono.model_tresoldi,
         )
 
         assert str(snd1) == "p"
@@ -53,7 +51,7 @@ class TestSound(unittest.TestCase):
 
     # TODO: test add_value return
     def test_add_value(self):
-        snd1 = maniphono.Sound(maniphono.IPA, "p")
+        snd1 = maniphono.Sound("p")
         snd1.add_value("voiced")
 
         assert str(snd1) == "b"
@@ -67,7 +65,7 @@ class TestSound(unittest.TestCase):
         """
 
         # Test a simple addition
-        snd = maniphono.Sound(maniphono.IPA, "p")
+        snd = maniphono.Sound("p")
         snd += "voiced;aspirated"
         assert str(snd) == "bʰ"
 
@@ -82,9 +80,7 @@ class TestSound(unittest.TestCase):
         This only tests the method; tests of good results are performed in
         `test_operation()`.
         """
-        snd = maniphono.Sound(
-            maniphono.IPA, description="voiced bilabial aspirated plosive consonant"
-        )
+        snd = maniphono.Sound(description="voiced bilabial aspirated plosive consonant")
         snd -= "aspirated"
         assert str(snd) == "b"
 
@@ -93,7 +89,7 @@ class TestSound(unittest.TestCase):
         Test the Sound cache.
         """
 
-        snd = maniphono.Sound(maniphono.IPA, "b")
+        snd = maniphono.Sound("b")
         assert str(snd) == "b"
         assert str(snd) == "b"
         assert repr(snd) == "voiced bilabial plosive consonant"
@@ -123,7 +119,7 @@ class TestSound(unittest.TestCase):
 
         for test in ADD_TESTS:
             source, values, target = test
-            snd1 = maniphono.Sound(maniphono.IPA, source)
+            snd1 = maniphono.Sound(source)
             snd2 = snd1 + values
             assert target == str(snd2)
 

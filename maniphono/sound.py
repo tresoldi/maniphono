@@ -13,6 +13,8 @@ This module holds the code for the sound model.
 import re
 import unicodedata
 
+from . import phonomodel
+
 
 def _split_values(values):
     """
@@ -54,9 +56,12 @@ class Sound:
     PhonoModel class.
     """
 
-    def __init__(self, model, grapheme=None, description=None):
-        # Store model, initialize, and add descriptors
-        self.model = model
+    def __init__(self, grapheme=None, description=None, model=None):
+        # Store model (defaulting to MIPA), initialize, and add descriptors
+        if not model:
+            self.model = phonomodel.model_mipa
+        else:
+            self.model = model
         self.values = []
 
         # Initialize/empty the cache
@@ -68,7 +73,7 @@ class Sound:
 
         # Set the values
         if grapheme:
-            self.add_values(model.grapheme2values[grapheme])
+            self.add_values(self.model.grapheme2values[grapheme])
         else:
             self.add_values(description)
 
@@ -247,10 +252,10 @@ class Sound:
         return self.grapheme()
 
     def __add__(self, other):
-        _snd = Sound(self.model, description=self.values)
+        _snd = Sound(description=self.values, model=self.model)
         _snd.add_values(other)
         return _snd
 
     def __sub__(self, other):
         values = [value for value in self.values if value not in _split_values(other)]
-        return Sound(self.model, description=" ".join(values))
+        return Sound(description=" ".join(values), model=self.model)
