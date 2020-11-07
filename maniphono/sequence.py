@@ -9,6 +9,8 @@ This module holds the code for the sequence model.
 # TODO: add method for sylabification (including syll breaks)
 # TODO: tone, stress and other (=general) suprasegmentals? it should probably be a
 #       vector, with representation computed on the fly for __str__
+# TODO: add method to syllabify
+# TODO: add suprasegmentals
 
 
 class Sequence:
