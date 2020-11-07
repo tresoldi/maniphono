@@ -6,7 +6,7 @@ a,open front unrounded vowel
 ɑ,open back unrounded vowel
 ɒ,open back rounded vowel
 b,voiced bilabial plosive consonant
-bv,voiced labio-dental non-sibilant affricate consonant
+b̪v,voiced labio-dental non-sibilant affricate consonant
 bβ,voiced bilabial non-sibilant affricate consonant
 ʙ,voiced bilabial trill consonant
 ɓ,voiced bilabial implosive plosive consonant
@@ -100,7 +100,7 @@ o,close-mid back rounded vowel
 ɔ,open-mid back rounded vowel
 ɵ,close-mid central rounded vowel
 p,voiceless bilabial plosive consonant
-pf,voiceless labio-dental non-sibilant affricate consonant
+p̪f,voiceless labio-dental non-sibilant affricate consonant
 pɸ,voiceless bilabial non-sibilant affricate consonant
 pʼ,voiceless bilabial ejective plosive consonant
 ɸ,voiceless bilabial non-sibilant fricative consonant

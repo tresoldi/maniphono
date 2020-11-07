@@ -1,11 +1,11 @@
 FEATURE,VALUE,RANK,PREFIX,SUFFIX,CONSTRAINTS
 aspiration,aspirated,6,,ʰ,consonant
-centrality,back,2,,,vowel
-centrality,central,2,,,vowel
-centrality,front,2,,,vowel
+centrality,back,2,,U+0320,vowel
+centrality,central,2,,U+0308,vowel
+centrality,front,2,,U+031F,vowel
 centrality,near-back,2,,,vowel
 centrality,near-front,2,,,vowel
-ejection,ejective,5,,,consonant
+ejection,ejective,5,,,plosive|fricative|affricate
 height,close-mid,3,,,vowel
 height,close,3,,,vowel
 height,mid,3,,,vowel
@@ -14,17 +14,17 @@ height,near-open,3,,,vowel
 height,open-mid,3,,,vowel
 height,open,3,,,vowel
 labialization,labialized,7,,ʷ,consonant
-laterality,lateral,3,,,consonant
+laterality,lateral,3,,,consonant -bilabial -labio-dental -epiglottal -glottal
 length,half-long,10,ˑ,
 length,long,10,,ː,
 manner,affricate,2,,,consonant
 manner,approximant,2,,,consonant
 manner,click,2,,,consonant
-manner,flap,2,,,consonant
+manner,flap,2,,,consonant -velar -glottal
 manner,fricative,2,,,consonant
 manner,implosive,2,,,consonant
 manner,plosive,2,,,consonant
-manner,trill,2,,,consonant
+manner,trill,2,,,consonant -velar -glottal
 nasality,nasal,3,,,plosive|click -epiglottal -glottal
 palatalization,palatalized,7,,ʲ,consonant
 pharyngealization,pharyngealized,7,,ˤ,
@@ -53,11 +53,11 @@ place,uvulo-epiglottal,4,,,consonant
 place,velar,4,,,consonant
 roundness,rounded,4,,U+0339,vowel
 roundness,unrounded,4,,U+031C,vowel
-sibilancy,non-sibilant,4,,,consonant
-sibilancy,sibilant,4,,,consonant
+sibilancy,non-sibilant,4,,,fricative|affricate
+sibilancy,sibilant,4,,,fricative|affricate -bilabial -labio-dental -linguo-labial -velar -uvular -epiglottal -glottal
 type,consonant,1,,,
 type,vowel,1,,,
 uvularization,uvularized,7,,ʶ,consonant
 velarization,velarized,7,,ˠ,consonant
 syllabicity,syllabic,8,,U+0329,consonant
-syllabicity,non-syllabic,8,,U+032F,consonant
+syllabicity,non-syllabic,8,,U+032F,vowel
