@@ -1,16 +1,47 @@
-# TODO: unicode escaper -- as utils?
-# TODO: allow initialization from description to be a list and not only a stirng,
-#       making __add__ and __sub__ easier for example
-# TODO: allow " and " as separator for adding and removing features
+"""
+Module for sound abstractions and operations.
+
+This module holds the code for the sound model.
+"""
+
+# TODO: expand module documentation
 # TODO: add __hash__ and comparison
 # TODO: getattribute and set attribute can work on features
 # TODO: investigate __slots__
-# TODO: overload operators
 # TODO: build implies -> e.g., all plosives will be consonants automatically
-# TODO: use unidecode? other normalizations?
-# TODO: cache grapheme at the end of add_value/add_values
 
+import re
 import unicodedata
+
+
+def _split_values(values):
+    """
+    Split a string with multiple values.
+
+    This function, intended for internal usage, allows to use different
+    delimiters and guarantees that all methods will allow all delimiters.
+
+    Delimiters can be white spaces, commas, semicolons, forward slashes,
+    and the " and " substring.
+
+    Parameters
+    ----------
+    values : str
+        The string with the list of values to be split.
+
+    Returns
+    -------
+    value_list : list
+        A list of strings with the values.
+    """
+
+    # We internally convert everything to spaces
+    for delimiter in [" and ", ",", ";", "/"]:
+        values = values.replace(delimiter, " ")
+
+    values = re.sub(r"\s+", " ", values.strip())
+
+    return values.split()
 
 
 class Sound:
@@ -34,11 +65,12 @@ class Sound:
         # Either a description or a grapheme must be provided
         if all([grapheme, description]) or not any([grapheme, description]):
             raise ValueError("Either a `grapheme` or a `description` must be provided.")
+
+        # Set the values
+        if grapheme:
+            self.add_values(model.grapheme2values[grapheme])
         else:
-            if grapheme:
-                self.add_values(model.grapheme2values[grapheme])
-            else:
-                self.add_values(description)
+            self.add_values(description)
 
     def _empty_cache(self):
         """
@@ -79,9 +111,10 @@ class Sound:
         self._empty_cache()
 
         # Get the feature related to the value, cache its previous value (if any),
-        # and remove it
+        # and remove it; we set `idx` to `None` in the beginning to avoid
+        # false positives of non-initilization
+        prev_value, idx = None, None
         feature = self.model.values[value]["feature"]
-        prev_value = None
         for idx, _value in enumerate(self.values):
             if _value in self.model.features[feature]:
                 prev_value = value
@@ -110,7 +143,8 @@ class Sound:
         ----------
         values : list or str
             A list of strings with the values to be added to the sound, a string
-            with values separated by spaces, commas, or semicolons.
+            with values separated by the delimiters specified in
+            `_split_values()`.
         check : bool
             Whether to run constraints check after adding the new values (default: True).
 
@@ -127,11 +161,8 @@ class Sound:
         # If `values` is a string, we assume it is space-separated list of
         # `values`, which can preprocess a bit. Note that this allows to use a
         # string with a single descriptor without any special treatment.
-        # TODO: preprocessing
         if isinstance(values, str):
-            values = values.replace(",", " ")
-            values = values.replace(";", " ")
-            values = values.split()
+            values = _split_values(values)
 
         # Add all values, collecting the replacements which are stripped of Nones
         replaced = [self.add_value(value, check=False) for value in values]
@@ -216,12 +247,10 @@ class Sound:
         return self.grapheme()
 
     def __add__(self, other):
-        _snd = Sound(self.model, description=" ".join(self.values))
+        _snd = Sound(self.model, description=self.values)
         _snd.add_values(other)
         return _snd
 
     def __sub__(self, other):
-        other = other.replace(",", " ")
-        other = other.replace(";", " ")
-        values = [value for value in self.values if value not in other.split()]
+        values = [value for value in self.values if value not in _split_values(other)]
         return Sound(self.model, description=" ".join(values))

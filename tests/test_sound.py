@@ -65,8 +65,14 @@ class TestSound(unittest.TestCase):
         This only tests the method; tests of good results are performed in
         `test_operation()`.
         """
+
+        # Test a simple addition
         snd = maniphono.Sound(maniphono.IPA, "p")
         snd += "voiced;aspirated"
+        assert str(snd) == "bʰ"
+
+        # Add a value alrady in the sound
+        snd += "voiced"
         assert str(snd) == "bʰ"
 
     def test_sub_operator(self):
@@ -81,6 +87,17 @@ class TestSound(unittest.TestCase):
         )
         snd -= "aspirated"
         assert str(snd) == "b"
+
+    def test_cache(self):
+        """
+        Test the Sound cache.
+        """
+
+        snd = maniphono.Sound(maniphono.IPA, "b")
+        assert str(snd) == "b"
+        assert str(snd) == "b"
+        assert repr(snd) == "voiced bilabial plosive consonant"
+        assert repr(snd) == "voiced bilabial plosive consonant"
 
     def test_operation(self):
         ADD_TESTS = [
