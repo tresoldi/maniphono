@@ -26,6 +26,7 @@ manner,implosive,2,,,consonant
 manner,plosive,2,,,consonant
 manner,trill,2,,,consonant -velar -glottal
 nasality,nasal,3,,,plosive|click -epiglottal -glottal
+nasalization,nasalized,4,,U+0303,vowel
 palatalization,palatalized,7,,ʲ,consonant
 pharyngealization,pharyngealized,7,,ˤ,
 phonation,voiced,5,,U+032C,consonant
