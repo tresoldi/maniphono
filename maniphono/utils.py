@@ -2,7 +2,9 @@
 Utility functions for `maniphono`.
 """
 
+from pathlib import Path
 import re
+import csv
 
 # Pattern for unicode codepoint replacement
 RE_CODEPOINT = re.compile("U\+[0-9A-F]{4}")
@@ -58,3 +60,34 @@ def replace_codepoints(text):
         return codepoint2glyph(match.group())
 
     return RE_CODEPOINT.sub(_match_repr, text)
+
+
+def read_distance_matrix(filepath=None):
+    """
+    Read a distance matrix, used to seed a regressor.
+
+    Parameters
+    ==========
+    filepath : str
+        Path to the TSV file containing the distance matrix used to
+        seed the regressor. If not provided, will default to one derived
+        from data presented in Mielke (2012) and included in the library.
+
+    Returns
+    =======
+    matrix : dict
+        A dictionary of dictionaries with the distances as floating-point
+        values.
+    """
+
+    if not filepath:
+        filepath = Path(__file__).parent.parent / "distances" / "default.tsv"
+        filepath = filepath.as_posix()
+
+    matrix = {}
+    with open(filepath) as tsvfile:
+        for row in csv.DictReader(tsvfile, delimiter="\t"):
+            grapheme = row.pop("GRAPHEME")
+            matrix[grapheme] = {gr: float(dist) for gr, dist in row.items()}
+
+    return matrix
