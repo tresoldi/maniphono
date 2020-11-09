@@ -13,8 +13,14 @@ import csv
 import itertools
 import re
 
+import appdirs
+
+from sklearn.neural_network import MLPRegressor
+import joblib
+import numpy as np
+
 # Import local modules
-from .utils import replace_codepoints
+from .utils import replace_codepoints, read_distance_matrix
 
 # Define regular expression for accepting names
 RE_FEATURE = re.compile(r"^[a-z][-_a-z]*$")
@@ -74,6 +80,13 @@ class PhonoModel:
         self.values = {}
         self.grapheme2values = {}
         self.values2grapheme = {}
+
+        # Instantiate a property for the regressor used for computing
+        # quantitative distances. All such methods require the `sklearn`
+        # library, which is *not* listed as a dependency; as such, by
+        # design we are not allowing to create it when initializing the
+        # object, and the user must be explicit about it.
+        self._regressor = None
 
         # Build a path for reading the model; if it was not provided, assume it lives in
         # the `model/` directory
@@ -374,6 +387,107 @@ class PhonoModel:
         vector = [entry[1] for entry in vector_data]
 
         return feature_names, vector
+
+    # TODO: cache properties to know if the cached regressor can
+    #       be used -- maybe hash the matrix
+    def _build_regressor(self):
+        """
+        Build or replace the quantitative distance regressor.
+        Note that this method, as all methods related to quantitative
+        distances, requires the `sklearn` library, which is not listed as
+        a dependency of the package.
+        """
+
+        # Set path for cache regressor: get path with `appdirs`, create path
+        # if necessary, and write it
+        cache_path = appdirs.user_data_dir("maniphono", "tresoldi")
+        cache_path = Path(cache_path)
+        cache_file = cache_path / "regressor.joblib"
+
+        # if cache file exists, load it
+        if cache_file.is_file():
+            self._regressor = joblib.load(cache_file.as_posix())
+            return
+
+        # TODO: get `matrix_path` when initializing
+        matrix_path = None
+
+        # Read raw distance data and cache vectors, also allowing to
+        # skip over unmapped graphemes
+        raw_matrix = read_distance_matrix(matrix_path)
+        mapper = {"-": -1.0, "0": 0.0, "+": +1.0}
+        vector = {}
+        for grapheme in raw_matrix:
+            try:
+                _, vector[grapheme] = self.value_vector(grapheme)
+            except KeyError:
+                print("Skipping over unmapped [%s] grapheme..." % grapheme)
+
+        # Collect (X,y) vectors
+        X, y = [], []
+        for grapheme_a in raw_matrix:
+            # Skip over unmapped graphemes
+            if grapheme_a not in vector:
+                continue
+
+            for grapheme_b, dist in raw_matrix[grapheme_a].items():
+                # Skip over unmapped graphemes
+                if grapheme_b not in vector:
+                    continue
+
+                X.append(vector[grapheme_a] + vector[grapheme_b])
+                if dist == 0.0:
+                    y.append(dist)
+                else:
+                    y.append(dist + 1.0)
+
+        # Train regressor; setting the random value for reproducibility
+        np.random.seed(42)
+        # TODO: use logger
+        print("Training MLPRegressor...")
+        self._regressor = MLPRegressor(random_state=1, max_iter=500)
+        self._regressor.fit(X, y)
+
+        # TODO: wrap to catch exceptions
+        cache_path.mkdir(parents=True, exist_ok=True)
+        joblib.dump(self._regressor, cache_file.as_posix())
+
+    # TODO: allow to run on categorical vectors?
+    def distance(self, grapheme_a, grapheme_b):
+        """
+        Return a quantitative distance based on a seed matrix.
+        The distance is by definition 0.0 for equal graphemes.
+        If no regressor has previously been trained, one will be trained with
+        default values and cached for future calls.
+        Note that this method, as all methods related to quantitative
+        distances, requires the `sklearn` library, which is not listed as
+        a dependency of the package.
+        Parameters
+        ==========
+        grapheme_a : str
+            The first grapheme to be used for distance computation.
+        grapheme_b : str
+            The second grapheme to be used for distance computation.
+        Returns
+        =======
+        dist : float
+            The distance between the two sounds.
+        """
+        # Build and cache a regressor with default parameters
+        if not self._regressor:
+            self._build_regressor()
+
+        # Get vectors, dropping feature names that are not needed
+        mapper = {"-": -1.0, "0": 0.0, "+": +1.0}
+        _, vector_a = self.value_vector(grapheme_a)
+        _, vector_b = self.value_vector(grapheme_b)
+
+        # If the vectors are equal, by definition the distance is zero
+        if tuple(vector_a) == tuple(vector_b):
+            return 0.0
+
+        # Compute distance with the regressor
+        return self._regressor.predict([vector_a + vector_b])[0]
 
 
 # Load default models

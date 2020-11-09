@@ -48,3 +48,5 @@ Version 0.2:
     `minimal_matrix()` function.
   - Added a `.class_features()` method, modelled after `distfeat`'s
     `class_features()` function.
+  - Added a general distance method, modelled after `distfeat`'s one,
+    including local cache of the regressor
