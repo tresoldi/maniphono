@@ -264,14 +264,46 @@ class PhonoModel:
         # in the future
         return sorted(pass_test)
 
-    # TODO: implement minimal_matrix from `distfeat`, including documentation
-    def minimal_matrix(self):
+    # TODO: add `vector` option as in distfeat
+    # TODO: deal with sounds/values
+    # TODO: allow use to pass their collection of sounds
+    # TODO: deal with `drop_na` as in distfeat
+    # TODO: have in documentation that you can get the values with
+    #       a .values() on the return (or just return as vector as well)
+    # TODO: add a tabulate matrix
+    def minimal_matrix(self, sounds):
         """
         Compute the minimal feature matrix for a set of sounds.
 
         Not implemented yet.
         """
-        raise ValueError("Not implemented yet")
+
+        # Build list of values for the sounds
+        features = defaultdict(list)
+        for grapheme in sounds:
+            for value in self.grapheme2values[grapheme]:
+                features[self.values[value]["feature"]].append(value)
+
+        # Keep only features with a mismatch
+        features = {
+            feature: values
+            for feature, values in features.items()
+            if len(set(values)) > 1
+        }
+
+        # Build matrix
+        # TODO: rewrite loop
+        matrix = defaultdict(dict)
+        for grapheme in sounds:
+            for feature, f_values in features.items():
+                # Get the value for the current feature
+                matrix[grapheme][feature] = [
+                    value
+                    for value in self.grapheme2values[grapheme]
+                    if value in f_values
+                ][0]
+
+        return matrix
 
     # TODO: implement class_features from `distfeat`, including documentation
     def class_features(self):

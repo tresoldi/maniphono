@@ -147,6 +147,19 @@ class TestPhonoModel(unittest.TestCase):
             "ʏ̃",
         )
 
+    def test_minimal_matrix(self):
+        mtx = maniphono.model_mipa.minimal_matrix(["t", "d"])
+        assert len(mtx) == 2
+        assert len(mtx["t"]) == 1
+        assert mtx["t"]["phonation"] == "voiceless"
+        assert "manner" not in mtx["d"]
+
+        mtx = maniphono.model_mipa.minimal_matrix(["t", "d", "s"])
+        assert len(mtx) == 3
+        assert len(mtx["t"]) == 2
+        assert mtx["t"]["phonation"] == "voiceless"
+        assert "manner" in mtx["d"]
+
 
 if __name__ == "__main__":
     # Explicitly creating and running a test suite allows to profile it
