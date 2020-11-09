@@ -334,6 +334,47 @@ class PhonoModel:
 
         return features
 
+    # TODO: allow more sounds, etc
+    # TODO: allow categorical and boolean
+    def value_vector(self, sound, binary=True):
+        """
+        Return a vector representation of the values of a sound.
+        """
+
+        sound_values = self.grapheme2values[sound]
+
+        # Binary vector
+        if not binary:
+            # First get all features that are set, and later add those that
+            # are not set as `None` (it is up to the user to filter, if
+            # not wanted)
+            vector_data = [
+                [(feature, value) for value in values if value in sound_values]
+                for feature, values in self.features.items()
+            ]
+            vector_data = list(itertools.chain.from_iterable(vector_data))
+            vector_features = [entry[0] for entry in vector_data]
+
+            for feature in self.features:
+                if feature not in vector_features:
+                    vector_data.append((feature, None))
+
+        else:
+            # TODO: better name without underscore?
+            vector_data = [
+                [(f"{feature}_{value}", value in sound_values) for value in values]
+                for feature, values in self.features.items()
+            ]
+
+            vector_data = list(itertools.chain.from_iterable(vector_data))
+
+        vector_data = sorted(vector_data, key=lambda f: f[0])
+
+        feature_names = [entry[0] for entry in vector_data]
+        vector = [entry[1] for entry in vector_data]
+
+        return feature_names, vector
+
 
 # Load default models
 model_mipa = PhonoModel("mipa")

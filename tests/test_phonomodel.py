@@ -171,6 +171,18 @@ class TestPhonoModel(unittest.TestCase):
         assert len(cf) == 2
         assert cf["type"] == "consonant"
 
+    # TODO: add test with other models
+    def test_value_vector(self):
+        fnames, vec = maniphono.model_mipa.value_vector("a")
+        assert len(fnames) == 63
+        assert fnames[0] == "aspiration_aspirated"
+        assert vec[0] is False
+
+        fnames, vec = maniphono.model_mipa.value_vector("a", binary=False)
+        assert len(fnames) == 20
+        assert fnames[0] == "aspiration"
+        assert vec[0] is None
+
 
 if __name__ == "__main__":
     # Explicitly creating and running a test suite allows to profile it
