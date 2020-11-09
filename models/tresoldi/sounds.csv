@@ -35,17 +35,16 @@ dð,anterior non-approximant non-click consonantal non-constricted non-continuan
 dɮ,anterior non-approximant non-click consonantal non-constricted non-continuant coronal non-distributed non-dorsal non-labial laryngeal lateral nasal place non-sibilant sonorant non-spread non-strident non-syllabic non-tense voice
 dʑ,non-anterior non-approximant non-back non-click consonantal non-constricted non-continuant coronal non-distributed dorsal high non-labial laryngeal non-lateral non-low nasal place sibilant sonorant non-spread non-strident non-syllabic tense voice
 dʑː,non-anterior non-approximant non-back non-click consonantal non-constricted non-continuant coronal non-distributed dorsal high non-labial laryngeal non-lateral long non-low nasal place sibilant sonorant non-spread non-strident non-syllabic tense voice
-dʒ,non-anterior non-approximant non-click consonantal non-constricted non-continuant coronal non-distributed laryngeal non-lateral nasal non-place sibilant sonorant non-spread non-strident non-syllabic non-tense voice
-dʒʱ,non-anterior non-approximant non-click consonantal non-constricted non-continuant coronal non-distributed laryngeal non-lateral nasal non-place sibilant sonorant spread non-strident non-syllabic non-tense voice
-dʒʲ,non-anterior non-approximant non-click consonantal non-constricted non-continuant coronal distributed laryngeal non-lateral nasal non-place sibilant sonorant non-spread non-strident non-syllabic non-tense voice
-dʒʷ,non-anterior non-approximant non-click consonantal non-constricted non-continuant coronal non-distributed labial laryngeal non-lateral nasal non-place round sibilant sonorant non-spread non-strident non-syllabic non-tense voice
+dʒ,non-anterior non-approximant non-click consonantal non-constricted non-continuant coronal non-distributed laryngeal non-lateral nasal place sibilant sonorant non-spread non-strident non-syllabic non-tense voice
+dʒʱ,non-anterior non-approximant non-click consonantal non-constricted non-continuant coronal non-distributed laryngeal non-lateral nasal place sibilant sonorant spread non-strident non-syllabic non-tense voice
+dʒʲ,non-anterior non-approximant non-click consonantal non-constricted non-continuant coronal distributed laryngeal non-lateral nasal place sibilant sonorant non-spread non-strident non-syllabic non-tense voice
+dʒʷ,non-anterior non-approximant non-click consonantal non-constricted non-continuant coronal non-distributed labial laryngeal non-lateral nasal place round sibilant sonorant non-spread non-strident non-syllabic non-tense voice
 dʰ,anterior non-approximant non-click consonantal non-constricted non-continuant coronal non-distributed non-dorsal non-labial laryngeal non-lateral non-nasal place non-sibilant non-sonorant spread non-strident non-syllabic non-tense voice
 dʰː,anterior non-approximant non-click consonantal non-constricted non-continuant coronal non-distributed non-dorsal non-labial laryngeal non-lateral long non-nasal place non-sibilant non-sonorant spread non-strident non-syllabic non-tense voice
 dʲ,anterior non-approximant non-click consonantal non-constricted non-continuant coronal distributed non-dorsal non-labial laryngeal non-lateral non-nasal place non-sibilant non-sonorant non-spread non-strident non-syllabic non-tense voice
 dː,anterior non-approximant non-click consonantal non-constricted non-continuant coronal non-distributed non-dorsal non-labial laryngeal non-lateral long non-nasal place non-sibilant non-sonorant non-spread non-strident non-syllabic non-tense voice
-dːʒ,non-anterior non-approximant non-click consonantal non-constricted non-continuant coronal non-distributed laryngeal non-lateral long nasal non-place sibilant sonorant non-spread non-strident non-syllabic non-tense voice
 dˤ,anterior non-approximant non-click consonantal non-constricted non-continuant coronal non-distributed non-dorsal non-labial laryngeal non-lateral non-nasal pharyngeal place non-sibilant non-sonorant non-spread non-strident non-syllabic non-tense voice
-d̠,non-approximant non-click consonantal non-constricted non-continuant laryngeal non-lateral non-nasal non-place non-sonorant non-spread non-syllabic non-tense voice
+d̠,non-approximant non-click consonantal non-constricted non-continuant laryngeal non-lateral non-nasal place non-sonorant non-spread non-syllabic non-tense voice
 d̥,anterior non-approximant non-click consonantal non-constricted non-continuant coronal non-distributed non-dorsal non-labial laryngeal non-lateral non-nasal place non-sibilant non-sonorant non-spread non-strident non-syllabic non-tense non-voice
 d̥ⁿ,anterior non-approximant non-click consonantal non-constricted non-continuant coronal non-distributed non-dorsal non-labial laryngeal non-lateral nasal place non-sibilant non-sonorant non-spread non-strident non-syllabic non-tense non-voice
 d̪,anterior non-approximant non-click consonantal non-constricted non-continuant coronal distributed non-dorsal non-labial laryngeal non-lateral non-nasal place non-sibilant non-sonorant non-spread non-strident non-syllabic tense voice
@@ -88,8 +87,8 @@ gʲ,non-anterior non-approximant back non-click consonantal non-constricted non-
 gʷ,non-approximant back non-click consonantal non-constricted non-continuant non-coronal dorsal high labial laryngeal non-lateral non-low non-nasal place round non-sonorant non-spread non-syllabic non-tense voice
 gː,non-approximant back non-click consonantal non-constricted non-continuant non-coronal dorsal high non-labial laryngeal non-lateral long non-low non-nasal place non-sonorant non-spread non-syllabic non-tense voice
 g̊,non-approximant back non-click consonantal non-constricted non-continuant non-coronal dorsal high non-labial laryngeal non-lateral non-low non-nasal place non-sonorant non-spread non-syllabic non-tense non-voice
-h,non-approximant non-click non-consonantal non-constricted continuant laryngeal non-lateral non-nasal non-place non-sonorant spread non-syllabic non-tense non-voice
-h̃,non-approximant non-click non-consonantal continuant non-laryngeal non-lateral nasal non-place non-sonorant non-syllabic non-tense
+h,non-approximant non-click non-consonantal non-constricted continuant laryngeal non-lateral non-nasal place non-sonorant spread non-syllabic non-tense non-voice
+h̃,non-approximant non-click non-consonantal continuant non-laryngeal non-lateral nasal place non-sonorant non-syllabic non-tense
 i,anterior approximant non-back non-click non-consonantal non-constricted continuant coronal distributed dorsal high non-labial laryngeal non-lateral non-low non-nasal place non-sibilant sonorant non-spread non-strident syllabic tense voice
 iː,anterior approximant non-back non-click non-consonantal non-constricted continuant coronal distributed dorsal high non-labial laryngeal non-lateral long non-low non-nasal place non-sibilant sonorant non-spread non-strident syllabic tense voice
 ĩ,anterior approximant non-back non-click non-consonantal non-constricted continuant coronal distributed dorsal high non-labial laryngeal non-lateral non-low nasal place non-sibilant sonorant non-spread non-strident syllabic tense voice
@@ -117,8 +116,8 @@ lʱ,anterior approximant non-click consonantal non-constricted non-continuant co
 lʲ,non-anterior approximant non-click consonantal non-constricted non-continuant coronal distributed non-dorsal non-labial laryngeal lateral non-nasal place non-sibilant sonorant non-spread non-strident non-syllabic non-tense voice
 lː,anterior approximant non-click consonantal non-constricted non-continuant coronal non-distributed non-dorsal non-labial laryngeal lateral long non-nasal place non-sibilant sonorant non-spread non-strident non-syllabic non-tense voice
 lˠ,anterior approximant back non-click consonantal non-constricted non-continuant coronal non-distributed dorsal high non-labial laryngeal lateral non-low non-nasal place non-sibilant sonorant non-spread non-strident non-syllabic non-tense voice
-l̠,approximant non-click consonantal non-constricted non-continuant laryngeal lateral non-nasal non-place sonorant non-spread non-syllabic non-tense voice
-l̠ʲ,non-anterior approximant non-click consonantal non-constricted non-continuant coronal distributed laryngeal lateral non-nasal non-place non-sibilant sonorant non-spread non-strident non-syllabic non-tense voice
+l̠,approximant non-click consonantal non-constricted non-continuant laryngeal lateral non-nasal place sonorant non-spread non-syllabic non-tense voice
+l̠ʲ,non-anterior approximant non-click consonantal non-constricted non-continuant coronal distributed laryngeal lateral non-nasal place non-sibilant sonorant non-spread non-strident non-syllabic non-tense voice
 l̥,anterior approximant non-click consonantal non-constricted non-continuant coronal non-distributed non-dorsal non-labial laryngeal lateral non-nasal place non-sibilant sonorant non-spread non-strident non-syllabic non-tense non-voice
 l̩,anterior approximant non-click consonantal non-constricted non-continuant coronal non-distributed non-dorsal non-labial laryngeal lateral non-nasal place non-sibilant sonorant non-spread non-strident syllabic non-tense voice
 l̪,anterior approximant non-click consonantal non-constricted non-continuant coronal distributed non-dorsal non-labial laryngeal lateral non-nasal place non-sibilant sonorant non-spread non-strident non-syllabic tense voice
@@ -219,13 +218,13 @@ tɬʼ,anterior non-approximant non-click consonantal constricted non-continuant 
 tɬ̪,anterior non-approximant non-click consonantal non-continuant coronal distributed non-dorsal non-labial non-laryngeal lateral nasal place non-sibilant sonorant non-strident non-syllabic tense
 tɬ̪ʰ,anterior non-approximant non-click consonantal non-constricted non-continuant coronal distributed non-dorsal non-labial laryngeal lateral nasal place non-sibilant sonorant spread non-strident non-syllabic tense non-voice
 tɬ̪ʼ,anterior non-approximant non-click consonantal constricted non-continuant coronal distributed non-dorsal non-labial laryngeal lateral nasal place non-sibilant sonorant non-spread non-strident non-syllabic tense non-voice
-tʃ,non-anterior non-approximant non-click consonantal non-continuant coronal non-distributed non-laryngeal non-lateral nasal non-place sibilant sonorant non-strident non-syllabic non-tense
-tʃʰ,non-anterior non-approximant non-click consonantal non-constricted non-continuant coronal non-distributed laryngeal non-lateral nasal non-place sibilant sonorant spread non-strident non-syllabic non-tense non-voice
-tʃʲ,non-anterior non-approximant non-click consonantal non-continuant coronal distributed non-laryngeal non-lateral nasal non-place sibilant sonorant non-strident non-syllabic non-tense
-tʃʷ,non-anterior non-approximant non-click consonantal non-continuant coronal non-distributed labial non-laryngeal non-lateral nasal non-place round sibilant sonorant non-strident non-syllabic non-tense
-tʃʼ,non-anterior non-approximant non-click consonantal constricted non-continuant coronal non-distributed laryngeal non-lateral nasal non-place sibilant sonorant non-spread non-strident non-syllabic non-tense non-voice
-tʃʼː,non-anterior non-approximant non-click consonantal constricted non-continuant coronal non-distributed laryngeal non-lateral long nasal non-place sibilant sonorant non-spread non-strident non-syllabic non-tense non-voice
-tʃː,non-anterior non-approximant non-click consonantal non-continuant coronal non-distributed non-laryngeal non-lateral long nasal non-place sibilant sonorant non-strident non-syllabic non-tense
+tʃ,non-anterior non-approximant non-click consonantal non-continuant coronal non-distributed non-laryngeal non-lateral nasal place sibilant sonorant non-strident non-syllabic non-tense
+tʃʰ,non-anterior non-approximant non-click consonantal non-constricted non-continuant coronal non-distributed laryngeal non-lateral nasal place sibilant sonorant spread non-strident non-syllabic non-tense non-voice
+tʃʲ,non-anterior non-approximant non-click consonantal non-continuant coronal distributed non-laryngeal non-lateral nasal place sibilant sonorant non-strident non-syllabic non-tense
+tʃʷ,non-anterior non-approximant non-click consonantal non-continuant coronal non-distributed labial non-laryngeal non-lateral nasal place round sibilant sonorant non-strident non-syllabic non-tense
+tʃʼ,non-anterior non-approximant non-click consonantal constricted non-continuant coronal non-distributed laryngeal non-lateral nasal place sibilant sonorant non-spread non-strident non-syllabic non-tense non-voice
+tʃʼː,non-anterior non-approximant non-click consonantal constricted non-continuant coronal non-distributed laryngeal non-lateral long nasal place sibilant sonorant non-spread non-strident non-syllabic non-tense non-voice
+tʃː,non-anterior non-approximant non-click consonantal non-continuant coronal non-distributed non-laryngeal non-lateral long nasal place sibilant sonorant non-strident non-syllabic non-tense
 tʰ,anterior non-approximant non-click consonantal non-constricted non-continuant coronal non-distributed non-dorsal non-labial laryngeal non-lateral non-nasal place non-sibilant non-sonorant spread non-strident non-syllabic non-tense non-voice
 tʲ,non-anterior non-approximant non-click consonantal non-continuant coronal distributed non-dorsal non-labial non-laryngeal non-lateral non-nasal place non-sibilant non-sonorant non-strident non-syllabic non-tense
 tʷ,anterior non-approximant non-click consonantal non-continuant coronal non-distributed non-dorsal labial non-laryngeal non-lateral non-nasal place round non-sibilant non-sonorant non-strident non-syllabic non-tense
@@ -261,8 +260,8 @@ vː,anterior non-approximant non-click consonantal non-constricted continuant co
 v̥,anterior non-approximant non-click consonantal non-constricted continuant coronal distributed non-dorsal labial laryngeal non-lateral non-nasal place non-round non-sibilant non-sonorant non-spread strident non-syllabic non-tense non-voice
 v̩,anterior non-approximant non-click consonantal non-constricted continuant coronal distributed non-dorsal labial laryngeal non-lateral non-nasal place non-round non-sibilant non-sonorant non-spread strident syllabic non-tense voice
 w,approximant back non-consonantal continuant non-coronal dorsal high labial non-laryngeal non-lateral non-low non-nasal place round sonorant non-syllabic non-tense
-wː,non-approximant non-consonantal non-constricted continuant laryngeal non-lateral long non-nasal non-place sonorant non-spread non-syllabic non-tense voice
-w̃,non-approximant non-consonantal non-constricted continuant laryngeal non-lateral nasal non-place sonorant non-spread non-syllabic non-tense voice
+wː,non-approximant non-consonantal non-constricted continuant laryngeal non-lateral long non-nasal place sonorant non-spread non-syllabic non-tense voice
+w̃,non-approximant non-consonantal non-constricted continuant laryngeal non-lateral nasal place sonorant non-spread non-syllabic non-tense voice
 x,non-approximant back non-click consonantal continuant non-coronal dorsal high non-labial non-laryngeal non-lateral non-low non-nasal place non-sonorant non-syllabic non-tense
 xʲ,non-anterior non-approximant back non-click consonantal continuant coronal distributed dorsal high non-labial non-laryngeal non-lateral non-low non-nasal place non-sibilant non-sonorant strident non-syllabic non-tense
 xʷ,non-approximant back non-click consonantal continuant non-coronal dorsal high labial non-laryngeal non-lateral non-low non-nasal place round non-sonorant non-syllabic non-tense
@@ -384,8 +383,8 @@ z̪̥,anterior non-approximant non-click consonantal non-constricted continuant 
 ɤ̆,non-anterior approximant back non-click non-consonantal non-constricted continuant non-coronal distributed dorsal non-high non-labial laryngeal non-lateral non-long non-low non-nasal place sonorant non-spread syllabic tense voice
 ɤ̯,non-anterior approximant back non-click non-consonantal non-constricted continuant non-coronal distributed dorsal non-high non-labial laryngeal non-lateral non-low non-nasal place sonorant non-spread non-syllabic tense voice
 ɥ,non-anterior non-approximant non-consonantal non-constricted continuant coronal distributed non-dorsal labial laryngeal non-lateral non-nasal place non-round non-sibilant sonorant non-spread non-strident non-syllabic non-tense voice
-ɦ,non-approximant non-click non-consonantal non-constricted continuant laryngeal non-lateral non-nasal non-place non-sonorant non-spread non-syllabic non-tense voice
-ɧ,non-approximant non-click consonantal continuant non-laryngeal non-lateral non-nasal non-place non-sonorant non-syllabic non-tense
+ɦ,non-approximant non-click non-consonantal non-constricted continuant laryngeal non-lateral non-nasal place non-sonorant non-spread non-syllabic non-tense voice
+ɧ,non-approximant non-click consonantal continuant non-laryngeal non-lateral non-nasal place non-sonorant non-syllabic non-tense
 ɨ,non-anterior approximant non-back non-click non-consonantal non-constricted continuant non-coronal distributed dorsal high non-labial laryngeal non-lateral non-low non-nasal place sonorant non-spread syllabic tense voice
 ɨː,non-anterior approximant non-back non-click non-consonantal non-constricted continuant non-coronal distributed dorsal high non-labial laryngeal non-lateral long non-low non-nasal place sonorant non-spread syllabic tense voice
 ɨ̃,non-anterior approximant non-back non-click non-consonantal non-constricted continuant non-coronal distributed dorsal high non-labial laryngeal non-lateral non-low nasal place sonorant non-spread syllabic tense voice
@@ -445,7 +444,7 @@ z̪̥,anterior non-approximant non-click consonantal non-constricted continuant 
 ɶ̃ː,anterior approximant non-back non-click non-consonantal non-constricted continuant coronal distributed dorsal non-high labial laryngeal non-lateral long low nasal place round non-sibilant sonorant non-spread non-strident syllabic tense voice
 ɸ,non-approximant non-click consonantal continuant non-coronal non-dorsal labial non-laryngeal non-lateral non-nasal place non-round non-sonorant non-syllabic non-tense
 ɹ,anterior non-approximant non-consonantal non-constricted continuant coronal non-distributed non-dorsal non-labial laryngeal non-lateral non-nasal place non-sibilant sonorant non-spread non-strident non-syllabic non-tense voice
-ɹ̠,non-approximant non-consonantal non-constricted continuant laryngeal non-lateral non-nasal non-place sonorant non-spread non-syllabic non-tense voice
+ɹ̠,non-approximant non-consonantal non-constricted continuant laryngeal non-lateral non-nasal place sonorant non-spread non-syllabic non-tense voice
 ɹ̩,anterior non-approximant non-consonantal non-constricted continuant coronal non-distributed non-dorsal non-labial laryngeal non-lateral non-nasal place non-sibilant sonorant non-spread non-strident syllabic non-tense voice
 ɺ,anterior non-approximant non-click consonantal non-constricted non-continuant coronal non-distributed non-dorsal non-labial laryngeal lateral non-nasal place non-sibilant sonorant non-spread non-strident non-syllabic non-tense voice
 ɻ,non-anterior non-approximant non-consonantal non-constricted continuant coronal non-distributed non-dorsal non-labial laryngeal non-lateral non-nasal place non-sibilant sonorant non-spread non-strident non-syllabic non-tense voice
@@ -461,9 +460,9 @@ z̪̥,anterior non-approximant non-click consonantal non-constricted continuant 
 ʁ̞,non-approximant back non-consonantal non-constricted continuant non-coronal dorsal non-high non-labial laryngeal non-lateral non-low non-nasal place sonorant non-spread non-syllabic non-tense voice
 ʁ̥,non-approximant back non-click consonantal non-constricted continuant non-coronal dorsal non-high non-labial laryngeal non-lateral non-low non-nasal place non-sonorant non-spread non-syllabic non-tense non-voice
 ʂ,non-anterior non-approximant non-click consonantal continuant coronal non-distributed non-dorsal non-labial non-laryngeal non-lateral non-nasal place sibilant non-sonorant strident non-syllabic non-tense
-ʃ,non-anterior non-approximant non-click consonantal continuant coronal non-distributed non-laryngeal non-lateral non-nasal non-place sibilant non-sonorant strident non-syllabic non-tense
-ʃʲ,non-anterior non-approximant non-click consonantal continuant coronal distributed non-laryngeal non-lateral non-nasal non-place sibilant non-sonorant strident non-syllabic non-tense
-ʃʼ,non-anterior non-approximant non-click consonantal constricted continuant coronal non-distributed laryngeal non-lateral non-nasal non-place sibilant non-sonorant non-spread strident non-syllabic non-tense non-voice
+ʃ,non-anterior non-approximant non-click consonantal continuant coronal non-distributed non-laryngeal non-lateral non-nasal place sibilant non-sonorant strident non-syllabic non-tense
+ʃʲ,non-anterior non-approximant non-click consonantal continuant coronal distributed non-laryngeal non-lateral non-nasal place sibilant non-sonorant strident non-syllabic non-tense
+ʃʼ,non-anterior non-approximant non-click consonantal constricted continuant coronal non-distributed laryngeal non-lateral non-nasal place sibilant non-sonorant non-spread strident non-syllabic non-tense non-voice
 ʄ,non-anterior non-approximant consonantal constricted non-continuant coronal distributed non-dorsal non-labial laryngeal non-lateral non-nasal place non-sibilant non-sonorant non-spread non-strident non-syllabic non-tense voice
 ʅ,non-anterior approximant non-back non-consonantal non-constricted continuant non-coronal dorsal high non-labial laryngeal non-lateral non-low non-nasal place sonorant non-spread syllabic tense voice
 ʇ̼,anterior non-approximant click consonantal non-constricted non-continuant coronal non-distributed non-dorsal labial laryngeal non-lateral non-nasal place non-round non-sibilant non-sonorant non-spread non-strident non-syllabic non-tense voice
@@ -506,13 +505,13 @@ z̪̥,anterior non-approximant non-click consonantal non-constricted continuant 
 ʏ̃ː,anterior approximant non-back non-click non-consonantal non-constricted continuant coronal distributed dorsal high labial laryngeal non-lateral long non-low nasal place round non-sibilant sonorant non-spread non-strident syllabic non-tense voice
 ʐ,non-anterior non-approximant non-click consonantal non-constricted continuant coronal non-distributed non-dorsal non-labial laryngeal non-lateral non-nasal place sibilant non-sonorant non-spread strident non-syllabic non-tense voice
 ʑ,non-anterior non-approximant non-back non-click consonantal non-constricted continuant coronal non-distributed dorsal high non-labial laryngeal non-lateral non-low non-nasal place sibilant non-sonorant non-spread strident non-syllabic tense voice
-ʒ,non-anterior non-approximant non-click consonantal non-constricted continuant coronal non-distributed laryngeal non-lateral non-nasal non-place sibilant non-sonorant non-spread strident non-syllabic non-tense voice
-ʒ̊,non-anterior non-approximant non-click consonantal non-constricted continuant coronal non-distributed laryngeal non-lateral non-nasal non-place sibilant non-sonorant non-spread strident non-syllabic non-tense non-voice
-ʒ̍,non-anterior non-approximant non-click consonantal non-constricted continuant coronal non-distributed laryngeal non-lateral non-nasal non-place sibilant non-sonorant non-spread strident syllabic non-tense voice
-ʔ,non-approximant non-click non-consonantal constricted non-continuant laryngeal non-lateral non-nasal non-place non-sonorant non-spread non-syllabic non-tense non-voice
-ʔh,non-approximant non-click non-consonantal non-continuant non-laryngeal non-lateral nasal non-place non-sonorant non-syllabic non-tense
-ʔʲ,non-anterior non-approximant non-click non-consonantal non-continuant coronal distributed non-laryngeal non-lateral non-nasal non-place non-sibilant non-sonorant non-strident non-syllabic non-tense
-ʔʷ,non-approximant non-click non-consonantal non-continuant labial non-laryngeal non-lateral non-nasal non-place round non-sonorant non-syllabic non-tense
+ʒ,non-anterior non-approximant non-click consonantal non-constricted continuant coronal non-distributed laryngeal non-lateral non-nasal place sibilant non-sonorant non-spread strident non-syllabic non-tense voice
+ʒ̊,non-anterior non-approximant non-click consonantal non-constricted continuant coronal non-distributed laryngeal non-lateral non-nasal place sibilant non-sonorant non-spread strident non-syllabic non-tense non-voice
+ʒ̍,non-anterior non-approximant non-click consonantal non-constricted continuant coronal non-distributed laryngeal non-lateral non-nasal place sibilant non-sonorant non-spread strident syllabic non-tense voice
+ʔ,non-approximant non-click non-consonantal constricted non-continuant laryngeal non-lateral non-nasal place non-sonorant non-spread non-syllabic non-tense non-voice
+ʔh,non-approximant non-click non-consonantal non-continuant non-laryngeal non-lateral nasal place non-sonorant non-syllabic non-tense
+ʔʲ,non-anterior non-approximant non-click non-consonantal non-continuant coronal distributed non-laryngeal non-lateral non-nasal place non-sibilant non-sonorant non-strident non-syllabic non-tense
+ʔʷ,non-approximant non-click non-consonantal non-continuant labial non-laryngeal non-lateral non-nasal place round non-sonorant non-syllabic non-tense
 ʕ,non-approximant non-click consonantal non-constricted continuant non-coronal non-dorsal non-labial laryngeal non-lateral non-nasal pharyngeal place non-sonorant non-spread non-syllabic non-tense voice
 ʘ,non-approximant click consonantal non-continuant non-coronal non-dorsal labial non-laryngeal non-lateral non-nasal place non-round non-sonorant non-syllabic non-tense
 ʙ,approximant non-click consonantal non-constricted continuant non-coronal non-dorsal labial laryngeal non-lateral non-nasal place non-round sonorant non-spread non-syllabic non-tense voice
@@ -552,7 +551,7 @@ z̪̥,anterior non-approximant non-click consonantal non-constricted continuant 
 ᶑ,non-anterior non-approximant consonantal constricted non-continuant coronal non-distributed non-dorsal non-labial laryngeal non-lateral non-nasal place non-sibilant non-sonorant non-spread non-strident non-syllabic non-tense voice
 ⁿb,non-approximant non-click consonantal non-constricted non-continuant non-coronal non-dorsal labial laryngeal non-lateral non-nasal place prenasal non-round non-sonorant non-spread non-syllabic non-tense voice
 ⁿd,anterior non-approximant non-click consonantal non-constricted non-continuant coronal non-distributed non-dorsal non-labial laryngeal non-lateral non-nasal place prenasal non-sibilant non-sonorant non-spread non-strident non-syllabic non-tense voice
-ⁿdʒ,non-approximant non-click consonantal non-constricted non-continuant laryngeal non-lateral nasal non-place prenasal sonorant non-spread non-syllabic non-tense voice
+ⁿdʒ,non-approximant non-click consonantal non-constricted non-continuant laryngeal non-lateral nasal place prenasal sonorant non-spread non-syllabic non-tense voice
 ⁿd̪,anterior non-approximant non-click consonantal non-constricted non-continuant coronal distributed non-dorsal non-labial laryngeal non-lateral non-nasal place prenasal non-sibilant non-sonorant non-spread non-strident non-syllabic tense voice
 ⁿd̼,anterior non-approximant non-click consonantal non-constricted non-continuant coronal non-distributed non-dorsal labial laryngeal non-lateral non-nasal place prenasal non-round non-sibilant non-sonorant non-spread non-strident non-syllabic non-tense voice
 ⁿg,non-approximant back non-click consonantal non-constricted non-continuant non-coronal dorsal high non-labial laryngeal non-lateral non-low non-nasal place prenasal non-sonorant non-spread non-syllabic non-tense voice
@@ -566,7 +565,7 @@ z̪̥,anterior non-approximant non-click consonantal non-constricted continuant 
 ⁿkʷ,non-approximant back non-click consonantal non-continuant non-coronal dorsal high labial non-laryngeal non-lateral non-low non-nasal place prenasal round non-sonorant non-syllabic non-tense
 ⁿp,non-approximant non-click consonantal non-continuant non-coronal non-dorsal labial non-laryngeal non-lateral non-nasal place prenasal non-round non-sonorant non-syllabic non-tense
 ⁿt,anterior non-approximant non-click consonantal non-continuant coronal non-distributed non-dorsal non-labial non-laryngeal non-lateral non-nasal place prenasal non-sibilant non-sonorant non-strident non-syllabic non-tense
-ⁿtʃ,non-anterior non-approximant non-click consonantal non-continuant coronal non-distributed non-laryngeal non-lateral nasal non-place prenasal sibilant sonorant non-strident non-syllabic non-tense
+ⁿtʃ,non-anterior non-approximant non-click consonantal non-continuant coronal non-distributed non-laryngeal non-lateral nasal place prenasal sibilant sonorant non-strident non-syllabic non-tense
 ⁿt̪,anterior non-approximant non-click consonantal non-continuant coronal distributed non-dorsal non-labial non-laryngeal non-lateral non-nasal place prenasal non-sibilant non-sonorant non-strident non-syllabic tense
 ⁿɟ,non-anterior non-approximant non-click consonantal non-constricted non-continuant coronal distributed non-dorsal non-labial laryngeal non-lateral non-nasal place prenasal non-sibilant non-sonorant non-spread non-strident non-syllabic non-tense voice
 ⱱ,anterior non-approximant non-click consonantal non-constricted non-continuant coronal distributed non-dorsal labial laryngeal non-lateral non-nasal place non-round non-sibilant sonorant non-spread non-strident non-syllabic non-tense voice
