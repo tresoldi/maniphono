@@ -44,5 +44,7 @@ Version 0.2:
     hard-coded and constraints to features and values
   - Added a `.values2sounds()` method, modelled after `distfeat`'s
     `features2graphemes()` function.
-  - Added a `.minimal_matirx()` method, modelled after `distfeat`'s
+  - Added a `.minimal_matrix()` method, modelled after `distfeat`'s
     `minimal_matrix()` function.
+  - Added a `.class_features()` method, modelled after `distfeat`'s
+    `class_features()` function.

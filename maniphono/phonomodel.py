@@ -305,14 +305,34 @@ class PhonoModel:
 
         return matrix
 
-    # TODO: implement class_features from `distfeat`, including documentation
-    def class_features(self):
+    # TODO: note that, while this is to a large extent the inverse
+    #       of minimal_matrix, to use the same codebase for both
+    #       will add an unnecessary level of abstraction; better to
+    #       just write on its own
+    # TODO: decide on NAs
+    def class_features(self, sounds):
         """
         Compute the class features for a set of sounds.
 
         Not implemented yet.
         """
-        raise ValueError("Not implemented yet")
+
+        # Build list of values for the sounds
+        features = defaultdict(list)
+        for grapheme in sounds:
+            for value in self.grapheme2values[grapheme]:
+                features[self.values[value]["feature"]].append(value)
+
+        # Keep only features with a perfect match;
+        # len(values) == len(sounds) checks there are no NAs;
+        # len(set(values)) == 1 checks if there is a match
+        features = {
+            feature: values[0]
+            for feature, values in features.items()
+            if len(values) == len(sounds) and len(set(values)) == 1
+        }
+
+        return features
 
 
 # Load default models
