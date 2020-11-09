@@ -124,6 +124,29 @@ class TestPhonoModel(unittest.TestCase):
         with self.assertRaises(ValueError):
             maniphono.PhonoModel("I", TEST_DIR / "test_models" / "i")
 
+    def test_values2sounds(self):
+        s = maniphono.model_mipa.values2sounds("+vowel +front -close")
+        assert tuple(s) == (
+            "a",
+            "ã",
+            "e",
+            "ẽ",
+            "æ",
+            "æ̃",
+            "ø",
+            "ø̃",
+            "œ",
+            "œ̃",
+            "ɛ",
+            "ɛ̃",
+            "ɪ",
+            "ɪ̃",
+            "ɶ",
+            "ɶ̃",
+            "ʏ",
+            "ʏ̃",
+        )
+
 
 if __name__ == "__main__":
     # Explicitly creating and running a test suite allows to profile it

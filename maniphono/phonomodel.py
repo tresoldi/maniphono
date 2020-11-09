@@ -228,6 +228,42 @@ class PhonoModel:
 
         return offending
 
+    # TODO: add check for inconsistent values
+    # TODO: allow custom list of graphemes (default to sounds here)
+    # TODO: generalize constraint checking with `fail_constraints` above
+    def values2sounds(self, values_str):
+        """
+        Collect the set of sounds that satisfy a list of values.
+
+        This method is intended to replace `distfeat`'s
+        `.features2graphemes()` function.
+        """
+
+        # Parse values as constraints
+        constraints = parse_constraints(values_str)
+
+        pass_test = []
+        for sound_values, sound in self.values2grapheme.items():
+            satisfy = itertools.chain.from_iterable(
+                [
+                    [
+                        constr["value"] in sound_values
+                        if constr["type"] == "presence"
+                        else constr["value"] not in sound_values
+                        for constr in constr_group
+                    ]
+                    for constr_group in constraints
+                ]
+            )
+
+            if all(satisfy):
+                pass_test.append(sound)
+
+        # While the internal list is already sorted, we sort
+        # again here so as to allow user-defined groups of sounds
+        # in the future
+        return sorted(pass_test)
+
     # TODO: implement minimal_matrix from `distfeat`, including documentation
     def minimal_matrix(self):
         """
