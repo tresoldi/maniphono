@@ -17,7 +17,7 @@ $ pip install maniphono
 
 ```python
 >>> import maniphono
->>> snd1 = maniphono.Sound(maniphono.IPA, "p")
+>>> snd1 = maniphono.Sound("p")
 >>> snd1
 voiceless bilabial plosive consonant
 >>> str(snd1)
