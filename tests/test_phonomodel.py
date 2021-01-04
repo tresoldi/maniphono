@@ -49,10 +49,10 @@ class TestPhonoModel(unittest.TestCase):
         with self.assertRaises(ValueError):
             maniphono.phonomodel.parse_constraints("-a123")
 
-    # TODO add more IPA assertions, including sounds
-    def test_ipa(self):
+    # TODO add more MIPA assertions, including sounds
+    def test_mipa(self):
         """
-        Test the IPA model.
+        Test the MIPA model.
         """
 
         # Note that these will already be indirectly tested when running the other

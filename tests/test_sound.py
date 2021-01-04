@@ -49,7 +49,6 @@ class TestSound(unittest.TestCase):
         assert str(snd1) == "p"
         assert str(snd2) == "a"
 
-    # TODO: test add_value return
     def test_add_value(self):
         snd1 = maniphono.Sound("p")
         snd1.add_value("voiced")
@@ -69,7 +68,7 @@ class TestSound(unittest.TestCase):
         snd += "voiced;aspirated"
         assert str(snd) == "bʰ"
 
-        # Add a value alrady in the sound
+        # Add a value already in the sound
         snd += "voiced"
         assert str(snd) == "bʰ"
 

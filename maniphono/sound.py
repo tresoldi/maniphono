@@ -9,10 +9,13 @@ This module holds the code for the sound model.
 # TODO: getattribute and set attribute can work on features
 # TODO: investigate __slots__
 # TODO: build implies -> e.g., all plosives will be consonants automatically
+# TODO: set cache in the model (that is shared) and not in each segment
 
+# Import Python standard libraries
 import re
 import unicodedata
 
+# Import package module
 from . import phonomodel
 
 
@@ -57,15 +60,15 @@ class Sound:
     """
 
     def __init__(self, grapheme=None, description=None, model=None):
+        self.values = []
+        # Initialize/empty the cache
+        self._empty_cache()
+
         # Store model (defaulting to MIPA), initialize, and add descriptors
         if not model:
             self.model = phonomodel.model_mipa
         else:
             self.model = model
-        self.values = []
-
-        # Initialize/empty the cache
-        self._empty_cache()
 
         # Either a description or a grapheme must be provided
         if all([grapheme, description]) or not any([grapheme, description]):
@@ -86,7 +89,7 @@ class Sound:
 
     def add_value(self, value, check=True):
         """
-        Add a value to the sound.
+        Add a single value to the sound.
 
         The method will remove all other values for the same feature before setting the
         new value.
@@ -108,7 +111,7 @@ class Sound:
         """
 
         # If the value is already set, not need to do the whole operation, including
-        # clearning the cache, so just return to confirm
+        # clearing the cache, so just return to confirm
         if value in self.values:
             return value
 
@@ -117,7 +120,7 @@ class Sound:
 
         # Get the feature related to the value, cache its previous value (if any),
         # and remove it; we set `idx` to `None` in the beginning to avoid
-        # false positives of non-initilization
+        # false positives of non-initialization
         prev_value, idx = None, None
         feature = self.model.values[value]["feature"]
         for idx, _value in enumerate(self.values):
@@ -169,7 +172,8 @@ class Sound:
         if isinstance(values, str):
             values = _split_values(values)
 
-        # Add all values, collecting the replacements which are stripped of Nones
+        # Add all values, collecting the replacements which are stripped of Nones;
+        # note that we don't run checks here, but only after all values have been added
         replaced = [self.add_value(value, check=False) for value in values]
         replaced = [value for value in replaced if value]
 
@@ -223,6 +227,7 @@ class Sound:
                 grapheme = f"{grapheme}[{','.join(sorted(leftover))}]"
 
         # Unicode and other normalizations
+        # TODO: should it be performed all the time?
         grapheme = unicodedata.normalize("NFC", grapheme)
 
         # Store in the cache and return

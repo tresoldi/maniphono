@@ -27,6 +27,7 @@ RE_FEATURE = re.compile(r"^[a-z][-_a-z]*$")
 RE_VALUE = re.compile(r"^[a-z][-_a-z]*$")
 
 # TODO: dont use `presence` and `absence` strings
+# TODO: add documentation
 def parse_constraints(constraints_str):
     # Prepare constraint string for manipulation
     for delimiter in [",", ";", "/"]:
@@ -100,6 +101,10 @@ class PhonoModel:
         self._init_sounds(model_path)
 
     def _init_model(self, model_path):
+        """
+        Internal method for initializing a model.
+        """
+
         # Parse file with feature definitions
         with open(model_path / "model.csv") as csvfile:
             for row in csv.DictReader(csvfile):
@@ -120,9 +125,10 @@ class PhonoModel:
                         f"Rank must be an integer >= 1.0 (passed `{rank}`)"
                     )
 
-                # Store features (also as reverse map) and ranks
+                # Store features
                 self.features[feature].add(value)
 
+                # Store values, which includes parsing the constraint string
                 constraint_str = row.get("CONSTRAINTS")
                 if constraint_str:
                     constr = parse_constraints(constraint_str)
@@ -138,7 +144,7 @@ class PhonoModel:
                 }
 
         # Check if all constraints refer to existing values; this cannot be done
-        # before the entire model is loaded
+        # before the entire model has been loaded
         all_constr = set()
         for value in self.values.values():
             for c_group in value["constraints"]:
@@ -150,6 +156,10 @@ class PhonoModel:
             raise ValueError(f"Contraints have undefined value(s): {missing_values}")
 
     def _init_sounds(self, model_path):
+        """
+        Internal method for initializing the sounds of a model.
+        """
+
         # Parse file with inventory, filling `.grapheme2values` and `.values2grapheme`
         # from uniform `value_keys` (tuples of the sorted values). We first load
         # all the data to perform checks.
@@ -185,7 +195,7 @@ class PhonoModel:
             if value not in self.values
         ]
         if bad_model_values:
-            raise ValueError(f"Undefined values used {bad_model_values}")
+            raise ValueError(f"Undefined values used: {bad_model_values}")
 
         # We can now add the sounds, using values as hasheable key, also checking if
         # contranints are met
@@ -287,8 +297,6 @@ class PhonoModel:
     def minimal_matrix(self, sounds):
         """
         Compute the minimal feature matrix for a set of sounds.
-
-        Not implemented yet.
         """
 
         # Build list of values for the sounds
@@ -326,8 +334,6 @@ class PhonoModel:
     def class_features(self, sounds):
         """
         Compute the class features for a set of sounds.
-
-        Not implemented yet.
         """
 
         # Build list of values for the sounds
@@ -390,12 +396,10 @@ class PhonoModel:
 
     # TODO: cache properties to know if the cached regressor can
     #       be used -- maybe hash the matrix
+    # TODO: have a parameter to delete/overwrite regressor
     def _build_regressor(self):
         """
         Build or replace the quantitative distance regressor.
-        Note that this method, as all methods related to quantitative
-        distances, requires the `sklearn` library, which is not listed as
-        a dependency of the package.
         """
 
         # Set path for cache regressor: get path with `appdirs`, create path
@@ -442,6 +446,7 @@ class PhonoModel:
                     y.append(dist + 1.0)
 
         # Train regressor; setting the random value for reproducibility
+        # TODO: config regressor parameters, including seed
         np.random.seed(42)
         # TODO: use logger
         print("Training MLPRegressor...")
@@ -456,23 +461,29 @@ class PhonoModel:
     def distance(self, grapheme_a, grapheme_b):
         """
         Return a quantitative distance based on a seed matrix.
+
         The distance is by definition 0.0 for equal graphemes.
         If no regressor has previously been trained, one will be trained with
         default values and cached for future calls.
         Note that this method, as all methods related to quantitative
         distances, requires the `sklearn` library, which is not listed as
         a dependency of the package.
+
         Parameters
         ==========
+
         grapheme_a : str
             The first grapheme to be used for distance computation.
         grapheme_b : str
             The second grapheme to be used for distance computation.
+
         Returns
         =======
+
         dist : float
             The distance between the two sounds.
         """
+
         # Build and cache a regressor with default parameters
         if not self._regressor:
             self._build_regressor()

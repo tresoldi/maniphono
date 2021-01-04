@@ -7,7 +7,7 @@ import re
 import csv
 
 # Pattern for unicode codepoint replacement
-RE_CODEPOINT = re.compile("U\+[0-9A-F]{4}")
+RE_CODEPOINT = re.compile("[Uu]\+[0-9A-Fa-f]{4}")
 
 
 def codepoint2glyph(codepoint):
@@ -27,10 +27,8 @@ def codepoint2glyph(codepoint):
     """
 
     codepoint = codepoint.lower()
-    if codepoint.startswith("u+") or codepoint.startswith("x+"):
+    if codepoint.startswith("u+"):
         value = int(codepoint[2:], 16)
-    elif codepoint[0] in "ux":
-        value = int(codepoint[1:], 16)
     else:
         value = int(codepoint, 16)
 
