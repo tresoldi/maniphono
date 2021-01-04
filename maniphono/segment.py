@@ -19,6 +19,7 @@ to behave as a Sound class when it is composed of a single sound.
 # TODO: allow to initialize sounds with strings (graphemes/descs)
 # TODO: allow to parse segments/sounds
 # TODO: allow add/sub operations, and most from Sound
+# TODO: should allow gaps? i.e., zero-sounds segments?
 
 from . import sound
 

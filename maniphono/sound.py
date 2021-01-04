@@ -256,6 +256,7 @@ class Sound:
     def __str__(self):
         return self.grapheme()
 
+    # TODO: make sure __add__ and __sub__ accept lists
     def __add__(self, other):
         _snd = Sound(description=self.values, model=self.model)
         _snd.add_values(other)

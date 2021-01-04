@@ -4,6 +4,7 @@ Module for phonological model abstractions and operations.
 This module holds the code for phonological models, the bottom-most layer of our
 abstractions. A model is defined from tabular data as...
 """
+
 # TODO: expand module doc, preparing for paper
 
 # Import Python standard libraries
@@ -254,6 +255,8 @@ class PhonoModel:
     # TODO: add check for inconsistent values
     # TODO: allow custom list of graphemes (default to sounds here)
     # TODO: generalize constraint checking with `fail_constraints` above
+    # TODO: rename `values2graphemes`?
+    # TODO: allow to return as sounds?
     def values2sounds(self, values_str):
         """
         Collect the set of sounds that satisfy a list of values.
@@ -288,6 +291,7 @@ class PhonoModel:
         return sorted(pass_test)
 
     # TODO: add `vector` option as in distfeat
+    # TODO: should take sounds and graphemes as well
     # TODO: deal with sounds/values
     # TODO: allow use to pass their collection of sounds
     # TODO: deal with `drop_na` as in distfeat
@@ -324,7 +328,8 @@ class PhonoModel:
                     if value in f_values
                 ][0]
 
-        return matrix
+        # return as a normal dictionary
+        return dict(matrix)
 
     # TODO: note that, while this is to a large extent the inverse
     #       of minimal_matrix, to use the same codebase for both
@@ -499,6 +504,9 @@ class PhonoModel:
 
         # Compute distance with the regressor
         return self._regressor.predict([vector_a + vector_b])[0]
+
+    def __str__(self):
+        return f"[`{self.name}` model ({len(self.features)} features, {len(self.values)} values, {len(self.grapheme2values)} graphemes)]"
 
 
 # Load default models
