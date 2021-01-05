@@ -73,6 +73,13 @@ is already set is added, it will be replaced.
 ('kʷ', 'labialized voiceless velar plosive consonant')
 ```
 
+A dictionary of features and values can be easily obtained:
+
+```python
+>>> snd2.feature_dict()
+{'phonation': 'voiceless', 'manner': 'plosive', 'type': 'consonant', 'place': 'velar', 'labialization': 'labialized'}
+```
+
 If a grapheme is not available, either because the sound is not complete or because no
 diacritic is offered in the model, the library will try to be explicit about its
 representation.
@@ -82,6 +89,15 @@ representation.
 >>> str(snd4), repr(snd4)
 ('c[-palatal,-plosive]', 'voiceless consonant')
 # TODO: find example of no diacritic
+```
+
+While the results are technically correct, the library still needs work for
+always returning good representations when it computes the grapheme.
+
+```python
+>>> snd5 = maniphono.Sound("kʰʷ[voiced]")
+>>> str(snd5), repr(snd5)
+('ŋʰʷ[-nasal]', 'labialized aspirated voiced velar plosive consonant')
 ```
 
 ### Segments

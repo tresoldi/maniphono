@@ -76,9 +76,41 @@ class Sound:
 
         # Set the values
         if grapheme:
-            self.add_values(self.model.grapheme2values[grapheme])
+            if grapheme in self.model.grapheme2values:
+                self.add_values(self.model.grapheme2values[grapheme])
+            else:
+                self._parse_grapheme(grapheme)
         else:
             self.add_values(description)
+
+    # TODO: write stronger parser
+    def _parse_grapheme(self, grapheme):
+        # Capture list of modifiers, if any
+        if "[" not in grapheme:
+            base, modifier = grapheme, None
+        else:
+            base, modifier = grapheme.split("[")
+            if modifier:
+                modifier = [m.strip() for m in _split_values(modifier[:-1])]
+
+        # If the base is in the list of graphemes, we can just return the
+        # grapheme values, the modified ones; otherwise we take all characters
+        # that are diacritics, remove them from the base translating into modifiers,
+        # and add the new ones
+        if base not in self.model.grapheme2values:
+            # TODO: assume diacrtics are one character
+            new_base = ""
+            for char in base:
+                if char in self.model.diacritics:
+                    modifier.insert(0, self.model.diacritics[char])
+                else:
+                    new_base += char
+            base = new_base
+
+        # Add base character and modifiers (which might include the translated
+        # diacritics)
+        self.add_values(self.model.grapheme2values[base])
+        self.add_values(modifier)
 
     def _empty_cache(self):
         """
@@ -87,6 +119,7 @@ class Sound:
 
         self._cache = {"grapheme": None, "description": None}
 
+    # TODO: rename to `set_value`?
     def add_value(self, value, check=True):
         """
         Add a single value to the sound.
@@ -118,20 +151,26 @@ class Sound:
         # Clear the cache
         self._empty_cache()
 
-        # Get the feature related to the value, cache its previous value (if any),
-        # and remove it; we set `idx` to `None` in the beginning to avoid
-        # false positives of non-initialization
-        prev_value, idx = None, None
-        feature = self.model.values[value]["feature"]
-        for idx, _value in enumerate(self.values):
-            if _value in self.model.features[feature]:
-                prev_value = value
-                break
-        if prev_value:
-            self.values.pop(idx)
+        # We need a different treatment for setting positive values (i.e. "voiced")
+        # and for removing them (i.e., "-voiced")
+        if value[0] == "-":
+            self.values = [val for val in self.values if val != value[1:]]
+            prev_value = value[1:]
+        else:
+            # Get the feature related to the value, cache its previous value (if any),
+            # and remove it; we set `idx` to `None` in the beginning to avoid
+            # false positives of non-initialization
+            prev_value, idx = None, None
+            feature = self.model.values[value]["feature"]
+            for idx, _value in enumerate(self.values):
+                if _value in self.model.features[feature]:
+                    prev_value = value
+                    break
+            if prev_value:
+                self.values.pop(idx)
 
-        # Add the new feature
-        self.values.append(value)
+            # Add the new feature
+            self.values.append(value)
 
         # Run a check if so requested (default)
         if check and self.model.fail_constraints(self.values):

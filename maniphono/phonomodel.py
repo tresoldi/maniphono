@@ -82,6 +82,7 @@ class PhonoModel:
         self.values = {}
         self.grapheme2values = {}
         self.values2grapheme = {}
+        self.diacritics = {}
 
         # Instantiate a property for the regressor used for computing
         # quantitative distances. All such methods require the `sklearn`
@@ -136,13 +137,21 @@ class PhonoModel:
                 else:
                     constr = []
 
+                prefix = replace_codepoints(row["PREFIX"])
+                suffix = replace_codepoints(row["SUFFIX"])
                 self.values[value] = {
                     "feature": feature,
                     "rank": rank,
-                    "prefix": replace_codepoints(row["PREFIX"]),
-                    "suffix": replace_codepoints(row["SUFFIX"]),
+                    "prefix": prefix,
+                    "suffix": suffix,
                     "constraints": constr,
                 }
+
+                # store auxiliary diacritic table
+                if prefix:
+                    self.diacritics[prefix] = value
+                if suffix:
+                    self.diacritics[suffix] = value
 
         # Check if all constraints refer to existing values; this cannot be done
         # before the entire model has been loaded
