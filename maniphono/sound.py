@@ -200,31 +200,52 @@ class Sound:
             # graphemes, building a string with the representation if we hit a
             # `best_score`
             best_score = 0.0
-            best_features = None
             for candidate_f, candidate_g in self.model.values2grapheme.items():
                 common = [value for value in feat_tuple if value in candidate_f]
                 score = sum([1 / self.model.values[value]["rank"] for value in common])
                 if score > best_score:
                     best_score = score
-                    best_features = candidate_f
                     grapheme = candidate_g
 
-            # Build grapheme, adding prefixes/suffixes for all missing values;
-            # we also build a `leftover` list of values that could not be expressed
-            # with affixes and which will be added later
-            not_common = [value for value in feat_tuple if value not in best_features]
-            leftover = []
-            for value in not_common:
+            # Build grapheme, adding prefixes/suffixes for all missing values; we first
+            # get the dictionary of features for both the current sound and the candidate,
+            # make a list of features missing/different in the candidate, extend with
+            # the features in candidate not found in the current one, add values that
+            # can be expressed with diacritics, and add the remaining values with
+            # full name. Note that we need to sort the list of values according to the
+            # rank.
+            # TODO: could we go around building a grapheme?
+            cur_features = self.feature_dict()
+            best_features = Sound(
+                description=self.model.grapheme2values[grapheme]
+            ).feature_dict()
+
+            modifier = []
+            for feat, val in cur_features.items():
+                if feat not in best_features:
+                    modifier.append(val)
+                elif val != best_features[feat]:
+                    modifier.append(val)
+            modifier = sorted(modifier, key=lambda v: self.model.values[v]["rank"])
+
+            expression = []
+            for value in modifier:
                 # If there is no prefix or no suffix
                 prefix = self.model.values[value]["prefix"]
                 suffix = self.model.values[value]["suffix"]
                 if not any([prefix, suffix]):
-                    leftover.append(value)
+                    expression.append(value)
                 else:
                     grapheme = f"{prefix}{grapheme}{suffix}"
 
-            if leftover:
-                grapheme = f"{grapheme}[{','.join(sorted(leftover))}]"
+            # Add substractions that have no diacritic
+            for feat, val in best_features.items():
+                if feat not in cur_features:
+                    expression.append("-%s" % val)
+
+            # Finally build string
+            if expression:
+                grapheme = f"{grapheme}[{','.join(sorted(expression))}]"
 
         # Unicode and other normalizations
         # TODO: should it be performed all the time?
@@ -234,6 +255,13 @@ class Sound:
         self._cache["grapheme"] = grapheme
 
         return grapheme
+
+    def feature_dict(self):
+        """
+        Return the defined features as a dictionary.
+        """
+
+        return {self.model.values[value]["feature"]: value for value in self.values}
 
     def __repr__(self):
         # Return the cache description, if it exists

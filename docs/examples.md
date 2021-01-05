@@ -78,10 +78,9 @@ diacritic is offered in the model, the library will try to be explicit about its
 representation.
 
 ```python
-# TODO: work on this
 >>> snd4 = maniphono.Sound(description="voiceless consonant")
 >>> str(snd4), repr(snd4)
-('c', 'voiceless consonant')
+('c[-palatal,-plosive]', 'voiceless consonant')
 # TODO: find example of no diacritic
 ```
 
