@@ -5,7 +5,7 @@ maniphono __init__.py
 """
 
 # Version of the lpngram package
-__version__ = "0.1.2"
+__version__ = "0.1.3"
 __author__ = "Tiago Tresoldi"
 __email__ = "tresoldi@shh.mpg.de"
 
