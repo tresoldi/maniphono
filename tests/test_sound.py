@@ -113,7 +113,7 @@ class TestSound(unittest.TestCase):
             ["a", "pharyngealized", "aˤ"],
             ["d", "palatalized", "dʲ"],
             ["t", "aspirated,labialized", "tʰʷ"],
-            ["e", "nasalized", "ẽ"],
+            ["e", "nasalized", "ẽ"],  # NFD normalized
         ]
 
         for test in ADD_TESTS:

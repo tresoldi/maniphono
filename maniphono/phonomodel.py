@@ -1,11 +1,6 @@
 """
 Module for phonological model abstractions and operations.
-
-This module holds the code for phonological models, the bottom-most layer of our
-abstractions. A model is defined from tabular data as...
 """
-
-# TODO: expand module doc, preparing for paper
 
 # Import Python standard libraries
 from collections import defaultdict, Counter
@@ -14,91 +9,59 @@ import csv
 import itertools
 import re
 
-import appdirs
-
+# Import 3rd party libraries
 from sklearn.neural_network import MLPRegressor
+import appdirs
 import joblib
 import numpy as np
 
 # Import local modules
-from .utils import replace_codepoints, read_distance_matrix
-
-# Define regular expression for accepting names
-RE_FEATURE = re.compile(r"^[a-z][-_a-z]*$")
-RE_VALUE = re.compile(r"^[a-z][-_a-z]*$")
-
-# TODO: dont use `presence` and `absence` strings
-# TODO: add documentation
-def parse_constraints(constraints_str):
-    # Prepare constraint string for manipulation
-    for delimiter in [",", ";", "/"]:
-        constraints_str = constraints_str.replace(delimiter, " ")
-    constraints_str = re.sub(r"\s+", " ", constraints_str.strip())
-
-    # Obtain all constraints and check for disjunctions
-    constraints = []
-    for constr_str in constraints_str.split():
-        constr_group = []
-        for constr in constr_str.split("|"):
-            if constr[0] == "-" or constr[0] == "!":
-                if not re.match(RE_VALUE, constr[1:]):
-                    raise ValueError(f"Invalid value name `{constr[1:]}` in constraint")
-
-                constr_group.append({"type": "absence", "value": constr[1:]})
-
-            elif constr[0] == "+":
-                if not re.match(RE_VALUE, constr[1:]):
-                    raise ValueError(f"Invalid value name `{constr[1:]}` in constraint")
-
-                constr_group.append({"type": "presence", "value": constr[1:]})
-
-            else:
-                if not re.match(RE_VALUE, constr):
-                    raise ValueError(f"Invalid value name `{constr}` in constraint")
-
-                constr_group.append({"type": "presence", "value": constr})
-
-        # Collect constraint group
-        constraints.append(constr_group)
-
-    # Check for duplicates/inconsistent
-    # TODO: we can have a simple check for duplicates when groups have only
-    # one entry, but it would be difficult to check when allowing disjunction
-
-    return constraints
+from .utils import (
+    replace_codepoints,
+    read_distance_matrix,
+    _split_values,
+    parse_constraints,
+    normalize,
+    RE_FEATURE,
+    RE_VALUE,
+)
 
 
+# TODO: expand class documentation
 class PhonoModel:
     """
     Phonological model.
     """
 
-    # TODO: expand class documentation
-
     def __init__(self, name, model_path=None):
+        """
+        Initialize a phonological model.
+        """
+
         # Setup model and defaults
-        self.name = name
-        self.features = defaultdict(set)
-        self.values = {}
-        self.grapheme2values = {}
-        self.values2grapheme = {}
-        self.diacritics = {}
+        self.name = name  # model name
+        self.features = defaultdict(set)  # set of features in the model
+        self.values = {}  # dictionary of value structures
+        self.grapheme2values = {}  # auxiliary dict for mapping
+        self.values2grapheme = {}  # auxiliary dict for mapping
+        self.diacritics = {}  # auxiliary dict for parsing/representation
 
         # Instantiate a property for the regressor used for computing
-        # quantitative distances. All such methods require the `sklearn`
-        # library, which is *not* listed as a dependency; as such, by
+        # quantitative distances. These methods require the `sklearn`
+        # library, which is a dependency but which, due to issues with serialization
+        # and computation time, is *not* used by default; as such, by
         # design we are not allowing to create it when initializing the
         # object, and the user must be explicit about it.
         self._regressor = None
 
-        # Build a path for reading the model; if it was not provided, assume it lives in
-        # the `model/` directory
+        # Build a path for reading the model (if it was not provided, we assume it
+        # lives in the `model/` directory), and then load the features/values first
+        # and the sounds later
         if not model_path:
             model_path = Path(__file__).parent.parent / "models" / name
         else:
             model_path = Path(model_path).absolute()
 
-        # Init model first, and inventory later
         self._init_model(model_path)
         self._init_sounds(model_path)
 
@@ -127,18 +90,20 @@ class PhonoModel:
                         f"Rank must be an integer >= 1.0 (passed `{rank}`)"
                     )
 
-                # Store features
+                # Store values for all features
                 self.features[feature].add(value)
 
-                # Store values, which includes parsing the constraint string
+                # Store values structs, which includes parsing the diacritics and
+                # the constraint string
+                prefix = replace_codepoints(row["PREFIX"])
+                suffix = replace_codepoints(row["SUFFIX"])
+
                 constraint_str = row.get("CONSTRAINTS")
                 if constraint_str:
                     constr = parse_constraints(constraint_str)
                 else:
                     constr = []
 
-                prefix = replace_codepoints(row["PREFIX"])
-                suffix = replace_codepoints(row["SUFFIX"])
                 self.values[value] = {
                     "feature": feature,
                     "rank": rank,
@@ -147,7 +112,7 @@ class PhonoModel:
                     "constraints": constr,
                 }
 
-                # store auxiliary diacritic table
+                # Store diacritics
                 if prefix:
                     self.diacritics[prefix] = value
                 if suffix:
@@ -158,8 +123,7 @@ class PhonoModel:
         all_constr = set()
         for value in self.values.values():
             for c_group in value["constraints"]:
-                values = [entry["value"] for entry in c_group]
-                all_constr |= set(values)
+                all_constr |= {constr["value"] for constr in c_group}
 
         missing_values = [value for value in all_constr if value not in self.values]
         if missing_values:
@@ -173,18 +137,23 @@ class PhonoModel:
         # Parse file with inventory, filling `.grapheme2values` and `.values2grapheme`
         # from uniform `value_keys` (tuples of the sorted values). We first load
         # all the data to perform checks.
+        # TODO: wrap _split_values?
         def _desc2valkey(description):
+            """
+            Internal function returning a description as a sorted tuple.
+            """
             description = re.sub(r"\s+", " ", description.strip())
             return tuple(sorted(description.split()))
 
+        # Load the the descriptions as an internal dictionary; we normalize also
+        # normalize the grapheme by default
         with open(model_path / "sounds.csv") as csvfile:
             _graphemes = {
-                row["GRAPHEME"].strip(): _desc2valkey(row["DESCRIPTION"])
+                normalize(row["GRAPHEME"]): _desc2valkey(row["DESCRIPTION"])
                 for row in csv.DictReader(csvfile)
             }
 
-        # Check for duplicate descriptions; in any are found, we collect back the
-        # graphemes that share them
+        # Check for duplicate descriptions
         for desc, count in Counter(_graphemes.values()).items():
             if count > 1:
                 at_fault = "/".join(
@@ -208,14 +177,13 @@ class PhonoModel:
             raise ValueError(f"Undefined values used: {bad_model_values}")
 
         # We can now add the sounds, using values as hasheable key, also checking if
-        # contranints are met
+        # constraints are met
         for grapheme, values in _graphemes.items():
-            # Check the grapheme constraints; we can adopt the walrus operator in
-            # the future
+            # Check the grapheme constraints; we can adopt the walrus operator later
             failed = self.fail_constraints(values)
             if failed:
                 raise ValueError(
-                    f"Grapheme `{grapheme}` (model {self.name}) fails constraint check on {failed}"
+                    f"Grapheme `{grapheme}` fails constraint check on {failed}"
                 )
 
             # Update the internal catalog
@@ -250,31 +218,38 @@ class PhonoModel:
         for value in sound_values:
             # Get a vector for each group
             for group in self.values[value]["constraints"]:
-                z = [
+                offense = [
                     constr["value"] in sound_values
                     if constr["type"] == "presence"
                     else constr["value"] not in sound_values
                     for constr in group
                 ]
-                if not any(z):
+                if not any(offense):
                     offending.append(value)
 
         return offending
 
     # TODO: add check for inconsistent values
-    # TODO: allow custom list of graphemes (default to sounds here)
     # TODO: generalize constraint checking with `fail_constraints` above
-    # TODO: rename `values2graphemes`?
-    # TODO: allow to return as sounds?
-    def values2sounds(self, values_str):
+    # TODO: should take user-defined sets of sounds/graphemes (instead of model only)
+    def values2graphemes(self, values_str):
         """
-        Collect the set of sounds that satisfy a list of values.
+        Collect the set of graphemes in the model that satisfy a list of values.
 
-        This method is intended to replace `distfeat`'s
-        `.features2graphemes()` function.
+        Parameters
+        ==========
+
+        values_str : str
+            A list of values provided as constraints, such as `"+vowel +front -close"`.
+
+        Returns
+        =======
+
+        graphemes: list of str
+            A list of all graphemes that satisfy the provided constraints.
         """
 
-        # Parse values as constraints
+        # Parse the values as if they were constraints
         constraints = parse_constraints(values_str)
 
         pass_test = []
@@ -294,27 +269,23 @@ class PhonoModel:
             if all(satisfy):
                 pass_test.append(sound)
 
-        # While the internal list is already sorted, we sort
-        # again here so as to allow user-defined groups of sounds
-        # in the future
-        return sorted(pass_test)
+        # No need to sort, as the internal list is already sorted
+        return pass_test
 
     # TODO: add `vector` option as in distfeat
-    # TODO: should take sounds and graphemes as well
     # TODO: deal with sounds/values
-    # TODO: allow use to pass their collection of sounds
     # TODO: deal with `drop_na` as in distfeat
     # TODO: have in documentation that you can get the values with
     #       a .values() on the return (or just return as vector as well)
-    # TODO: add a tabulate matrix
-    def minimal_matrix(self, sounds):
+    # TODO: should take user-defined sets of sounds/graphemes (instead of model only)
+    def minimal_matrix(self, graphemes):
         """
         Compute the minimal feature matrix for a set of sounds.
         """
 
         # Build list of values for the sounds
         features = defaultdict(list)
-        for grapheme in sounds:
+        for grapheme in graphemes:
             for value in self.grapheme2values[grapheme]:
                 features[self.values[value]["feature"]].append(value)
 
@@ -328,7 +299,7 @@ class PhonoModel:
         # Build matrix
         # TODO: rewrite loop
         matrix = defaultdict(dict)
-        for grapheme in sounds:
+        for grapheme in graphemes:
             for feature, f_values in features.items():
                 # Get the value for the current feature
                 matrix[grapheme][feature] = [
@@ -340,19 +311,18 @@ class PhonoModel:
         # return as a normal dictionary
         return dict(matrix)
 
-    # TODO: note that, while this is to a large extent the inverse
-    #       of minimal_matrix, to use the same codebase for both
-    #       will add an unnecessary level of abstraction; better to
-    #       just write on its own
+    # While this method is to a good extend similar to `.minimal_matrix`, it is not
+    # reusing its codebase as it would add an unnecessary level of abstraction.
     # TODO: decide on NAs
-    def class_features(self, sounds):
+    # TODO: should take user-defined sets of sounds/graphemes (instead of model only)
+    def class_features(self, graphemes):
         """
-        Compute the class features for a set of sounds.
+        Compute the class features for a set of graphemes.
         """
 
         # Build list of values for the sounds
         features = defaultdict(list)
-        for grapheme in sounds:
+        for grapheme in graphemes:
             for value in self.grapheme2values[grapheme]:
                 features[self.values[value]["feature"]].append(value)
 
@@ -362,51 +332,48 @@ class PhonoModel:
         features = {
             feature: values[0]
             for feature, values in features.items()
-            if len(values) == len(sounds) and len(set(values)) == 1
+            if len(values) == len(graphemes) and len(set(values)) == 1
         }
 
         return features
 
-    # TODO: allow more sounds, etc
-    # TODO: allow categorical and boolean
-    def value_vector(self, sound, binary=True):
+    # TODO: should take user-defined sets of sounds/graphemes (instead of model only)
+    def value_vector(self, grapheme, binary=True):
         """
         Return a vector representation of the values of a sound.
         """
 
-        sound_values = self.grapheme2values[sound]
-
-        # Binary vector
+        # Collect vector data in categorical or binary form
+        grapheme_values = self.grapheme2values[grapheme]
         if not binary:
             # First get all features that are set, and later add those that
             # are not set as `None` (it is up to the user to filter, if
             # not wanted)
             vector_data = [
-                [(feature, value) for value in values if value in sound_values]
+                [(feature, value) for value in values if value in grapheme_values]
                 for feature, values in self.features.items()
             ]
             vector_data = list(itertools.chain.from_iterable(vector_data))
             vector_features = [entry[0] for entry in vector_data]
 
+            # Add non-specified features
             for feature in self.features:
                 if feature not in vector_features:
                     vector_data.append((feature, None))
 
         else:
-            # TODO: better name without underscore?
             vector_data = [
-                [(f"{feature}_{value}", value in sound_values) for value in values]
+                [(f"{feature}_{value}", value in grapheme_values) for value in values]
                 for feature, values in self.features.items()
             ]
 
             vector_data = list(itertools.chain.from_iterable(vector_data))
 
+        # Sort vector data and return a list of features and a vector
         vector_data = sorted(vector_data, key=lambda f: f[0])
+        features, vector = zip(*vector_data)
 
-        feature_names = [entry[0] for entry in vector_data]
-        vector = [entry[1] for entry in vector_data]
-
-        return feature_names, vector
+        return features, vector
 
     # TODO: cache properties to know if the cached regressor can
     #       be used -- maybe hash the matrix
@@ -433,7 +400,6 @@ class PhonoModel:
         # Read raw distance data and cache vectors, also allowing to
         # skip over unmapped graphemes
         raw_matrix = read_distance_matrix(matrix_path)
-        mapper = {"-": -1.0, "0": 0.0, "+": +1.0}
         vector = {}
         for grapheme in raw_matrix:
             try:
@@ -472,6 +438,7 @@ class PhonoModel:
         joblib.dump(self._regressor, cache_file.as_posix())
 
     # TODO: allow to run on categorical vectors?
+    # TODO: should take user-defined sets of sounds/graphemes (instead of model only)
     def distance(self, grapheme_a, grapheme_b):
         """
         Return a quantitative distance based on a seed matrix.
@@ -480,8 +447,7 @@ class PhonoModel:
         If no regressor has previously been trained, one will be trained with
         default values and cached for future calls.
         Note that this method, as all methods related to quantitative
-        distances, requires the `sklearn` library, which is not listed as
-        a dependency of the package.
+        distances, uses the `sklearn` library.
 
         Parameters
         ==========
@@ -503,7 +469,6 @@ class PhonoModel:
             self._build_regressor()
 
         # Get vectors, dropping feature names that are not needed
-        mapper = {"-": -1.0, "0": 0.0, "+": +1.0}
         _, vector_a = self.value_vector(grapheme_a)
         _, vector_b = self.value_vector(grapheme_b)
 
@@ -515,7 +480,10 @@ class PhonoModel:
         return self._regressor.predict([vector_a + vector_b])[0]
 
     def __str__(self):
-        return f"[`{self.name}` model ({len(self.features)} features, {len(self.values)} values, {len(self.grapheme2values)} graphemes)]"
+        _str = f"[`{self.name}` model ({len(self.features)} features, "
+        _str += f"{len(self.values)} values, {len(self.grapheme2values)} graphemes)]"
+
+        return _str
 
 
 # Load default models

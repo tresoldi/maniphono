@@ -15,38 +15,9 @@ This module holds the code for the sound model.
 import re
 import unicodedata
 
-# Import package module
-from . import phonomodel
-
-
-def _split_values(values):
-    """
-    Split a string with multiple values.
-
-    This function, intended for internal usage, allows to use different
-    delimiters and guarantees that all methods will allow all delimiters.
-
-    Delimiters can be white spaces, commas, semicolons, forward slashes,
-    and the " and " substring.
-
-    Parameters
-    ----------
-    values : str
-        The string with the list of values to be split.
-
-    Returns
-    -------
-    value_list : list
-        A list of strings with the values.
-    """
-
-    # We internally convert everything to spaces
-    for delimiter in [" and ", ",", ";", "/"]:
-        values = values.replace(delimiter, " ")
-
-    values = re.sub(r"\s+", " ", values.strip())
-
-    return values.split()
+# Import local modules
+from .phonomodel import model_mipa
+from .utils import _split_values
 
 
 class Sound:
@@ -66,7 +37,7 @@ class Sound:
 
         # Store model (defaulting to MIPA), initialize, and add descriptors
         if not model:
-            self.model = phonomodel.model_mipa
+            self.model = model_mipa
         else:
             self.model = model
 
@@ -288,7 +259,7 @@ class Sound:
 
         # Unicode and other normalizations
         # TODO: should it be performed all the time?
-        grapheme = unicodedata.normalize("NFC", grapheme)
+        grapheme = unicodedata.normalize("NFD", grapheme)
 
         # Store in the cache and return
         self._cache["grapheme"] = grapheme

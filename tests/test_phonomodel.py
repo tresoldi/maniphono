@@ -124,8 +124,8 @@ class TestPhonoModel(unittest.TestCase):
         with self.assertRaises(ValueError):
             maniphono.PhonoModel("I", TEST_DIR / "test_models" / "i")
 
-    def test_values2sounds(self):
-        s = maniphono.model_mipa.values2sounds("+vowel +front -close")
+    def test_values2graphemes(self):
+        s = maniphono.model_mipa.values2graphemes("+vowel +front -close")
         assert tuple(s) == (
             "a",
             "ã",
