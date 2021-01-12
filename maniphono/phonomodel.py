@@ -402,7 +402,7 @@ class PhonoModel:
         Note that this method will silently replace any existing regressor.
         """
 
-        # TODO: raise error
+        # Load serialized model, if provided and existing
         if filename:
             filename = Path(filename)
             if filename.is_file():
