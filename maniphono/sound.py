@@ -57,7 +57,6 @@ class Sound:
         # while updating the modifier list, and again add the modifier at the end.
         # Note that diacritics are inserted to the beginning of the list, so that
         # the modifiers explicitly listed as value names are consumed at the end.
-        # TODO: this assumes diacritics are always one character, which could be good
         new_base = ""
         while base:
             base, diacritic = startswithset(base, self.model.diacritics)
