@@ -184,11 +184,13 @@ class TestPhonoModel(unittest.TestCase):
         assert vec[0] is None
 
     def test_distance(self):
-        dist1 = maniphono.model_mipa.distance("a", "e")
-        self.assertAlmostEqual(dist1, 5.2, places=1)
+        dist1 = maniphono.model_mipa.distance("a", "a")
+        dist2 = maniphono.model_mipa.distance("a", "e")
+        dist3 = maniphono.model_mipa.distance("a", "ʒ")
 
-        dist2 = maniphono.model_mipa.distance("a", "a")
-        assert dist2 == 0.0
+        assert dist1 == 0.0
+        assert dist2 > dist1
+        assert dist3 > dist2
 
 
 if __name__ == "__main__":

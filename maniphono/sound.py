@@ -4,11 +4,7 @@ Module for sound abstractions and operations.
 This module holds the code for the sound model.
 """
 
-# TODO: expand module documentation
-# TODO: getattribute and set attribute can work on features
-# TODO: investigate __slots__
 # TODO: build implies -> e.g., all plosives will be consonants automatically
-# TODO: set cache in the model (that is shared) and not in each segment
 
 # Import Python standard libraries
 import re
@@ -65,7 +61,6 @@ class Sound:
         # Note that diacritics are inserted to the beginning of the list, so that
         # the modifiers explicitly listed as value names are consumed at the end.
         # TODO: this assumes diacritics are always one character, which could be good
-        # TODO: needs to be updated if the cache system is added to the model
         if base not in self.model.grapheme2values:
             new_base = ""
             for char in base:
@@ -79,10 +74,9 @@ class Sound:
         self.add_values(self.model.grapheme2values[base])
         self.add_values(modifier)
 
-    # TODO: rename to `set_value`?
-    def add_value(self, value, check=True):
+    def set_value(self, value, check=True):
         """
-        Add a single value to the sound.
+        Set a single value to the sound.
 
         The method will remove all other values for the same feature before setting the
         new value.
@@ -167,7 +161,7 @@ class Sound:
 
         # Add all values, collecting the replacements which are stripped of Nones;
         # note that we don't run checks here, but only after all values have been added
-        replaced = [self.add_value(value, check=False) for value in values]
+        replaced = [self.set_value(value, check=False) for value in values]
         replaced = [value for value in replaced if value]
 
         # Run a check if so requested (default)
@@ -178,8 +172,7 @@ class Sound:
 
         return replaced
 
-    # TODO: implement cache in the model
-    # TODO: should be a property?
+    @property
     def grapheme(self):
         """
         Return a graphemic representation of the current sound.
@@ -213,8 +206,8 @@ class Sound:
             # extend with the features in candidate not found in the current one, add
             # values that can be expressed with diacritics, and add the remaining
             # values with full name.
-            curr_features = self.feature_dict()
-            best_features = Sound(description=best_values).feature_dict()
+            curr_features = self.feature_dict
+            best_features = Sound(description=best_values).feature_dict
 
             # Collect the disagreements in a list of modifiers; note that it needs to
             # be sorted according to the rank to guarantee the order of values and
@@ -251,7 +244,7 @@ class Sound:
 
         return normalize(grapheme)
 
-    # TODO: should be a property?
+    @property
     def feature_dict(self):
         """
         Return the defined features as a dictionary.
@@ -283,7 +276,7 @@ class Sound:
         Return a graphemic normalized representation of the sound.
         """
 
-        return self.grapheme()
+        return self.grapheme
 
     def __add__(self, other):
         """
@@ -323,8 +316,8 @@ class Sound:
         Checks if the values of the current sound are a subset of the other.
         """
 
-        other_dict = other.feature_dict()
-        for feature, value in self.feature_dict():
+        other_dict = other.feature_dict
+        for feature, value in self.feature_dict:
             if feature not in other_dict:
                 return False
             elif other_dict[feature] != value:
@@ -337,8 +330,8 @@ class Sound:
         Checks if the values of the current sound are a superset of the other.
         """
 
-        this_dict = self.feature_dict()
-        for feature, value in other.feature_dict():
+        this_dict = self.feature_dict
+        for feature, value in other.feature_dict:
             if feature not in this_dict:
                 return False
             elif this_dict[feature] != value:

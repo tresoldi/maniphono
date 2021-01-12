@@ -11,6 +11,7 @@ import re
 
 # Import 3rd party libraries
 from sklearn.neural_network import MLPRegressor
+from sklearn.svm import SVR
 import appdirs
 import joblib
 import numpy as np
@@ -429,8 +430,10 @@ class PhonoModel:
         # TODO: config regressor parameters, including seed
         np.random.seed(42)
         # TODO: use logger
-        print("Training MLPRegressor...")
-        self._regressor = MLPRegressor(random_state=1, max_iter=500)
+        #        print("Training MLPRegressor...")
+        #        self._regressor = MLPRegressor(random_state=1, max_iter=500)
+        print("Training SVR...")
+        self._regressor = SVR()  # (random_state=1, max_iter=500)
         self._regressor.fit(X, y)
 
         # TODO: wrap to catch exceptions

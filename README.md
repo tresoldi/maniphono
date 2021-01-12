@@ -213,3 +213,9 @@ and `sklearn` regressor, which can take a while.
 >>> maniphono.model_mipa.distance("a", "ʒ")
 27.996041203253856
 ```
+
+## TODO
+
+  - Add a cache system to `phonomodel` for grapheme representation
+  - Make sure `grapheme` (and other names?) cannot be used as a feature name
+  - Expand docs for release
