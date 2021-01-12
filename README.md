@@ -42,6 +42,7 @@ The library is imported as expected. It is currently distributed with two models
 distinctive features that is intended mostly for machine learning approaches. In all
 cases, the `mipa` model is used as default.
 
+TODO: classes
 ```python
 >>> import maniphono
 >>> print(maniphono.model_mipa)
@@ -222,3 +223,9 @@ and `sklearn` regressor, which can take a while.
   - Incorporate (with a flag) build implies (e.g., all plosives will be set
     as consonants automatically)
   - Methods for coarsing
+  - Review sounds in MIPA and sort descriptions
+  - Use temporary file for storing regresosrs
+  - Build new matrix extending mielke
+  - add prosody, trying to reuse regressor for distance (or closest grapheme?)
+  - currently, all vectors for distnaces are binary, decide on categorical
+  - use logger for all prints?

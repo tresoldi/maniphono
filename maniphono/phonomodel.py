@@ -12,7 +12,6 @@ import re
 # Import 3rd party libraries
 from sklearn.neural_network import MLPRegressor
 from sklearn.svm import SVR
-import appdirs
 import joblib
 import numpy as np
 
@@ -20,15 +19,14 @@ import numpy as np
 from .utils import (
     replace_codepoints,
     read_distance_matrix,
-    _split_values,
     parse_constraints,
     normalize,
+    _split_values,
     RE_FEATURE,
     RE_VALUE,
 )
 
 
-# TODO: expand class documentation
 class PhonoModel:
     """
     Phonological model.
@@ -43,9 +41,9 @@ class PhonoModel:
         self.name = name  # model name
         self.features = defaultdict(set)  # set of features in the model
         self.values = {}  # dictionary of value structures
-        self.grapheme2values = {}  # auxiliary dict for mapping
-        self.values2grapheme = {}  # auxiliary dict for mapping
-        self.diacritics = {}  # auxiliary dict for parsing/representation
+        self._grapheme2values = {}  # auxiliary dict for mapping
+        self._values2grapheme = {}  # auxiliary dict for mapping
+        self._diacritics = {}  # auxiliary dict for parsing/representation
         self._classes = []  # auxiliary list to distinguish phonemes/classes
 
         # Instantiate a property for the regressor used for computing
@@ -88,9 +86,7 @@ class PhonoModel:
                 if value in self.values:
                     raise ValueError(f"Duplicate value `{value}`")
                 if rank < 1:
-                    raise ValueError(
-                        f"Rank must be an integer >= 1.0 (passed `{rank}`)"
-                    )
+                    raise ValueError(f"Rank must be a value >= 1.0 (passed `{rank}`)")
 
                 # Store values for all features
                 self.features[feature].add(value)
@@ -116,9 +112,9 @@ class PhonoModel:
 
                 # Store diacritics
                 if prefix:
-                    self.diacritics[prefix] = value
+                    self._diacritics[prefix] = value
                 if suffix:
-                    self.diacritics[suffix] = value
+                    self._diacritics[suffix] = value
 
         # Check if all constraints refer to existing values; this cannot be done
         # before the entire model has been loaded
@@ -144,12 +140,12 @@ class PhonoModel:
             """
             Internal function returning a description as a sorted tuple.
             """
-            description = re.sub(r"\s+", " ", description.strip())
-            return tuple(sorted(description.split()))
+            # description = re.sub(r"\s+", " ", description.strip())
+            # return tuple(sorted(description.split()))
+            return self.sort_values(_split_values(description))
 
         # Load the the descriptions as an internal dictionary; we normalize also
         # normalize the grapheme by default
-        self._classes = []
         with open(model_path / "sounds.csv") as csvfile:
             _graphemes = {}
             for row in csv.DictReader(csvfile):
@@ -194,8 +190,8 @@ class PhonoModel:
                 )
 
             # Update the internal catalog
-            self.grapheme2values[grapheme] = values
-            self.values2grapheme[values] = grapheme
+            self._grapheme2values[grapheme] = values
+            self._values2grapheme[values] = grapheme
 
     def fail_constraints(self, sound_values):
         """
@@ -212,7 +208,7 @@ class PhonoModel:
         ----------
         sound_values : list
             A list, or another iterable, of the string values to be checked, such as
-            those stored in `self.grapheme2values`.
+            those stored in `self._grapheme2values`.
 
         Returns
         -------
@@ -238,9 +234,7 @@ class PhonoModel:
 
     # TODO: add check for inconsistent values
     # TODO: generalize constraint checking with `fail_constraints` above
-    # TODO: should take user-defined sets of sounds/graphemes (instead of model only)
-    # TODO: allow to include classes with a special flag
-    def values2graphemes(self, values_str):
+    def values2graphemes(self, values_str, classes=False):
         """
         Collect the set of graphemes in the model that satisfy a list of values.
 
@@ -249,6 +243,8 @@ class PhonoModel:
 
         values_str : str
             A list of values provided as constraints, such as `"+vowel +front -close"`.
+        classes : bool
+            Whether to include class graphemes in the output (default: False)
 
         Returns
         =======
@@ -261,7 +257,7 @@ class PhonoModel:
         constraints = parse_constraints(values_str)
 
         pass_test = []
-        for sound_values, sound in self.values2grapheme.items():
+        for sound_values, sound in self._values2grapheme.items():
             satisfy = itertools.chain.from_iterable(
                 [
                     [
@@ -278,18 +274,16 @@ class PhonoModel:
                 pass_test.append(sound)
 
         # Remove sounds that are classes
-        pass_test = [sound for sound in pass_test if sound not in self._classes]
+        if not classes:
+            pass_test = [sound for sound in pass_test if sound not in self._classes]
 
         # No need to sort, as the internal list is already sorted
         return pass_test
 
-    # TODO: add `vector` option as in distfeat
+    # TODO: document  `vector` option as in distfeat
     # TODO: deal with sounds/values
-    # TODO: deal with `drop_na` as in distfeat
-    # TODO: have in documentation that you can get the values with
-    #       a .values() on the return (or just return as vector as well)
     # TODO: should take user-defined sets of sounds/graphemes (instead of model only)
-    def minimal_matrix(self, graphemes):
+    def minimal_matrix(self, graphemes, vector=False):
         """
         Compute the minimal feature matrix for a set of sounds.
         """
@@ -297,7 +291,7 @@ class PhonoModel:
         # Build list of values for the sounds
         features = defaultdict(list)
         for grapheme in graphemes:
-            for value in self.grapheme2values[grapheme]:
+            for value in self._grapheme2values[grapheme]:
                 features[self.values[value]["feature"]].append(value)
 
         # Keep only features with a mismatch
@@ -307,24 +301,23 @@ class PhonoModel:
             if len(set(values)) > 1
         }
 
-        # Build matrix
-        # TODO: rewrite loop
+        # Build matrix, iterating over graphemes and features
         matrix = defaultdict(dict)
-        for grapheme in graphemes:
-            for feature, f_values in features.items():
-                # Get the value for the current feature
-                matrix[grapheme][feature] = [
-                    value
-                    for value in self.grapheme2values[grapheme]
-                    if value in f_values
-                ][0]
+        for feature, f_values in features.items():
+            for grapheme in graphemes:
+                for value in self._grapheme2values[grapheme]:
+                    if value in f_values:
+                        matrix[grapheme][feature] = value
+                        break
 
-        # return as a normal dictionary
-        return dict(matrix)
+        # return
+        if vector:
+            return matrix.values()
+
+        return dict(matrix)  # return dict and not defaultdict
 
     # While this method is to a good extend similar to `.minimal_matrix`, it is not
     # reusing its codebase as it would add an unnecessary level of abstraction.
-    # TODO: decide on NAs
     # TODO: should take user-defined sets of sounds/graphemes (instead of model only)
     def class_features(self, graphemes):
         """
@@ -334,7 +327,7 @@ class PhonoModel:
         # Build list of values for the sounds
         features = defaultdict(list)
         for grapheme in graphemes:
-            for value in self.grapheme2values[grapheme]:
+            for value in self._grapheme2values[grapheme]:
                 features[self.values[value]["feature"]].append(value)
 
         # Keep only features with a perfect match;
@@ -348,14 +341,14 @@ class PhonoModel:
 
         return features
 
-    # TODO: should take user-defined sets of sounds/graphemes (instead of model only)
+    # TODO: move to Sound?
     def value_vector(self, grapheme, binary=True):
         """
         Return a vector representation of the values of a sound.
         """
 
         # Collect vector data in categorical or binary form
-        grapheme_values = self.grapheme2values[grapheme]
+        grapheme_values = self._grapheme2values[grapheme]
         if not binary:
             # First get all features that are set, and later add those that
             # are not set as `None` (it is up to the user to filter, if
@@ -386,31 +379,55 @@ class PhonoModel:
 
         return features, vector
 
-    # TODO: cache properties to know if the cached regressor can
-    #       be used -- maybe hash the matrix
-    # TODO: have a parameter to delete/overwrite regressor
-    def _build_regressor(self):
+    def write_regressor(self, regressor_file):
+        """
+        Serialize the model regressor to disk.
+
+        The method uses `sklearn`/`joblib` method, which is intended for caching
+        across different runs in the same system. Using a model serialized in one
+        machine/environment in a different configuration might raise an error, fail,
+        or return different results.
+
+        The method will raise `ValueErrors` if no regressor has been built in the
+        current model, or if it is unable to serialize the regressor to disk.
+
+        Parameters
+        ----------
+
+        regressor_file : str
+            Path to the file where the regressor will be serialized.
+        """
+
+        if not self._regressor:
+            raise ValueError("No regressor to serialize.")
+
+        # Build a pathlib object, create the directory (if necessary), and write
+        try:
+            regressor_file = Path(regressor_file).absolute()
+            regressor_file.parent.mkdir(parents=True, exist_ok=True)
+            joblib.dump(self._regressor, regressor_file.as_posix())
+        except:
+            raise ValueError("Unable to serialize model")
+
+    def build_regressor(self, regtype="svr", filename=None, matrix_file=None):
         """
         Build or replace the quantitative distance regressor.
+
+        Note that this method will silently replace any existing regressor.
         """
 
-        # Set path for cache regressor: get path with `appdirs`, create path
-        # if necessary, and write it
-        cache_path = appdirs.user_data_dir("maniphono", "tresoldi")
-        cache_path = Path(cache_path)
-        cache_file = cache_path / "regressor.joblib"
+        # TODO: raise error
+        if filename:
+            filename = Path(filename)
+            if filename.is_file():
+                self._regressor = joblib.load(filename.as_posix())
+                return
 
-        # if cache file exists, load it
-        if cache_file.is_file():
-            self._regressor = joblib.load(cache_file.as_posix())
-            return
-
-        # TODO: get `matrix_path` when initializing
-        matrix_path = None
+            raise ValueError(f"Unable to read regressor from {filename}")
 
         # Read raw distance data and cache vectors, also allowing to
         # skip over unmapped graphemes
-        raw_matrix = read_distance_matrix(matrix_path)
+        raw_matrix = read_distance_matrix(matrix_file)
         vector = {}
         for grapheme in raw_matrix:
             try:
@@ -419,39 +436,27 @@ class PhonoModel:
                 print("Skipping over unmapped [%s] grapheme..." % grapheme)
 
         # Collect (X,y) vectors
-        X, y = [], []
+        X, y = [], []  # pylint: disable=invalid-name
         for grapheme_a in raw_matrix:
-            # Skip over unmapped graphemes
-            if grapheme_a not in vector:
-                continue
-
-            for grapheme_b, dist in raw_matrix[grapheme_a].items():
-                # Skip over unmapped graphemes
-                if grapheme_b not in vector:
-                    continue
-
-                X.append(vector[grapheme_a] + vector[grapheme_b])
-                if dist == 0.0:
-                    y.append(dist)
-                else:
-                    y.append(dist + 1.0)
+            if grapheme_a in vector:
+                for grapheme_b, dist in raw_matrix[grapheme_a].items():
+                    if grapheme_b in vector:
+                        X.append(vector[grapheme_a] + vector[grapheme_b])
+                        if dist == 0.0:
+                            y.append(dist)
+                        else:
+                            y.append(dist + 1.0)
 
         # Train regressor; setting the random value for reproducibility
         # TODO: config regressor parameters, including seed
         np.random.seed(42)
-        # TODO: use logger
-        #        print("Training MLPRegressor...")
-        #        self._regressor = MLPRegressor(random_state=1, max_iter=500)
-        print("Training SVR...")
-        self._regressor = SVR()  # (random_state=1, max_iter=500)
+        if regtype == "mlp":
+            self._regressor = MLPRegressor(random_state=1, max_iter=500)
+        elif regtype == "svr":  # default
+            self._regressor = SVR()
+
         self._regressor.fit(X, y)
 
-        # TODO: wrap to catch exceptions
-        cache_path.mkdir(parents=True, exist_ok=True)
-        joblib.dump(self._regressor, cache_file.as_posix())
-
-    # TODO: allow to run on categorical vectors?
-    # TODO: should take user-defined sets of sounds/graphemes (instead of model only)
     def distance(self, grapheme_a, grapheme_b):
         """
         Return a quantitative distance based on a seed matrix.
@@ -479,7 +484,7 @@ class PhonoModel:
 
         # Build and cache a regressor with default parameters
         if not self._regressor:
-            self._build_regressor()
+            self.build_regressor()
 
         # Get vectors, dropping feature names that are not needed
         _, vector_a = self.value_vector(grapheme_a)
@@ -494,7 +499,7 @@ class PhonoModel:
 
     def __str__(self):
         _str = f"[`{self.name}` model ({len(self.features)} features, "
-        _str += f"{len(self.values)} values, {len(self.grapheme2values)} graphemes)]"
+        _str += f"{len(self.values)} values, {len(self._grapheme2values)} graphemes)]"
 
         return _str
 
@@ -505,7 +510,7 @@ class PhonoModel:
         best_score = 0.0
         best_values = None
         grapheme = None
-        for candidate_v, candidate_g in self.values2grapheme.items():
+        for candidate_v, candidate_g in self._values2grapheme.items():
             common = [value for value in value_tuple if value in candidate_v]
             extra = [value for value in candidate_v if value not in value_tuple]
             score_common = sum([1 / self.values[value]["rank"] for value in common])
@@ -517,6 +522,11 @@ class PhonoModel:
                 grapheme = candidate_g
 
         return grapheme, best_values
+
+    # TODO: doc: sort a list of values accoding to rank, retuning a tuple
+    # TODO: try to split with _split_values
+    def sort_values(self, values):
+        return tuple(sorted(values, key=lambda v: (-self.values[v]["rank"], v)))
 
 
 # Load default models

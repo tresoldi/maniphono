@@ -40,8 +40,8 @@ class Sound:
         # Set the values
         if not grapheme:
             self.add_values(description)
-        elif grapheme in self.model.grapheme2values:
-            self.add_values(self.model.grapheme2values[grapheme])
+        elif grapheme in self.model._grapheme2values:
+            self.add_values(self.model._grapheme2values[grapheme])
         else:
             self._parse_grapheme(grapheme)
 
@@ -180,7 +180,7 @@ class Sound:
 
         # We first build a feature tuple and check if there is a model match...
         value_tuple = tuple(sorted(self.values))
-        grapheme = self.model.values2grapheme.get(value_tuple, None)
+        grapheme = self.model._values2grapheme.get(value_tuple, None)
 
         # If no match, we look for the closest one
         if not grapheme:
@@ -194,7 +194,9 @@ class Sound:
             # values that can be expressed with diacritics, and add the remaining
             # values with full name.
             curr_features = self.feature_dict()
-            best_features = Sound(description=best_values).feature_dict()
+            best_features = Sound(
+                description=best_values, model=self.model
+            ).feature_dict()
 
             # Collect the disagreements in a list of modifiers; note that it needs to
             # be sorted according to the rank to guarantee the order of values and
@@ -246,11 +248,7 @@ class Sound:
         values with equal ranks.
         """
 
-        desc = " ".join(
-            sorted(self.values, key=lambda v: (-self.model.values[v]["rank"], v))
-        )
-
-        return desc
+        return " ".join(self.model.sort_values(self.values))
 
     def __str__(self):
         """
@@ -278,12 +276,13 @@ class Sound:
 
         return Sound(description=" ".join(values), model=self.model)
 
+    # TODO: use model sort_vlaues
     def __hash__(self):
         """
         Return a hash of the current sound.
         """
 
-        return hash(tuple(self.values))
+        return hash(self.model.sort_values(self.values))
 
     def __eq__(self, other):
         """

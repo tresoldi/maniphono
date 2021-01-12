@@ -117,7 +117,7 @@ class TestPhonoModel(unittest.TestCase):
             maniphono.PhonoModel("G", TEST_DIR / "test_models" / "g")
 
         # Invalid value name in sound description
-        with self.assertRaises(ValueError):
+        with self.assertRaises(KeyError):
             maniphono.PhonoModel("H", TEST_DIR / "test_models" / "h")
 
         # Constraint not met in sound description
