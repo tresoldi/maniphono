@@ -230,3 +230,4 @@ and `sklearn` regressor, which can take a while.
   - currently, all vectors for distnaces are binary, decide on categorical
   - use logger for all prints?
   - more regressors
+  - add sonority following `art` model, and sca/asjp

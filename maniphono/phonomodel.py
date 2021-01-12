@@ -489,7 +489,35 @@ class PhonoModel:
 
         return _str
 
-    def closest_grapheme(self, value_tuple):
+    def closest_grapheme(self, value_tuple, classes=True):
+        """
+        Find the sound in the model that is the closest to a given value tuple.
+
+        Parameters
+        ----------
+        value_tuple : tuple
+            A value tuple, usually coming from the `.values` attributed of a sound.
+        classes : bool
+            Whether to allow a grapheme marked as a class to be returned; note that,
+            if a grapheme class is passed but `classes` is set to `False`, a different
+            grapheme will be returned (default: True).
+
+        Return
+        ------
+        grapheme : str
+            The grapheme for the closest match.
+        values : tuple
+            A tuple with the values for the closest match.
+        """
+
+        # Check if the grapheme happens to be already in our list, also making sure
+        # the tuple is sorted
+        value_tuple = self.sort_values(value_tuple)
+        if value_tuple in self._values2grapheme:
+            grapheme = self._values2grapheme[value_tuple]
+            if not all([classes, grapheme in self._classes]):
+                return self._values2grapheme[value_tuple], value_tuple
+
         # Compute a similarity score based on inverse rank for all
         # graphemes, building a string with the representation if we hit a
         # `best_score`.
@@ -497,6 +525,13 @@ class PhonoModel:
         best_values = None
         grapheme = None
         for candidate_v, candidate_g in self._values2grapheme.items():
+            # Don't include classes if asked so
+            if not classes and candidate_g in self._classes:
+                continue
+
+            # Compute a score for the closest match; note that there is a penalty for
+            # `extra` features, so that values such as "voiceless consonant" will tend
+            # to match classes and not actual sounds
             common = [value for value in value_tuple if value in candidate_v]
             extra = [value for value in candidate_v if value not in value_tuple]
             score_common = sum([1 / self.values[value]["rank"] for value in common])
