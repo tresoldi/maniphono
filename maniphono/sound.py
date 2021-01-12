@@ -187,14 +187,19 @@ class Sound:
             # Compute a similarity score based on inverse rank for all
             # graphemes, building a string with the representation if we hit a
             # `best_score`.
-            # TODO: change to computation to penalize extra features, so that
-            #       `C[+plosive]` has a better score than `t[-alveolar]`
             best_score = 0.0
             best_values = None
             grapheme = None
             for candidate_v, candidate_g in self.model.values2grapheme.items():
                 common = [value for value in value_tuple if value in candidate_v]
-                score = sum([1 / self.model.values[value]["rank"] for value in common])
+                extra = [value for value in candidate_v if value not in value_tuple]
+                score_common = sum(
+                    [1 / self.model.values[value]["rank"] for value in common]
+                )
+                score_extra = sum(
+                    [1 / self.model.values[value]["rank"] for value in extra]
+                )
+                score = score_common - score_extra
                 if score > best_score:
                     best_score = score
                     best_values = candidate_v
