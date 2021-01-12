@@ -4,15 +4,9 @@ Module for sound abstractions and operations.
 This module holds the code for the sound model.
 """
 
-# TODO: build implies -> e.g., all plosives will be consonants automatically
-
-# Import Python standard libraries
-import re
-import unicodedata
-
 # Import local modules
 from .phonomodel import model_mipa
-from .utils import _split_values, normalize
+from .utils import _split_values, normalize, startswithset
 
 
 class Sound:
@@ -50,9 +44,12 @@ class Sound:
         """
 
         # Capture list of modifiers, if any; no need to go full regex
-        base, _, modifier = grapheme.partition("[")
-        if modifier:
+        if "[" in grapheme:
+            base, _, modifier = grapheme.partition("[")
             modifier = [mod.strip() for mod in _split_values(modifier[:-1])]
+        else:
+            base = grapheme
+            modifier = []
 
         # If the base is among the list of graphemes, we can just return the
         # grapheme values and apply the modifier. Otherwise, we take all characters
@@ -61,17 +58,17 @@ class Sound:
         # Note that diacritics are inserted to the beginning of the list, so that
         # the modifiers explicitly listed as value names are consumed at the end.
         # TODO: this assumes diacritics are always one character, which could be good
-        if base not in self.model.grapheme2values:
-            new_base = ""
-            for char in base:
-                if char in self.model.diacritics:
-                    modifier.insert(0, self.model.diacritics[char])
-                else:
-                    new_base += char
-            base = new_base
+        new_base = ""
+        while base:
+            base, diacritic = startswithset(base, self.model.diacritics)
+            if not diacritic:
+                new_base += base[0]
+                base = base[1:]
+            else:
+                modifier.insert(0, self.model.diacritics[diacritic])
 
         # Add base character and modifiers
-        self.add_values(self.model.grapheme2values[base])
+        self.add_values(self.model.grapheme2values[new_base])
         self.add_values(modifier)
 
     def set_value(self, value, check=True):
@@ -184,26 +181,8 @@ class Sound:
 
         # If no match, we look for the closest one
         if not grapheme:
-            # Compute a similarity score based on inverse rank for all
-            # graphemes, building a string with the representation if we hit a
-            # `best_score`.
-            best_score = 0.0
-            best_values = None
-            grapheme = None
-            for candidate_v, candidate_g in self.model.values2grapheme.items():
-                common = [value for value in value_tuple if value in candidate_v]
-                extra = [value for value in candidate_v if value not in value_tuple]
-                score_common = sum(
-                    [1 / self.model.values[value]["rank"] for value in common]
-                )
-                score_extra = sum(
-                    [1 / self.model.values[value]["rank"] for value in extra]
-                )
-                score = score_common - score_extra
-                if score > best_score:
-                    best_score = score
-                    best_values = candidate_v
-                    grapheme = candidate_g
+            # Get the closest grapheme and its values from the model
+            grapheme, best_values = self.model.closest_grapheme(value_tuple)
 
             # Extend grapheme, adding prefixes/suffixes for all missing values; we first
             # get the dictionary of features for both the current sound and the
@@ -257,7 +236,6 @@ class Sound:
 
         return {self.model.values[value]["feature"]: value for value in self.values}
 
-    # TODO: as rank is ascending, the alphabet is inverted in the sorting
     def __repr__(self):
         """
         Return a representation with full name values.
@@ -267,11 +245,7 @@ class Sound:
         """
 
         desc = " ".join(
-            sorted(
-                self.values,
-                reverse=True,
-                key=lambda v: (self.model.values[v]["rank"], v),
-            )
+            sorted(self.values, key=lambda v: (-self.model.values[v]["rank"], v))
         )
 
         return desc
@@ -325,7 +299,7 @@ class Sound:
         for feature, value in self.feature_dict:
             if feature not in other_dict:
                 return False
-            elif other_dict[feature] != value:
+            if other_dict[feature] != value:
                 return False
 
         return True
@@ -339,7 +313,7 @@ class Sound:
         for feature, value in other.feature_dict:
             if feature not in this_dict:
                 return False
-            elif this_dict[feature] != value:
+            if this_dict[feature] != value:
                 return False
 
         return True

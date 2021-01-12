@@ -219,3 +219,5 @@ and `sklearn` regressor, which can take a while.
   - Add a cache system to `phonomodel` for grapheme representation
   - Make sure `grapheme` (and other names?) cannot be used as a feature name
   - Expand docs for release
+  - Incorporate (with a flag) build implies (e.g., all plosives will be set
+    as consonants automatically)

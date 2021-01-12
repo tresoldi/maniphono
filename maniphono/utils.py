@@ -176,3 +176,18 @@ def read_distance_matrix(filepath=None):
             matrix[grapheme] = {gr: float(dist) for gr, dist in row.items()}
 
     return matrix
+
+
+# given a list of `candidates`, returns the one (with a greedy search) that is
+# found at the beginning of the string and the strng itself
+# TODO: rename to something more appropriate and less confusing with Python standard
+# TODO: what if there is an empty string among candidates?
+def startswithset(string, candidates):
+    # sort the candidates by inverse length -- this is a bit expensive computationally,
+    # but it is better to perform it each time to make the function more general
+    candidates = sorted(candidates, reverse=True, key=lambda s: len(s))
+    for cand in candidates:
+        if string.startswith(cand):
+            return string[len(cand) :], cand
+
+    return string, None
