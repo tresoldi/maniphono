@@ -20,6 +20,13 @@ class Sound:
     """
 
     def __init__(self, grapheme=None, description=None, model=None):
+        """
+        Initialization method.
+
+        A sound can be initialized with either a `grapheme` or a `description`.
+        If a `model` is not provided, it will default to MIPA.
+        """
+
         # Initialize the main property, the set of values
         self.values = set()
 
@@ -44,12 +51,10 @@ class Sound:
         """
 
         # Capture list of modifiers, if any; no need to go full regex
-        if "[" in grapheme:
-            base, _, modifier = grapheme.partition("[")
+        modifier = []
+        if "[" in grapheme and grapheme[-1] == "]":
+            grapheme, _, modifier = grapheme.partition("[")
             modifier = [mod.strip() for mod in _split_values(modifier[:-1])]
-        else:
-            base = grapheme
-            modifier = []
 
         # If the base is among the list of graphemes, we can just return the
         # grapheme values and apply the modifier. Otherwise, we take all characters
@@ -57,17 +62,17 @@ class Sound:
         # while updating the modifier list, and again add the modifier at the end.
         # Note that diacritics are inserted to the beginning of the list, so that
         # the modifiers explicitly listed as value names are consumed at the end.
-        new_base = ""
-        while base:
-            base, diacritic = startswithset(base, self.model.diacritics)
+        base_grapheme = ""
+        while grapheme:
+            grapheme, diacritic = startswithset(grapheme, self.model.diacritics)
             if not diacritic:
-                new_base += base[0]
-                base = base[1:]
+                base_grapheme += grapheme[0]
+                grapheme = grapheme[1:]
             else:
                 modifier.insert(0, self.model.diacritics[diacritic])
 
         # Add base character and modifiers
-        self.add_values(self.model.grapheme2values[new_base])
+        self.add_values(self.model.grapheme2values[base_grapheme])
         self.add_values(modifier)
 
     def set_value(self, value, check=True):
@@ -168,7 +173,6 @@ class Sound:
 
         return replaced
 
-    @property
     def grapheme(self):
         """
         Return a graphemic representation of the current sound.
@@ -189,8 +193,8 @@ class Sound:
             # extend with the features in candidate not found in the current one, add
             # values that can be expressed with diacritics, and add the remaining
             # values with full name.
-            curr_features = self.feature_dict
-            best_features = Sound(description=best_values).feature_dict
+            curr_features = self.feature_dict()
+            best_features = Sound(description=best_values).feature_dict()
 
             # Collect the disagreements in a list of modifiers; note that it needs to
             # be sorted according to the rank to guarantee the order of values and
@@ -227,7 +231,6 @@ class Sound:
 
         return normalize(grapheme)
 
-    @property
     def feature_dict(self):
         """
         Return the defined features as a dictionary.
@@ -254,7 +257,7 @@ class Sound:
         Return a graphemic normalized representation of the sound.
         """
 
-        return self.grapheme
+        return self.grapheme()
 
     def __add__(self, other):
         """
@@ -294,8 +297,8 @@ class Sound:
         Checks if the values of the current sound are a subset of the other.
         """
 
-        other_dict = other.feature_dict
-        for feature, value in self.feature_dict:
+        other_dict = other.feature_dict()
+        for feature, value in self.feature_dict():
             if feature not in other_dict:
                 return False
             if other_dict[feature] != value:
@@ -316,3 +319,11 @@ class Sound:
                 return False
 
         return True
+
+    # TODO: restricted names: `grapheme`, `values`
+    def __getattr__(self, key):
+        for value in self.values:
+            if self.model.values[value]["feature"] == key:
+                return value
+
+        return None
