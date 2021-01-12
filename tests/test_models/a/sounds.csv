@@ -1,10 +1,10 @@
-GRAPHEME,DESCRIPTION
-a,open vowel
-e,mid vowel
-i,close vowel
-p,voiceless labial stop consonant
-b,voiced labial stop consonant
-f,voiceless labial fricative consonant
-v,voiced labial fricative consonant
-t,voiceless coronal stop consonant
-d,voiced coronal stop consonant
+GRAPHEME,DESCRIPTION,CLASS
+a,open vowel,False
+e,mid vowel,False
+i,close vowel,False
+p,voiceless labial stop consonant,False
+b,voiced labial stop consonant,False
+f,voiceless labial fricative consonant,False
+v,voiced labial fricative consonant,False
+t,voiceless coronal stop consonant,False
+d,voiced coronal stop consonant,False

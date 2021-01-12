@@ -221,3 +221,4 @@ and `sklearn` regressor, which can take a while.
   - Expand docs for release
   - Incorporate (with a flag) build implies (e.g., all plosives will be set
     as consonants automatically)
+  - Methods for coarsing

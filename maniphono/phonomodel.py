@@ -46,6 +46,7 @@ class PhonoModel:
         self.grapheme2values = {}  # auxiliary dict for mapping
         self.values2grapheme = {}  # auxiliary dict for mapping
         self.diacritics = {}  # auxiliary dict for parsing/representation
+        self._classes = []  # auxiliary list to distinguish phonemes/classes
 
         # Instantiate a property for the regressor used for computing
         # quantitative distances. These methods require the `sklearn`
@@ -148,11 +149,16 @@ class PhonoModel:
 
         # Load the the descriptions as an internal dictionary; we normalize also
         # normalize the grapheme by default
+        self._classes = []
         with open(model_path / "sounds.csv") as csvfile:
-            _graphemes = {
-                normalize(row["GRAPHEME"]): _desc2valkey(row["DESCRIPTION"])
-                for row in csv.DictReader(csvfile)
-            }
+            _graphemes = {}
+            for row in csv.DictReader(csvfile):
+                grapheme = normalize(row["GRAPHEME"])
+                desc = _desc2valkey(row["DESCRIPTION"])
+                _graphemes[grapheme] = desc
+
+                if row["CLASS"] == "True":
+                    self._classes.append(grapheme)
 
         # Check for duplicate descriptions
         for desc, count in Counter(_graphemes.values()).items():
@@ -233,6 +239,7 @@ class PhonoModel:
     # TODO: add check for inconsistent values
     # TODO: generalize constraint checking with `fail_constraints` above
     # TODO: should take user-defined sets of sounds/graphemes (instead of model only)
+    # TODO: allow to include classes with a special flag
     def values2graphemes(self, values_str):
         """
         Collect the set of graphemes in the model that satisfy a list of values.
@@ -269,6 +276,9 @@ class PhonoModel:
 
             if all(satisfy):
                 pass_test.append(sound)
+
+        # Remove sounds that are classes
+        pass_test = [sound for sound in pass_test if sound not in self._classes]
 
         # No need to sort, as the internal list is already sorted
         return pass_test
