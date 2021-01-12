@@ -229,3 +229,4 @@ and `sklearn` regressor, which can take a while.
   - add prosody, trying to reuse regressor for distance (or closest grapheme?)
   - currently, all vectors for distnaces are binary, decide on categorical
   - use logger for all prints?
+  - more regressors

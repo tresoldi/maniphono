@@ -132,25 +132,13 @@ class PhonoModel:
         Internal method for initializing the sounds of a model.
         """
 
-        # Parse file with inventory, filling `.grapheme2values` and `.values2grapheme`
-        # from uniform `value_keys` (tuples of the sorted values). We first load
-        # all the data to perform checks.
-        # TODO: wrap _split_values?
-        def _desc2valkey(description):
-            """
-            Internal function returning a description as a sorted tuple.
-            """
-            # description = re.sub(r"\s+", " ", description.strip())
-            # return tuple(sorted(description.split()))
-            return self.sort_values(_split_values(description))
-
         # Load the the descriptions as an internal dictionary; we normalize also
         # normalize the grapheme by default
         with open(model_path / "sounds.csv") as csvfile:
             _graphemes = {}
             for row in csv.DictReader(csvfile):
                 grapheme = normalize(row["GRAPHEME"])
-                desc = _desc2valkey(row["DESCRIPTION"])
+                desc = self.sort_values(row["DESCRIPTION"])
                 _graphemes[grapheme] = desc
 
                 if row["CLASS"] == "True":
@@ -232,8 +220,6 @@ class PhonoModel:
 
         return offending
 
-    # TODO: add check for inconsistent values
-    # TODO: generalize constraint checking with `fail_constraints` above
     def values2graphemes(self, values_str, classes=False):
         """
         Collect the set of graphemes in the model that satisfy a list of values.
@@ -253,9 +239,13 @@ class PhonoModel:
             A list of all graphemes that satisfy the provided constraints.
         """
 
-        # Parse the values as if they were constraints
+        # In this case we parse the values as if they were constraints
         constraints = parse_constraints(values_str)
 
+        # Note that we could make the code more general by relying on
+        # `.fail_constraints()`, but it would make the code more complex and a bit
+        # slower. It is better to perform a separately implemented check here,
+        # unless we refactor the class.
         pass_test = []
         for sound_values, sound in self._values2grapheme.items():
             satisfy = itertools.chain.from_iterable(
@@ -280,12 +270,11 @@ class PhonoModel:
         # No need to sort, as the internal list is already sorted
         return pass_test
 
-    # TODO: document  `vector` option as in distfeat
     # TODO: deal with sounds/values
     # TODO: should take user-defined sets of sounds/graphemes (instead of model only)
     def minimal_matrix(self, graphemes, vector=False):
         """
-        Compute the minimal feature matrix for a set of sounds.
+        Compute the minimal feature matrix for a set of sounds or graphemes.
         """
 
         # Build list of values for the sounds
@@ -321,7 +310,7 @@ class PhonoModel:
     # TODO: should take user-defined sets of sounds/graphemes (instead of model only)
     def class_features(self, graphemes):
         """
-        Compute the class features for a set of graphemes.
+        Compute the class features for a set of graphemes or sounds.
         """
 
         # Build list of values for the sounds
@@ -402,12 +391,9 @@ class PhonoModel:
             raise ValueError("No regressor to serialize.")
 
         # Build a pathlib object, create the directory (if necessary), and write
-        try:
-            regressor_file = Path(regressor_file).absolute()
-            regressor_file.parent.mkdir(parents=True, exist_ok=True)
-            joblib.dump(self._regressor, regressor_file.as_posix())
-        except:
-            raise ValueError("Unable to serialize model")
+        regressor_file = Path(regressor_file).absolute()
+        regressor_file.parent.mkdir(parents=True, exist_ok=True)
+        joblib.dump(self._regressor, regressor_file.as_posix())
 
     def build_regressor(self, regtype="svr", filename=None, matrix_file=None):
         """
@@ -523,9 +509,27 @@ class PhonoModel:
 
         return grapheme, best_values
 
-    # TODO: doc: sort a list of values accoding to rank, retuning a tuple
-    # TODO: try to split with _split_values
     def sort_values(self, values):
+        """
+        Sort a list of values according to their ranks.
+
+        In case of multiple values with the same rank, these are sorted alphabetically.
+
+        Parameters
+        ----------
+        values : list or str
+            A list (or other iterable) of values or a string description of them. If
+            a string is provided, the method will split them in the standard way.
+
+        Return
+        ------
+        sorted : tuple
+            A tuple with the sorted values.
+        """
+
+        if isinstance(values, str):
+            values = _split_values(values)
+
         return tuple(sorted(values, key=lambda v: (-self.values[v]["rank"], v)))
 
 
