@@ -31,7 +31,7 @@ cases, the `mipa` model is used as default.
 ```python
 >>> import maniphono
 >>> print(maniphono.model_mipa)
-[`mipa` model (20 features, 63 values, 211 graphemes)]
+[`mipa` model (20 features, 63 values, 224 graphemes)]
 >>> print(maniphono.model_tresoldi)
 [`tresoldi` model (30 features, 60 values, 570 graphemes)]
 ```
@@ -87,8 +87,7 @@ representation.
 ```python
 >>> snd4 = maniphono.Sound(description="voiceless consonant")
 >>> str(snd4), repr(snd4)
-('c[-palatal,-plosive]', 'voiceless consonant')
-# TODO: find example of no diacritic
+('C̥', 'voiceless consonant')
 ```
 
 While the results are technically correct, the library still needs work for
@@ -97,7 +96,7 @@ always returning good representations when it computes the grapheme.
 ```python
 >>> snd5 = maniphono.Sound("kʰʷ[voiced]")
 >>> str(snd5), repr(snd5)
-('ŋʰʷ[-nasal]', 'labialized aspirated voiced velar plosive consonant')
+('ɡʰʷ', 'labialized aspirated voiced velar plosive consonant')
 ```
 
 ### Segments
@@ -150,7 +149,7 @@ presence and absence, and returned an order list of all graphemes defined in the
 that satisfy the constraint.
 
 ```python
->>> maniphono.model_mipa.values2sounds("+vowel +front -close")
+>>> maniphono.model_mipa.values2graphemes("+vowel +front -close")
 ['a', 'ã', 'e', 'ẽ', 'æ', 'æ̃', 'ø', 'ø̃', 'œ', 'œ̃', 'ɛ', 'ɛ̃', 'ɪ', 'ɪ̃', 'ɶ', 'ɶ̃', 'ʏ', 'ʏ̃']
 ```
 
@@ -195,7 +194,7 @@ and `sklearn` regressor, which can take a while.
 >>> maniphono.model_mipa.distance("a", "a")
 0.0
 >>> maniphono.model_mipa.distance("a", "e")
-5.240862952257015
+3.7590891821444608
 >>> maniphono.model_mipa.distance("a", "ʒ")
-27.996041203253856
+30.419280377524366
 ```

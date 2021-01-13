@@ -64,15 +64,15 @@ class Sound:
         # the modifiers explicitly listed as value names are consumed at the end.
         base_grapheme = ""
         while grapheme:
-            grapheme, diacritic = startswithset(grapheme, self.model.diacritics)
+            grapheme, diacritic = startswithset(grapheme, self.model._x["diacritics"])
             if not diacritic:
                 base_grapheme += grapheme[0]
                 grapheme = grapheme[1:]
             else:
-                modifier.insert(0, self.model.diacritics[diacritic])
+                modifier.insert(0, self.model._x["diacritics"][diacritic])
 
         # Add base character and modifiers
-        self.add_values(self.model.grapheme2values[base_grapheme])
+        self.add_values(self.model._x["grapheme2values"][base_grapheme])
         self.add_values(modifier)
 
     def set_value(self, value, check=True):

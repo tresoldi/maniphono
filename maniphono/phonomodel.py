@@ -489,7 +489,9 @@ class PhonoModel:
 
     def __str__(self):
         _str = f"[`{self.name}` model ({len(self.features)} features, "
-        _str += f"{len(self.values)} values, {len(self._x['grapheme2values'])} graphemes)]"
+        _str += (
+            f"{len(self.values)} values, {len(self._x['grapheme2values'])} graphemes)]"
+        )
 
         return _str
 
