@@ -228,6 +228,11 @@ class PhonoModel:
         """
         Collect the set of graphemes in the model that satisfy a list of values.
 
+        Note that this will always match the provided list against the sounds
+        defined in the model. To check against a custom list of sounds, it possible
+        to use the overload operators, creating new sounds and checking whether they
+        are equal or a superset (i.e., `>=`).
+
         Parameters
         ==========
 
@@ -276,8 +281,6 @@ class PhonoModel:
         # No need to sort, as the internal list is already sorted
         return pass_test
 
-    # TODO: deal with sounds/values
-    # TODO: should take user-defined sets of sounds/graphemes (instead of model only)
     def minimal_matrix(self, graphemes, vector=False):
         """
         Compute the minimal feature matrix for a set of sounds or graphemes.
@@ -305,15 +308,15 @@ class PhonoModel:
                         matrix[grapheme][feature] = value
                         break
 
-        # return
+        # Return only values, if a vector was requested, or a dict (instead of a
+        # defaultdict) otherwise
         if vector:
             return matrix.values()
 
-        return dict(matrix)  # return dict and not defaultdict
+        return dict(matrix)
 
     # While this method is to a good extend similar to `.minimal_matrix`, it is not
     # reusing its codebase as it would add an unnecessary level of abstraction.
-    # TODO: should take user-defined sets of sounds/graphemes (instead of model only)
     def class_features(self, graphemes):
         """
         Compute the class features for a set of graphemes or sounds.
