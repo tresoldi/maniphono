@@ -214,25 +214,3 @@ and `sklearn` regressor, which can take a while.
 >>> maniphono.model_mipa.distance("a", "ʒ")
 27.996041203253856
 ```
-
-## TODO
-
-  - Add a cache system to `phonomodel` for grapheme representation
-  - Make sure `grapheme` (and other names?) cannot be used as a feature name
-  - Expand docs for release
-  - Incorporate (with a flag) build implies (e.g., all plosives will be set
-    as consonants automatically)
-  - Methods for coarsing
-  - Review sounds in MIPA and sort descriptions
-  - Use temporary file for storing regresosrs
-  - Build new matrix extending mielke
-  - add prosody, trying to reuse regressor for distance (or closest grapheme?)
-  - currently, all vectors for distnaces are binary, decide on categorical
-  - use logger for all prints?
-  - more regressors
-  - add sonority following `art` model, and sca/asjp
-  - .minimal_matrix() and .class_features()
-    should accept values, defaulting to using the graphemes
-    in the model otherwise; we cannot build sounds there due to circularity; same
-    thing for .value_vector(), which operates on a single one
-  - move to pytest

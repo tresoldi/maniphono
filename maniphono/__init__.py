@@ -10,8 +10,16 @@ __author__ = "Tiago Tresoldi"
 __email__ = "tresoldi@shh.mpg.de"
 
 # Build the namespace
-from maniphono.phonomodel import PhonoModel, model_mipa, model_tresoldi
-from maniphono.sound import Sound
-from maniphono.segment import Segment
-from maniphono.sequence import Sequence
-from maniphono.utils import codepoint2glyph, replace_codepoints, read_distance_matrix
+from maniphono.phonomodel import (
+    PhonoModel,
+    model_mipa,
+    model_tresoldi,
+)  # pyflakes.ignore
+from maniphono.sound import Sound  # pyflakes.ignore
+from maniphono.segment import Segment  # pyflakes.ignore
+from maniphono.sequence import Sequence  # pyflakes.ignore
+from maniphono.utils import (
+    codepoint2glyph,
+    replace_codepoints,
+    read_distance_matrix,
+)  # pyflakes.ignore
