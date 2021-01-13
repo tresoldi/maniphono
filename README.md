@@ -235,3 +235,4 @@ and `sklearn` regressor, which can take a while.
     should accept values, defaulting to using the graphemes
     in the model otherwise; we cannot build sounds there due to circularity; same
     thing for .value_vector(), which operates on a single one
+  - move to pytest
