@@ -339,19 +339,25 @@ class PhonoModel:
 
         return features
 
-    def value_vector(self, grapheme, binary=True):
+    def value_vector(self, source, binary=True):
         """
         Return a vector representation of the values of a sound.
         """
 
+        # Get the values from the grapheme if `source` is a string
+        if isinstance(source, str):
+            source_values = self._x["grapheme2values"][source]
+        else:
+            source_values = source
+
         # Collect vector data in categorical or binary form
-        grapheme_values = self._x["grapheme2values"][grapheme]
+
         if not binary:
             # First get all features that are set, and later add those that
             # are not set as `None` (it is up to the user to filter, if
             # not wanted)
             vector_data = [
-                [(feature, value) for value in values if value in grapheme_values]
+                [(feature, value) for value in values if value in source_values]
                 for feature, values in self.features.items()
             ]
             vector_data = list(itertools.chain.from_iterable(vector_data))
@@ -364,7 +370,7 @@ class PhonoModel:
 
         else:
             vector_data = [
-                [(f"{feature}_{value}", value in grapheme_values) for value in values]
+                [(f"{feature}_{value}", value in source_values) for value in values]
                 for feature, values in self.features.items()
             ]
 
