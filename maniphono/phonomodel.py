@@ -41,10 +41,14 @@ class PhonoModel:
         self.name = name  # model name
         self.features = defaultdict(set)  # set of features in the model
         self.values = {}  # dictionary of value structures
-        self._grapheme2values = {}  # auxiliary dict for mapping
-        self._values2grapheme = {}  # auxiliary dict for mapping
-        self._diacritics = {}  # auxiliary dict for parsing/representation
-        self._classes = []  # auxiliary list to distinguish phonemes/classes
+
+        # dictionary with extra, internal material
+        self._x = {
+            "grapheme2values": {},  # auxiliary dict for mapping
+            "values2grapheme": {},  # auxiliary dict for mapping
+            "diacritics": {},  # auxiliary dict for parsing/representation
+            "classes": [],  # auxiliary list to distinguish phonemes/classes
+        }
 
         # Instantiate a property for the regressor used for computing
         # quantitative distances. These methods require the `sklearn`
@@ -112,9 +116,9 @@ class PhonoModel:
 
                 # Store diacritics
                 if prefix:
-                    self._diacritics[prefix] = value
+                    self._x["diacritics"][prefix] = value
                 if suffix:
-                    self._diacritics[suffix] = value
+                    self._x["diacritics"][suffix] = value
 
         # Check if all constraints refer to existing values; this cannot be done
         # before the entire model has been loaded
@@ -142,7 +146,7 @@ class PhonoModel:
                 _graphemes[grapheme] = desc
 
                 if row["CLASS"] == "True":
-                    self._classes.append(grapheme)
+                    self._x["classes"].append(grapheme)
 
         # Check for duplicate descriptions
         for desc, count in Counter(_graphemes.values()).items():
@@ -178,8 +182,8 @@ class PhonoModel:
                 )
 
             # Update the internal catalog
-            self._grapheme2values[grapheme] = values
-            self._values2grapheme[values] = grapheme
+            self._x["grapheme2values"][grapheme] = values
+            self._x["values2grapheme"][values] = grapheme
 
     def fail_constraints(self, sound_values):
         """
@@ -247,7 +251,7 @@ class PhonoModel:
         # slower. It is better to perform a separately implemented check here,
         # unless we refactor the class.
         pass_test = []
-        for sound_values, sound in self._values2grapheme.items():
+        for sound_values, sound in self._x["values2grapheme"].items():
             satisfy = itertools.chain.from_iterable(
                 [
                     [
@@ -265,7 +269,9 @@ class PhonoModel:
 
         # Remove sounds that are classes
         if not classes:
-            pass_test = [sound for sound in pass_test if sound not in self._classes]
+            pass_test = [
+                sound for sound in pass_test if sound not in self._x["classes"]
+            ]
 
         # No need to sort, as the internal list is already sorted
         return pass_test
@@ -280,7 +286,7 @@ class PhonoModel:
         # Build list of values for the sounds
         features = defaultdict(list)
         for grapheme in graphemes:
-            for value in self._grapheme2values[grapheme]:
+            for value in self._x["grapheme2values"][grapheme]:
                 features[self.values[value]["feature"]].append(value)
 
         # Keep only features with a mismatch
@@ -294,7 +300,7 @@ class PhonoModel:
         matrix = defaultdict(dict)
         for feature, f_values in features.items():
             for grapheme in graphemes:
-                for value in self._grapheme2values[grapheme]:
+                for value in self._x["grapheme2values"][grapheme]:
                     if value in f_values:
                         matrix[grapheme][feature] = value
                         break
@@ -316,7 +322,7 @@ class PhonoModel:
         # Build list of values for the sounds
         features = defaultdict(list)
         for grapheme in graphemes:
-            for value in self._grapheme2values[grapheme]:
+            for value in self._x["grapheme2values"][grapheme]:
                 features[self.values[value]["feature"]].append(value)
 
         # Keep only features with a perfect match;
@@ -330,14 +336,13 @@ class PhonoModel:
 
         return features
 
-    # TODO: move to Sound?
     def value_vector(self, grapheme, binary=True):
         """
         Return a vector representation of the values of a sound.
         """
 
         # Collect vector data in categorical or binary form
-        grapheme_values = self._grapheme2values[grapheme]
+        grapheme_values = self._x["grapheme2values"][grapheme]
         if not binary:
             # First get all features that are set, and later add those that
             # are not set as `None` (it is up to the user to filter, if
@@ -434,7 +439,6 @@ class PhonoModel:
                             y.append(dist + 1.0)
 
         # Train regressor; setting the random value for reproducibility
-        # TODO: config regressor parameters, including seed
         np.random.seed(42)
         if regtype == "mlp":
             self._regressor = MLPRegressor(random_state=1, max_iter=500)
@@ -485,7 +489,7 @@ class PhonoModel:
 
     def __str__(self):
         _str = f"[`{self.name}` model ({len(self.features)} features, "
-        _str += f"{len(self.values)} values, {len(self._grapheme2values)} graphemes)]"
+        _str += f"{len(self.values)} values, {len(self._x['grapheme2values'])} graphemes)]"
 
         return _str
 
@@ -513,10 +517,10 @@ class PhonoModel:
         # Check if the grapheme happens to be already in our list, also making sure
         # the tuple is sorted
         value_tuple = self.sort_values(value_tuple)
-        if value_tuple in self._values2grapheme:
-            grapheme = self._values2grapheme[value_tuple]
-            if not all([classes, grapheme in self._classes]):
-                return self._values2grapheme[value_tuple], value_tuple
+        if value_tuple in self._x["values2grapheme"]:
+            grapheme = self._x["values2grapheme"][value_tuple]
+            if not all([classes, grapheme in self._x["classes"]]):
+                return self._x["values2grapheme"][value_tuple], value_tuple
 
         # Compute a similarity score based on inverse rank for all
         # graphemes, building a string with the representation if we hit a
@@ -524,9 +528,9 @@ class PhonoModel:
         best_score = 0.0
         best_values = None
         grapheme = None
-        for candidate_v, candidate_g in self._values2grapheme.items():
+        for candidate_v, candidate_g in self._x["values2grapheme"].items():
             # Don't include classes if asked so
-            if not classes and candidate_g in self._classes:
+            if not classes and candidate_g in self._x["classes"]:
                 continue
 
             # Compute a score for the closest match; note that there is a penalty for

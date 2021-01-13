@@ -40,8 +40,8 @@ class Sound:
         # Set the values
         if not grapheme:
             self.add_values(description)
-        elif grapheme in self.model._grapheme2values:
-            self.add_values(self.model._grapheme2values[grapheme])
+        elif grapheme in self.model._x["grapheme2values"]:
+            self.add_values(self.model._x["grapheme2values"][grapheme])
         else:
             self._parse_grapheme(grapheme)
 
@@ -180,7 +180,7 @@ class Sound:
 
         # We first build a feature tuple and check if there is a model match...
         value_tuple = tuple(sorted(self.values))
-        grapheme = self.model._values2grapheme.get(value_tuple, None)
+        grapheme = self.model._x["values2grapheme"].get(value_tuple, None)
 
         # If no match, we look for the closest one
         if not grapheme:
