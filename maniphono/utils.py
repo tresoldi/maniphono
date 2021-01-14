@@ -18,10 +18,23 @@ RE_FVALUE = re.compile(r"^[a-z][-_a-z]*$")
 def normalize(grapheme):
     """
     Normalize the string representation of a grapheme.
+
+    Currently, normalization involves NFD Unicode normalization and stripping
+    any leading and trailing white spaces. As these might change in the future, it
+    is suggested to always use this functions instead of reimplementing it in code.
+
+    Parameters
+    ----------
+    grapheme : str
+        The grapheme to be normalized.
+
+    Return
+    ------
+    grapheme : str
+        The normalized version of the grapheme.
     """
 
-    grapheme = unicodedata.normalize("NFD", grapheme)
-    return grapheme.strip()
+    return unicodedata.normalize("NFD", grapheme).strip()
 
 
 # TODO: extend documentation
