@@ -286,7 +286,6 @@ class PhonoModel:
         Compute the minimal feature matrix for a set of sounds or graphemes.
         """
 
-        graphemes = source
         # If source is a collection of strings, assume they are graphemes from
         # the model; otherwise, just take them as lists of values
         source = [
@@ -325,15 +324,22 @@ class PhonoModel:
 
     # While this method is to a good extend similar to `.minimal_matrix`, it is not
     # reusing its codebase as it would add an unnecessary level of abstraction.
-    def class_features(self, graphemes):
+    def class_features(self, source):
         """
         Compute the class features for a set of graphemes or sounds.
         """
 
+        # If source is a collection of strings, assume they are graphemes from
+        # the model; otherwise, just take them as lists of values
+        source = [
+            item if not isinstance(item, str) else self._x["grapheme2values"][item]
+            for item in source
+        ]
+
         # Build list of values for the sounds
         features = defaultdict(list)
-        for grapheme in graphemes:
-            for value in self._x["grapheme2values"][grapheme]:
+        for sound_values in source:
+            for value in sound_values:
                 features[self.values[value]["feature"]].append(value)
 
         # Keep only features with a perfect match;
@@ -342,7 +348,7 @@ class PhonoModel:
         features = {
             feature: values[0]
             for feature, values in features.items()
-            if len(values) == len(graphemes) and len(set(values)) == 1
+            if len(values) == len(source) and len(set(values)) == 1
         }
 
         return features
