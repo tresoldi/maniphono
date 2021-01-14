@@ -1,6 +1,8 @@
 # maniphono
 
-![Python package](https://github.com/tresoldi/maniphono/workflows/Python%20package/badge.svg)
+
+[![PyPI](https://img.shields.io/pypi/v/maniphono.svg)](https://pypi.org/project/maniphono)
+![build](https://github.com/tresoldi/maniphono/workflows/Python%20package/badge.svg)
 
 Python library for the symbolic manipulation of phoneme representations
 
