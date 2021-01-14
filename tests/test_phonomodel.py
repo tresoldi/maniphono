@@ -33,13 +33,13 @@ class TestPhonoModel(unittest.TestCase):
         ret = maniphono.phonomodel.parse_constraints("consonant")
         assert len(ret) == 1
         assert len(ret[0]) == 1
-        assert ret[0][0] == {"type": "presence", "value": "consonant"}
+        assert ret[0][0] == {"type": "presence", "fvalue": "consonant"}
 
         # Test multiple values with positive and negative
         ret = maniphono.phonomodel.parse_constraints("+cons;plos/-voiceless;!front")
         assert len(ret) == 4
         assert len(ret[0]) == 1
-        assert ret[3][0] == {"type": "absence", "value": "front"}
+        assert ret[3][0] == {"type": "absence", "fvalue": "front"}
 
         # Test invalid value names
         with self.assertRaises(ValueError):
@@ -64,7 +64,7 @@ class TestPhonoModel(unittest.TestCase):
         assert "length" in _mipa.features
         assert "long" in _mipa.features["length"]
 
-        assert _mipa.values["vowel"]["rank"] == 1
+        assert _mipa.fvalues["vowel"]["rank"] == 1
 
     # TODO add more TRESOLDI assertions, including sounds
     def test_tresoldi(self):
@@ -81,7 +81,7 @@ class TestPhonoModel(unittest.TestCase):
         assert "anterior" in _tresoldi.features
         assert "non-anterior" in _tresoldi.features["anterior"]
 
-        assert _tresoldi.values["click"]["rank"] == 12
+        assert _tresoldi.fvalues["click"]["rank"] == 12
 
     def test_custom_models(self):
         """
@@ -125,7 +125,7 @@ class TestPhonoModel(unittest.TestCase):
             maniphono.PhonoModel("I", TEST_DIR / "test_models" / "i")
 
     def test_values2graphemes(self):
-        s = maniphono.model_mipa.values2graphemes("+vowel +front -close")
+        s = maniphono.model_mipa.fvalues2graphemes("+vowel +front -close")
         assert tuple(s) == (
             "a",
             "ã",
@@ -179,12 +179,12 @@ class TestPhonoModel(unittest.TestCase):
 
     # TODO: add test with other models
     def test_value_vector(self):
-        fnames, vec = maniphono.model_mipa.value_vector("a")
+        fnames, vec = maniphono.model_mipa.fvalue_vector("a")
         assert len(fnames) == 63
         assert fnames[0] == "aspiration_aspirated"
         assert vec[0] is False
 
-        fnames, vec = maniphono.model_mipa.value_vector("a", binary=False)
+        fnames, vec = maniphono.model_mipa.fvalue_vector("a", binary=False)
         assert len(fnames) == 20
         assert fnames[0] == "aspiration"
         assert vec[0] is None

@@ -12,7 +12,7 @@ RE_CODEPOINT = re.compile("[Uu]\+[0-9A-Fa-f]{4}")
 
 # Define regular expression for accepting names
 RE_FEATURE = re.compile(r"^[a-z][-_a-z]*$")
-RE_VALUE = re.compile(r"^[a-z][-_a-z]*$")
+RE_FVALUE = re.compile(r"^[a-z][-_a-z]*$")
 
 
 def normalize(grapheme):
@@ -38,7 +38,7 @@ def parse_constraints(constraints_str):
         passing silently otherwise.
         """
 
-        if not re.match(RE_VALUE, value_name):
+        if not re.match(RE_FVALUE, value_name):
             raise ValueError(f"Invalid value name `{value_name}` in constraint")
 
     # Obtain all constraints and check for disjunctions
@@ -48,13 +48,13 @@ def parse_constraints(constraints_str):
         for constr in constr_str.split("|"):
             if constr[0] in "-!":
                 _assert_valid_name(constr[1:])
-                constr_group.append({"type": "absence", "value": constr[1:]})
+                constr_group.append({"type": "absence", "fvalue": constr[1:]})
             elif constr[0] == "+":
                 _assert_valid_name(constr[1:])
-                constr_group.append({"type": "presence", "value": constr[1:]})
+                constr_group.append({"type": "presence", "fvalue": constr[1:]})
             else:
                 _assert_valid_name(constr)
-                constr_group.append({"type": "presence", "value": constr})
+                constr_group.append({"type": "presence", "fvalue": constr})
 
         # Collect constraint group
         constraints.append(constr_group)
