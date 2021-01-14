@@ -308,7 +308,7 @@ class PhonoModel:
         # error if the value is not present (we use .discard(), not .remove())
         prev_fvalue = None
         if new_fvalue[0] == "-":
-            if new_value[1:] in fvalues:
+            if new_fvalue[1:] in fvalues:
                 # TODO make sure to return prev_fvalue only if it was there
                 fvalues.discard(new_fvalue[1:])
                 prev_fvalue = new_fvalue[1:]
