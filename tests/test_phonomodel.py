@@ -183,15 +183,6 @@ class TestPhonoModel(unittest.TestCase):
         assert fnames[0] == "aspiration"
         assert vec[0] is None
 
-    def test_distance(self):
-        dist1 = maniphono.model_mipa.distance("a", "a")
-        dist2 = maniphono.model_mipa.distance("a", "e")
-        dist3 = maniphono.model_mipa.distance("a", "ʒ")
-
-        assert dist1 == 0.0
-        assert dist2 > dist1
-        assert dist3 > dist2
-
 
 if __name__ == "__main__":
     # Explicitly creating and running a test suite allows to profile it
