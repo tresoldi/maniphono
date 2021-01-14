@@ -1,5 +1,9 @@
 include README.md
-include AUTHORS
+include CODE_OF_CONDUCT.md
+include CONTRIBUTING.md
+include AUTHORS.md
 include LICENSE
+recursive-include distances *.csv *.tsv
+recursive-include docs *.csv *.tsv
 recursive-include models *.csv *.tsv
 recursive-include tests/models *.csv *.tsv *.md
