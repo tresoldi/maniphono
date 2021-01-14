@@ -281,15 +281,23 @@ class PhonoModel:
         # No need to sort, as the internal list is already sorted
         return pass_test
 
-    def minimal_matrix(self, graphemes, vector=False):
+    def minimal_matrix(self, source, vector=False):
         """
         Compute the minimal feature matrix for a set of sounds or graphemes.
         """
 
+        graphemes = source
+        # If source is a collection of strings, assume they are graphemes from
+        # the model; otherwise, just take them as lists of values
+        source = [
+            item if not isinstance(item, str) else self._x["grapheme2values"][item]
+            for item in source
+        ]
+
         # Build list of values for the sounds
         features = defaultdict(list)
-        for grapheme in graphemes:
-            for value in self._x["grapheme2values"][grapheme]:
+        for sound_values in source:
+            for value in sound_values:
                 features[self.values[value]["feature"]].append(value)
 
         # Keep only features with a mismatch
@@ -302,10 +310,10 @@ class PhonoModel:
         # Build matrix, iterating over graphemes and features
         matrix = defaultdict(dict)
         for feature, f_values in features.items():
-            for grapheme in graphemes:
-                for value in self._x["grapheme2values"][grapheme]:
+            for sound_values in source:
+                for value in sound_values:
                     if value in f_values:
-                        matrix[grapheme][feature] = value
+                        matrix[sound_values][feature] = value
                         break
 
         # Return only values, if a vector was requested, or a dict (instead of a

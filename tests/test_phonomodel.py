@@ -151,15 +151,21 @@ class TestPhonoModel(unittest.TestCase):
     def test_minimal_matrix(self):
         mtx = maniphono.model_mipa.minimal_matrix(["t", "d"])
         assert len(mtx) == 2
-        assert len(mtx["t"]) == 1
-        assert mtx["t"]["phonation"] == "voiceless"
-        assert "manner" not in mtx["d"]
+        assert len(mtx["voiceless", "alveolar", "plosive", "consonant"]) == 1  # /t/
+        assert (
+            mtx["voiceless", "alveolar", "plosive", "consonant"]["phonation"]
+            == "voiceless"
+        )  # /t/
+        assert "manner" not in mtx["voiced", "alveolar", "plosive", "consonant"]  # /d/
 
         mtx = maniphono.model_mipa.minimal_matrix(["t", "d", "s"])
         assert len(mtx) == 3
-        assert len(mtx["t"]) == 2
-        assert mtx["t"]["phonation"] == "voiceless"
-        assert "manner" in mtx["d"]
+        assert len(mtx["voiceless", "alveolar", "plosive", "consonant"]) == 2  # /t/
+        assert (
+            mtx["voiceless", "alveolar", "plosive", "consonant"]["phonation"]
+            == "voiceless"
+        )  # /t/
+        assert "manner" in mtx["voiced", "alveolar", "plosive", "consonant"]  # /d/
 
     # TODO: add test with other models
     def test_class_features(self):
