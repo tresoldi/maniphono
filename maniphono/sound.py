@@ -4,7 +4,7 @@ Module for Sound abstraction and operations.
 
 # Import local modules
 from .phonomodel import model_mipa
-from .utils import _split_fvalues, normalize, startswithset
+from .utils import _split_fvalues
 
 
 class Sound:
@@ -46,6 +46,7 @@ class Sound:
         self.model = model or model_mipa
 
         # Either a description or a grapheme must be provided
+        # # pylint: disable=no-else-raise
         if all([grapheme, description]) or not any([grapheme, description]):
             raise ValueError("Either a `grapheme` or a `description` must be provided.")
         elif grapheme:
@@ -236,8 +237,8 @@ class Sound:
         Checks if the fvalues of the current sound are a superset of the other.
         """
 
-        this_dict = self.feature_dict
-        for feature, fvalue in other.feature_dict:
+        this_dict = self.feature_dict()
+        for feature, fvalue in other.feature_dict():
             if feature not in this_dict:
                 return False
             if this_dict[feature] != fvalue:
