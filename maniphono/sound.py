@@ -178,67 +178,14 @@ class Sound:
         Return a graphemic representation of the current sound.
         """
 
-        # We first build a feature tuple and check if there is a model match...
-        value_tuple = tuple(sorted(self.values))
-        grapheme = self.model._x["values2grapheme"].get(value_tuple, None)
-
-        # If no match, we look for the closest one
-        if not grapheme:
-            # Get the closest grapheme and its values from the model
-            grapheme, best_values = self.model.closest_grapheme(value_tuple)
-
-            # Extend grapheme, adding prefixes/suffixes for all missing values; we first
-            # get the dictionary of features for both the current sound and the
-            # candidate, make a list of features missing/different in the candidate,
-            # extend with the features in candidate not found in the current one, add
-            # values that can be expressed with diacritics, and add the remaining
-            # values with full name.
-            curr_features = self.feature_dict()
-            best_features = Sound(
-                description=best_values, model=self.model
-            ).feature_dict()
-
-            # Collect the disagreements in a list of modifiers; note that it needs to
-            # be sorted according to the rank to guarantee the order of values and
-            # especially of diacritics is the "canonical" one.
-            modifier = []
-            for feat, val in curr_features.items():
-                if feat not in best_features:
-                    modifier.append(val)
-                elif val != best_features[feat]:
-                    modifier.append(val)
-            modifier = sorted(modifier, key=lambda v: self.model.values[v]["rank"])
-
-            # Add all modifiers as diacritics whenever possible; those without a
-            # diacritic are collected in an `expression` list and will be given
-            # using their name (including those that need to be removed and not
-            # replaced, thus preceded by a "-")
-            expression = []
-            for value in modifier:
-                prefix = self.model.values[value]["prefix"]
-                suffix = self.model.values[value]["suffix"]
-                if any([prefix, suffix]):
-                    grapheme = f"{prefix}{grapheme}{suffix}"
-                else:
-                    expression.append(value)
-
-            # Add subtractions that have no diacritic
-            for feat, val in best_features.items():
-                if feat not in curr_features:
-                    expression.append("-%s" % val)
-
-            # Finally build string
-            if expression:
-                grapheme = f"{grapheme}[{','.join(sorted(expression))}]"
-
-        return normalize(grapheme)
+        return self.model.build_grapheme(self.values)
 
     def feature_dict(self):
         """
         Return the defined features as a dictionary.
         """
 
-        return {self.model.values[value]["feature"]: value for value in self.values}
+        return self.model.feature_dict(self.values)
 
     def __repr__(self):
         """

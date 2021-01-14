@@ -501,8 +501,8 @@ class PhonoModel:
 
         # `.value_vector()` takes care of always returning values, whether `sound_a`
         # and `sound_b` are graphemes or lists
-        _, vector_a = self.value_vector(grapheme_a)
-        _, vector_b = self.value_vector(grapheme_b)
+        _, vector_a = self.value_vector(sound_a)
+        _, vector_b = self.value_vector(sound_b)
 
         # If the vectors are equal, by definition the distance is zero
         if tuple(vector_a) == tuple(vector_b):
@@ -596,6 +596,71 @@ class PhonoModel:
             values = _split_values(values)
 
         return tuple(sorted(values, key=lambda v: (-self.values[v]["rank"], v)))
+
+    def feature_dict(self, values):
+        """
+        Return the defined features as a dictionary.
+        """
+
+        return {self.values[value]["feature"]: value for value in values}
+
+    def build_grapheme(self, value_tuple):
+        """
+        Return a graphemic representation of the current sound.
+        """
+
+        # We first make sure the value_tuple is actually an expected, sorted tuple
+        value_tuple = self.sort_values(value_tuple)
+        grapheme = self._x["values2grapheme"].get(value_tuple, None)
+
+        # If no match, we look for the closest one
+        if not grapheme:
+            # Get the closest grapheme and its values from the model
+            grapheme, best_values = self.closest_grapheme(value_tuple)
+
+            # Extend grapheme, adding prefixes/suffixes for all missing values; we first
+            # get the dictionary of features for both the current sound and the
+            # candidate, make a list of features missing/different in the candidate,
+            # extend with the features in candidate not found in the current one, add
+            # values that can be expressed with diacritics, and add the remaining
+            # values with full name.
+            curr_features = self.feature_dict(value_tuple)
+            best_features = self.feature_dict(best_values)
+
+            # Collect the disagreements in a list of modifiers; note that it needs to
+            # be sorted according to the rank to guarantee the order of values and
+            # especially of diacritics is the "canonical" one.
+            modifier = []
+            for feat, val in curr_features.items():
+                if feat not in best_features:
+                    modifier.append(val)
+                elif val != best_features[feat]:
+                    modifier.append(val)
+            modifier = sorted(modifier, key=lambda v: self.values[v]["rank"])
+
+            # Add all modifiers as diacritics whenever possible; those without a
+            # diacritic are collected in an `expression` list and will be given
+            # using their name (including those that need to be removed and not
+            # replaced, thus preceded by a "-")
+            expression = []
+            for value in modifier:
+                prefix = self.values[value]["prefix"]
+                suffix = self.values[value]["suffix"]
+                if any([prefix, suffix]):
+                    grapheme = f"{prefix}{grapheme}{suffix}"
+                else:
+                    expression.append(value)
+
+            # Add subtractions that have no diacritic
+            for feat, val in best_features.items():
+                if feat not in curr_features:
+                    expression.append("-%s" % val)
+
+            # Finally build string
+            if expression:
+                grapheme = f"{grapheme}[{','.join(sorted(expression))}]"
+
+        return normalize(grapheme)
 
 
 # Load default models
