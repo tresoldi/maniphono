@@ -98,37 +98,7 @@ class Sound:
             a value for the corresponding feature).
         """
 
-        # If the value is already set, not need to do the whole operation, including
-        # clearing the cache, so just return to confirm
-        if value in self.values:
-            return value
-
-        # We need a different treatment for setting positive values (i.e. "voiced")
-        # and for removing them (i.e., "-voiced"). Note that it does *not* raise an
-        # error if the value is not present (we use .discard(), not .remove())
-        prev_value = None
-        if value[0] == "-":
-            if value[1:] in self.values:
-                self.values.discard(value[1:])
-                prev_value = value[1:]
-        else:
-            # Get the feature related to the value, cache its previous value (if any),
-            # and remove it; we set `idx` to `None` in the beginning to avoid
-            # false positives of non-initialization
-            feature = self.model.values[value]["feature"]
-            for _value in self.values:
-                if _value in self.model.features[feature]:
-                    prev_value = _value
-                    break
-
-            # Remove the previous value (if there is one) and add the new value
-            self.values.discard(prev_value)
-            self.values.add(value)
-
-        # Run a check if so requested (default)
-        if check and self.model.fail_constraints(self.values):
-            raise ValueError(f"Value {value} ({feature}) breaks a constraint")
-
+        self.values, prev_value = self.model.set_value(self.values, value, check)
         return prev_value
 
     def add_values(self, values, check=True):

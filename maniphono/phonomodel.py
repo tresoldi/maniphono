@@ -662,6 +662,100 @@ class PhonoModel:
 
         return normalize(grapheme)
 
+    def set_value(self, value_set, new_value, check=True):
+        """
+        Set a single value to the sound.
+
+        The method will remove all other values for the same feature before setting the
+        new value.
+
+        Parameters
+        ----------
+        value : str
+            The value to be added to the sound.
+        check : bool
+            Whether to run constraints check after adding the new value (default: True).
+
+        Returns
+        -------
+        prev_value : str or None
+            The previous value for the feature, in case it was replaced, or None whether
+            no replacement happened. If the method is called to add a value which is
+            already set, the value will be returned (indicating that there was already
+            a value for the corresponding feature).
+        """
+
+        value_set = set(value_set)
+
+        # If the value is already set, not need to do the whole operation, including
+        # clearing the cache, so just return to confirm
+        if new_value in value_set:
+            return value_set, new_value
+
+        # We need a different treatment for setting positive values (i.e. "voiced")
+        # and for removing them (i.e., "-voiced"). Note that it does *not* raise an
+        # error if the value is not present (we use .discard(), not .remove())
+        prev_value = None
+        if new_value[0] == "-":
+            if new_value[1:] in value_set:
+                value_tuple.discard(new_value[1:])
+                prev_value = new_value[1:]
+        else:
+            # Get the feature related to the value, cache its previous value (if any),
+            # and remove it; we set `idx` to `None` in the beginning to avoid
+            # false positives of non-initialization
+            feature = self.values[new_value]["feature"]
+            for _value in value_set:
+                if _value in self.features[feature]:
+                    prev_value = _value
+                    break
+
+            # Remove the previous value (if there is one) and add the new value
+            value_set.discard(prev_value)
+            value_set.add(new_value)
+
+        # Run a check if so requested (default)
+        if check and self.fail_constraints(value_set):
+            raise ValueError(f"Value {new_value} ({feature}) breaks a constraint")
+
+        return value_set, prev_value
+
+    def parse_grapheme(self, grapheme):
+        """
+        Internal function for parsing a grapheme.
+        """
+
+        # Capture list of modifiers, if any; no need to go full regex
+        modifier = []
+        if "[" in grapheme and grapheme[-1] == "]":
+            grapheme, _, modifier = grapheme.partition("[")
+            modifier = [mod.strip() for mod in _split_values(modifier[:-1])]
+
+        # If the base is among the list of graphemes, we can just return the
+        # grapheme values and apply the modifier. Otherwise, we take all characters
+        # that are diacritics (remember we perform NFD normalization), remove them
+        # while updating the modifier list, and again add the modifier at the end.
+        # Note that diacritics are inserted to the beginning of the list, so that
+        # the modifiers explicitly listed as value names are consumed at the end.
+        base_grapheme = ""
+        while grapheme:
+            grapheme, diacritic = startswithset(grapheme, self._x["diacritics"])
+            if not diacritic:
+                base_grapheme += grapheme[0]
+                grapheme = grapheme[1:]
+            else:
+                modifier.insert(0, self._x["diacritics"][diacritic])
+
+        # Add base character and modifiers
+        values = self._x["grapheme2values"][base_grapheme]
+        for mod in modifier:
+            values, _ = self.set_value(values, mod, check=False)
+
+        # TODO: add a value already in it just to trigger the check
+
+        # TODO: sort?
+        return values
+
 
 # Load default models
 model_mipa = PhonoModel("mipa")
