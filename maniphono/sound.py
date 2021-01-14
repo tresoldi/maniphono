@@ -1,34 +1,46 @@
 """
-Module for sound abstractions and operations.
-
-This module holds the code for the sound model.
+Module for Sound abstraction and operations.
 """
 
 # Import local modules
 from .phonomodel import model_mipa
-from .utils import _split_values, normalize, startswithset
+from .utils import _split_fvalues, normalize, startswithset
 
 
 class Sound:
     """
-    Class representing a bundle of phonetic features according to a model.
+    Class for representing a sound as a bundle of feature values.
 
-    Note that, by definition, a sound does not need to be a "complete sound", but
-    can also be used to represent sound classes (such "consonant" or "front vowel").
-    The class is intended to work with any generic model provided by the
-    PhonoModel class.
+    By design, a "sound" does not need to be a "complete sound", as it can
+    hold any number of feature values, including none. All sounds work with
+    phonological models provided by the an instance of the `PhonoModel`
+    class. If a `model` is not provided, the library will default to
+    a shared MIPA model.
+
+    A sound can be initialized with either a `grapheme` (the default) or a
+    `description`.
+
+    Parameters
+    ----------
+    grapheme : str
+        A string with a grapheme to be parsed or read directly from the model.
+        Either a `grapheme` or a `description` can be provided for initialization.
+    description : str
+        A string with a list of feature values separated by one of the accepted
+        delimiters.
+        Either a `grapheme` or a `description` can be provided for initialization.
+    model : PhonoModel
+        A phonological model in the `PhonoModel` class (default:
+        `phonomodel.model_mipa`).
     """
 
     def __init__(self, grapheme=None, description=None, model=None):
         """
         Initialization method.
-
-        A sound can be initialized with either a `grapheme` or a `description`.
-        If a `model` is not provided, it will default to MIPA.
         """
 
         # Initialize the main property, the set of values
-        self.values = set()
+        self.fvalues = set()
 
         # Store model (defaulting to MIPA)
         self.model = model or model_mipa
@@ -36,108 +48,79 @@ class Sound:
         # Either a description or a grapheme must be provided
         if all([grapheme, description]) or not any([grapheme, description]):
             raise ValueError("Either a `grapheme` or a `description` must be provided.")
-
-        # Set the values
-        if not grapheme:
-            self.add_values(description)
-        elif grapheme in self.model._x["grapheme2values"]:
-            self.add_values(self.model._x["grapheme2values"][grapheme])
+        elif grapheme:
+            self.fvalues = self.model.parse_grapheme(grapheme)
         else:
-            self._parse_grapheme(grapheme)
+            self.add_fvalues(description)
 
-    def _parse_grapheme(self, grapheme):
+    def set_fvalue(self, fvalue, check=True):
         """
-        Internal function for parsing a grapheme.
-        """
+        Set a single feature value to the sound.
 
-        # Capture list of modifiers, if any; no need to go full regex
-        modifier = []
-        if "[" in grapheme and grapheme[-1] == "]":
-            grapheme, _, modifier = grapheme.partition("[")
-            modifier = [mod.strip() for mod in _split_values(modifier[:-1])]
+        The method will remove all other feature values for the same feature
+        before setting the new one.
 
-        # If the base is among the list of graphemes, we can just return the
-        # grapheme values and apply the modifier. Otherwise, we take all characters
-        # that are diacritics (remember we perform NFD normalization), remove them
-        # while updating the modifier list, and again add the modifier at the end.
-        # Note that diacritics are inserted to the beginning of the list, so that
-        # the modifiers explicitly listed as value names are consumed at the end.
-        base_grapheme = ""
-        while grapheme:
-            grapheme, diacritic = startswithset(grapheme, self.model._x["diacritics"])
-            if not diacritic:
-                base_grapheme += grapheme[0]
-                grapheme = grapheme[1:]
-            else:
-                modifier.insert(0, self.model._x["diacritics"][diacritic])
-
-        # Add base character and modifiers
-        self.add_values(self.model._x["grapheme2values"][base_grapheme])
-        self.add_values(modifier)
-
-    def set_value(self, value, check=True):
-        """
-        Set a single value to the sound.
-
-        The method will remove all other values for the same feature before setting the
-        new value.
+        This method works as a convenient wrapper to the equivalent method in
+        `PhonoModel`.
 
         Parameters
         ----------
-        value : str
-            The value to be added to the sound.
+        fvalue : str
+            The feature value to be added to the sound.
         check : bool
-            Whether to run constraints check after adding the new value (default: True).
+            Whether to run constraints check after adding the new feature
+            value (default: True).
 
         Returns
         -------
         prev_value : str or None
-            The previous value for the feature, in case it was replaced, or None whether
-            no replacement happened. If the method is called to add a value which is
-            already set, the value will be returned (indicating that there was already
-            a value for the corresponding feature).
+            The previous feature value for the feature, in case it was replaced, or
+            None, in case no replacement happened. If the method is called to add a
+            feature value which is already set, it will be returned as well
+            (indicating that there was already a value for the corresponding feature).
         """
 
-        self.values, prev_value = self.model.set_value(self.values, value, check)
-        return prev_value
+        self.fvalues, prev_fvalue = self.model.set_fvalue(self.fvalues, fvalue, check)
 
-    def add_values(self, values, check=True):
+        return prev_fvalue
+
+    def add_fvalues(self, fvalues, check=True):
         """
-        Add multiple values to the sound.
+        Add multiple feature values to the sound.
 
-        The method will remove all conflicting values before setting the new ones.
-        Currently, this method acts as a wrapper to `.add_value()`
+        The method will remove all conflicting feature values before setting the new
+        ones. The method acts as a wrapper to `.add_value()`
 
         Parameters
         ----------
-        values : list or str
-            A list of strings with the values to be added to the sound, a string
-            with values separated by the delimiters specified in
-            `_split_values()`.
+        fvalues : list or str
+            A list of strings with the feature values to be added to the sound, a string
+            with values separated by the delimiters specified in `_split_values()`.
         check : bool
-            Whether to run constraints check after adding the new values (default: True).
+            Whether to run constraint checks after adding the new feature values
+            (default: True).
 
         Returns
         -------
         replaced : list
-            A list of strings with the values that were replaced, in no particular
-            order.
+            A list of strings with the feature values that were replaced, in no
+            particular order.
         """
 
-        # If `values` is a string, we assume it is space-separated list of
-        # `values`, which can preprocess a bit. Note that this allows to use a
+        # If `fvalues` is a string, we assume it is space-separated list of
+        # feature values, which can preprocess. Note that this allows to use a
         # string with a single descriptor without any special treatment.
-        if isinstance(values, str):
-            values = _split_values(values)
+        if isinstance(fvalues, str):
+            fvalues = _split_fvalues(fvalues)
 
-        # Add all values, collecting the replacements which are stripped of Nones;
+        # Add all fvalues, collecting the replacements which are stripped of `None`s;
         # note that we don't run checks here, but only after all values have been added
-        replaced = [self.set_value(value, check=False) for value in values]
-        replaced = [value for value in replaced if value]
+        replaced = [self.set_fvalue(fvalue, check=False) for fvalue in fvalues]
+        replaced = [fvalue for fvalue in replaced if fvalue]
 
         # Run a check if so requested (default)
         if check:
-            offending = self.model.fail_constraints(self.values)
+            offending = self.model.fail_constraints(self.fvalues)
             if offending:
                 raise ValueError(f"At least one constraint unsatisfied by {offending}")
 
@@ -146,30 +129,55 @@ class Sound:
     def grapheme(self):
         """
         Return a graphemic representation of the current sound.
+
+        Return
+        ------
+        grapheme : str
+            A string withthe graphemic representation of the sound.
         """
 
-        return self.model.build_grapheme(self.values)
+        return self.model.build_grapheme(self.fvalues)
 
     def feature_dict(self):
         """
-        Return the defined features as a dictionary.
+        Return a dictionary of features and feature values that are defined.
+
+        Return
+        ------
+        fdict : dict
+            A dictionary of all feature values that are defined for the current sound,
+            with features as keys and feature values as values.
         """
 
-        return self.model.feature_dict(self.values)
+        return self.model.feature_dict(self.fvalues)
 
     def __repr__(self):
         """
         Return a representation with full name values.
 
-        The list of values is ordered by rank first and alphabetically in case of
-        values with equal ranks.
+        Following the convention from `PhonoModel`, the list of values is ordered by
+        feature value rank first and, in case of feature values with equal ranks,
+        alphabetically second.
+
+        Return
+        ------
+        r : str
+            A string with a representation of the current sound.
         """
 
-        return " ".join(self.model.sort_values(self.values))
+        return " ".join(self.model.sort_fvalues(self.fvalues))
 
     def __str__(self):
         """
-        Return a graphemic normalized representation of the sound.
+        Return a graphemic representation of the sound.
+
+        By design, the `str()` command will return the same value of the
+        `.grapheme()` method.
+
+        Return
+        ------
+        s : str
+            A string with the graphemic representation of the sound.
         """
 
         return self.grapheme()
@@ -179,8 +187,8 @@ class Sound:
         Overload the `+` operator.
         """
 
-        snd = Sound(description=self.values, model=self.model)
-        snd.add_values(other)
+        snd = Sound(description=self.fvalues, model=self.model)
+        snd.add_fvalues(other)
 
         return snd
 
@@ -189,57 +197,68 @@ class Sound:
         Overload the `-` operator.
         """
 
-        values = [value for value in self.values if value not in _split_values(other)]
+        fvalues = [
+            fvalue for fvalue in self.fvalues if fvalue not in _split_fvalues(other)
+        ]
 
-        return Sound(description=" ".join(values), model=self.model)
+        return Sound(description=" ".join(fvalues), model=self.model)
 
-    # TODO: use model sort_vlaues
     def __hash__(self):
         """
         Return a hash of the current sound.
         """
 
-        return hash(self.model.sort_values(self.values))
+        return hash(self.model.sort_values(self.fvalues))
 
     def __eq__(self, other):
         """
-        Compare two sounds in terms of their values.
+        Compare two sounds in terms of their fvalues.
         """
 
         return hash(self) == hash(other)
 
     def __lt__(self, other):
         """
-        Checks if the values of the current sound are a subset of the other.
+        Checks if the fvalues of the current sound are a subset of the other.
         """
 
         other_dict = other.feature_dict()
-        for feature, value in self.feature_dict():
+        for feature, fvalue in self.feature_dict():
             if feature not in other_dict:
                 return False
-            if other_dict[feature] != value:
+            if other_dict[feature] != fvalue:
                 return False
 
         return True
 
     def __gt__(self, other):
         """
-        Checks if the values of the current sound are a superset of the other.
+        Checks if the fvalues of the current sound are a superset of the other.
         """
 
         this_dict = self.feature_dict
-        for feature, value in other.feature_dict:
+        for feature, fvalue in other.feature_dict:
             if feature not in this_dict:
                 return False
-            if this_dict[feature] != value:
+            if this_dict[feature] != fvalue:
                 return False
 
         return True
 
-    # TODO: restricted names: `grapheme`, `values`
-    def __getattr__(self, key):
-        for value in self.values:
-            if self.model.values[value]["feature"] == key:
-                return value
+    def __getattr__(self, feature):
+        """
+        Get feature values from their features as object attributes.
+
+        Return
+        ------
+        fvalue : string
+            A string with the feature value for the requested `feature`, or `None`
+            if no feature value associated with the requested `feature` has been
+            set.
+        """
+
+        for fvalue in self.fvalues:
+            if self.model.values[fvalue]["feature"] == feature:
+                return fvalue
 
         return None

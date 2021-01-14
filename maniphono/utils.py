@@ -43,7 +43,7 @@ def parse_constraints(constraints_str):
 
     # Obtain all constraints and check for disjunctions
     constraints = []
-    for constr_str in _split_values(constraints_str):
+    for constr_str in _split_fvalues(constraints_str):
         constr_group = []
         for constr in constr_str.split("|"):
             if constr[0] in "-!":
@@ -67,9 +67,9 @@ def parse_constraints(constraints_str):
 
 
 # TODO: rename as it is used to split contraints as well
-def _split_values(values):
+def _split_fvalues(fvalues):
     """
-    Split a string with multiple values.
+    Split a string with multiple feature values.
 
     This function, intended for internal usage, allows to use different
     delimiters and guarantees that all methods will allow all delimiters.
@@ -79,22 +79,22 @@ def _split_values(values):
 
     Parameters
     ----------
-    values : str
-        The string with the list of values to be split.
+    fvalues : str
+        The string with the list of feature values to be split.
 
     Returns
     -------
-    value_list : list
-        A list of strings with the values.
+    fvalue_list : list
+        A list of strings with the feature values.
     """
 
     # We internally convert everything to spaces
     for delimiter in [" and ", ",", ";", "/"]:
-        values = values.replace(delimiter, " ")
+        fvalues = fvalues.replace(delimiter, " ")
 
-    values = re.sub(r"\s+", " ", values.strip())
+    fvalues = re.sub(r"\s+", " ", fvalues.strip())
 
-    return values.split()
+    return fvalues.split()
 
 
 def codepoint2glyph(codepoint):

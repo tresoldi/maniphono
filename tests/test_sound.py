@@ -51,7 +51,7 @@ class TestSound(unittest.TestCase):
 
     def test_add_value(self):
         snd1 = maniphono.Sound("p")
-        snd1.set_value("voiced")
+        snd1.set_fvalue("voiced")
 
         assert str(snd1) == "b"
 

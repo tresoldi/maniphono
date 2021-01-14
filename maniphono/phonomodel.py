@@ -21,9 +21,10 @@ from .utils import (
     read_distance_matrix,
     parse_constraints,
     normalize,
-    _split_values,
+    _split_fvalues,
     RE_FEATURE,
     RE_VALUE,
+    startswithset,
 )
 
 
@@ -142,7 +143,7 @@ class PhonoModel:
             _graphemes = {}
             for row in csv.DictReader(csvfile):
                 grapheme = normalize(row["GRAPHEME"])
-                desc = self.sort_values(row["DESCRIPTION"])
+                desc = self.sort_fvalues(row["DESCRIPTION"])
                 _graphemes[grapheme] = desc
 
                 if row["CLASS"] == "True":
@@ -542,7 +543,7 @@ class PhonoModel:
 
         # Check if the grapheme happens to be already in our list, also making sure
         # the tuple is sorted
-        value_tuple = self.sort_values(value_tuple)
+        value_tuple = self.sort_fvalues(value_tuple)
         if value_tuple in self._x["values2grapheme"]:
             grapheme = self._x["values2grapheme"][value_tuple]
             if not all([classes, grapheme in self._x["classes"]]):
@@ -574,7 +575,7 @@ class PhonoModel:
 
         return grapheme, best_values
 
-    def sort_values(self, values):
+    def sort_fvalues(self, values):
         """
         Sort a list of values according to their ranks.
 
@@ -593,7 +594,7 @@ class PhonoModel:
         """
 
         if isinstance(values, str):
-            values = _split_values(values)
+            values = _split_fvalues(values)
 
         return tuple(sorted(values, key=lambda v: (-self.values[v]["rank"], v)))
 
@@ -610,7 +611,7 @@ class PhonoModel:
         """
 
         # We first make sure the value_tuple is actually an expected, sorted tuple
-        value_tuple = self.sort_values(value_tuple)
+        value_tuple = self.sort_fvalues(value_tuple)
         grapheme = self._x["values2grapheme"].get(value_tuple, None)
 
         # If no match, we look for the closest one
@@ -662,7 +663,7 @@ class PhonoModel:
 
         return normalize(grapheme)
 
-    def set_value(self, value_set, new_value, check=True):
+    def set_fvalue(self, value_set, new_value, check=True):
         """
         Set a single value to the sound.
 
@@ -720,16 +721,21 @@ class PhonoModel:
 
         return value_set, prev_value
 
+    # TODO: replace set with sorted tuple
     def parse_grapheme(self, grapheme):
         """
         Internal function for parsing a grapheme.
         """
 
+        # Used model/cache graphemes if available
+        if grapheme in self._x["grapheme2values"]:
+            return set(self._x["grapheme2values"][grapheme])
+
         # Capture list of modifiers, if any; no need to go full regex
         modifier = []
         if "[" in grapheme and grapheme[-1] == "]":
             grapheme, _, modifier = grapheme.partition("[")
-            modifier = [mod.strip() for mod in _split_values(modifier[:-1])]
+            modifier = [mod.strip() for mod in _split_fvalues(modifier[:-1])]
 
         # If the base is among the list of graphemes, we can just return the
         # grapheme values and apply the modifier. Otherwise, we take all characters
