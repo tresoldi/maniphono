@@ -470,7 +470,7 @@ class PhonoModel:
 
         self._regressor.fit(X, y)
 
-    def distance(self, grapheme_a, grapheme_b):
+    def distance(self, sound_a, sound_b):
         """
         Return a quantitative distance based on a seed matrix.
 
@@ -499,7 +499,8 @@ class PhonoModel:
         if not self._regressor:
             self.build_regressor()
 
-        # Get vectors, dropping feature names that are not needed
+        # `.value_vector()` takes care of always returning values, whether `sound_a`
+        # and `sound_b` are graphemes or lists
         _, vector_a = self.value_vector(grapheme_a)
         _, vector_b = self.value_vector(grapheme_b)
 
