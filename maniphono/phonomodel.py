@@ -544,8 +544,11 @@ class PhonoModel:
 
         # If source is a collection of strings, assume they are graphemes from
         # the model; otherwise, just take them as lists of values
+        # TODO: remove sort_fvalues() when moving from set to tuple
         sounds = [
-            item if not isinstance(item, str) else self._x["grapheme2fvalues"][item]
+            item
+            if not isinstance(item, str)
+            else self.sort_fvalues(self.parse_grapheme(item))
             for item in sounds
         ]
 
