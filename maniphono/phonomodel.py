@@ -108,15 +108,13 @@ class PhonoModel:
                 self.features[feature].add(fvalue)
 
                 # Store values structs, which includes parsing the diacritics and
-                # the constraint string
+                # the constraint string (`constr` will be an empty list if
+                # `constraint_str` is empty)
                 prefix = replace_codepoints(row["PREFIX"])
                 suffix = replace_codepoints(row["SUFFIX"])
 
                 constraint_str = row.get("CONSTRAINTS")
-                if constraint_str:
-                    constr = parse_constraints(constraint_str)
-                else:
-                    constr = []
+                constr = parse_constraints(constraint_str)
 
                 self.fvalues[fvalue] = {
                     "feature": feature,
@@ -158,8 +156,7 @@ class PhonoModel:
             _graphemes = {}
             for row in csv.DictReader(csvfile):
                 grapheme = normalize(row["GRAPHEME"])
-                desc = self.sort_fvalues(row["DESCRIPTION"])
-                _graphemes[grapheme] = desc
+                _graphemes[grapheme] = self.sort_fvalues(row["DESCRIPTION"])
 
                 if row["CLASS"] == "True":
                     self._x["classes"].append(grapheme)
@@ -193,9 +190,7 @@ class PhonoModel:
             # Check the grapheme constraints; we can adopt the walrus operator later
             failed = self.fail_constraints(fvalues)
             if failed:
-                raise ValueError(
-                    f"Grapheme `{grapheme}` fails constraint check on {failed}"
-                )
+                raise ValueError(f"/{grapheme}/ fails constraint check on {failed}")
 
             # Update the internal catalog
             fvalues = self.sort_fvalues(fvalues)
@@ -294,9 +289,6 @@ class PhonoModel:
             feature).
         """
 
-        # TODO: move to tuple
-        fvalues = set(fvalues)
-
         # If the feature value is already set, not need to do the whole operation,
         # including clearing the cache, so just return to confirm
         if new_fvalue in fvalues:
@@ -308,8 +300,8 @@ class PhonoModel:
         prev_fvalue = None
         if new_fvalue[0] == "-":
             if new_fvalue[1:] in fvalues:
-                fvalues.discard(new_fvalue[1:])
                 prev_fvalue = new_fvalue[1:]
+                fvalues = [fv for fv in fvalues if fv != prev_fvalue]
         else:
             # Get the feature related to the value, cache its previous value (if any),
             # and remove it; we set `idx` to `None` in the beginning to avoid
@@ -321,16 +313,15 @@ class PhonoModel:
                     break
 
             # Remove the previous value (if there is one) and add the new value
-            fvalues.discard(prev_fvalue)
-            fvalues.add(new_fvalue)
+            fvalues = [new_fvalue] + [fv for fv in fvalues if fv != prev_fvalue]
 
         # Run a check if so requested (default)
         if check and self.fail_constraints(fvalues):
             raise ValueError(f"FValue {new_fvalue} ({feature}) breaks a constraint")
 
-        return fvalues, prev_fvalue
+        # Sort the new `fvalues`, which also makes sure we return a tuple
+        return self.sort_fvalues(fvalues), prev_fvalue
 
-    # TODO: replace set with sorted tuple
     def parse_grapheme(self, grapheme):
         """
         Parse a grapheme according to the library standard.
@@ -346,9 +337,9 @@ class PhonoModel:
             A set with the feature values from the parsed grapheme.
         """
 
-        # Used model/cache graphemes if available
+        # Used model/cache graphemes if available; it is already a sorted tuple
         if grapheme in self._x["grapheme2fvalues"]:
-            return set(self._x["grapheme2fvalues"][grapheme])
+            return self._x["grapheme2fvalues"][grapheme]
 
         # Capture list of modifiers, if any; no need to go full regex
         if "[" in grapheme and grapheme[-1] == "]":
@@ -379,7 +370,7 @@ class PhonoModel:
             check = mod == modifiers[-1]
             fvalues, _ = self.set_fvalue(fvalues, mod, check=check)
 
-        # TODO: sort?
+        # No need to sort, as it is already returned as a sorted tuple by .set_fvalue()
         return fvalues
 
     def sort_fvalues(self, fvalues):
@@ -540,11 +531,8 @@ class PhonoModel:
 
         # If source is a collection of strings, assume they are graphemes from
         # the model; otherwise, just take them as lists of values
-        # TODO: remove sort_fvalues() when moving from set to tuple
         sounds = [
-            item
-            if not isinstance(item, str)
-            else self.sort_fvalues(self.parse_grapheme(item))
+            item if not isinstance(item, str) else self.parse_grapheme(item)
             for item in sounds
         ]
 
@@ -598,11 +586,8 @@ class PhonoModel:
 
         # If source is a collection of strings, assume they are graphemes from
         # the model; otherwise, just take them as lists of values
-        # TODO: remove sort_fvalues() when moving from set to tuple
         sounds = [
-            item
-            if not isinstance(item, str)
-            else self.sort_fvalues(self.parse_grapheme(item))
+            item if not isinstance(item, str) else self.parse_grapheme(item)
             for item in sounds
         ]
 
@@ -653,9 +638,8 @@ class PhonoModel:
         """
 
         # Get the fvalues from the grapheme if `source` is a string
-        # TODO: remove sort_fvalues() when moving from set to tuple
         if isinstance(source, str):
-            source_fvalues = self.sort_fvalues(self.parse_grapheme(source))
+            source_fvalues = self.parse_grapheme(source)
         else:
             source_fvalues = source
 
@@ -820,14 +804,14 @@ class PhonoModel:
 
         # Read raw distance data and cache vectors, also allowing to
         # skip over unmapped graphemes
-        # TODO: check if all can be processed, with the new .fvalue_vector
+        # TODO: check why some graphemes are still failing
         raw_matrix = read_distance_matrix(matrix_file)
         vector = {}
         for grapheme in raw_matrix:
             try:
                 _, vector[grapheme] = self.fvalue_vector(grapheme)
             except KeyError:
-                print("Skipping over unmapped [%s] grapheme..." % grapheme)
+                print("Skipping over grapheme [%s]..." % grapheme)
 
         # Collect (X,y) vectors
         X, y = [], []  # pylint: disable=invalid-name

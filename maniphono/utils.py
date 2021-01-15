@@ -8,7 +8,7 @@ import csv
 import unicodedata
 
 # Pattern for unicode codepoint replacement
-RE_CODEPOINT = re.compile("[Uu]+[0-9A-Fa-f]{4}")
+RE_CODEPOINT = re.compile(r"[Uu]\+[0-9A-Fa-f]{4}")
 
 # Define regular expression for accepting names
 RE_FEATURE = re.compile(r"^[a-z][-_a-z]*$")
@@ -53,6 +53,10 @@ def parse_constraints(constraints_str):
 
         if not re.match(RE_FVALUE, value_name):
             raise ValueError(f"Invalid value name `{value_name}` in constraint")
+
+    # In case of an empty string, there is nothing to parse
+    if not constraints_str:
+        return []
 
     # Obtain all constraints and check for disjunctions
     constraints = []
@@ -201,6 +205,6 @@ def startswithset(string, candidates):
     candidates = sorted(candidates, reverse=True, key=lambda s: len(s))
     for cand in candidates:
         if string.startswith(cand):
-            return string[len(cand):], cand
+            return string[len(cand) :], cand
 
     return string, None

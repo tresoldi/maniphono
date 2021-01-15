@@ -39,8 +39,8 @@ class Sound:
         Initialization method.
         """
 
-        # Initialize the main property, the set of values
-        self.fvalues = set()
+        # Initialize the main property, the tuple of values
+        self.fvalues = tuple()
 
         # Store model (defaulting to MIPA)
         self.model = model or model_mipa
