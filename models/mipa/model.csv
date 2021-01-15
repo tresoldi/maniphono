@@ -1,4 +1,4 @@
-FEATURE,VALUE,RANK,PREFIX,SUFFIX,CONSTRAINTS
+FEATURE,FVALUE,RANK,PREFIX,SUFFIX,CONSTRAINTS
 aspiration,aspirated,6,,ʰ,consonant
 centrality,back,2,,U+0320,vowel
 centrality,central,2,,U+0308,vowel

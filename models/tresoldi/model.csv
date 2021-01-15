@@ -1,4 +1,4 @@
-FEATURE,VALUE,RANK,PREFIX,SUFFIX,CONSTRAINTS
+FEATURE,FVALUE,RANK,PREFIX,SUFFIX,CONSTRAINTS
 anterior,anterior,18,,,+coronal
 anterior,non-anterior,18,,,
 approximant,approximant,3,,,

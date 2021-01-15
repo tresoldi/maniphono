@@ -91,7 +91,7 @@ class PhonoModel:
             for row in csv.DictReader(csvfile):
                 # Extract and clean strings as much as we can
                 feature = row["FEATURE"].strip()
-                fvalue = row["VALUE"].strip()  # TODO: change files to FVALUE
+                fvalue = row["FVALUE"].strip()
                 rank = int(row["RANK"].strip())
 
                 # Run checks
@@ -761,7 +761,6 @@ class PhonoModel:
 
         return grapheme, best_fvalues
 
-    # TODO: parse general graphemes, not only in model
     def distance(self, sound_a, sound_b):
         """
         Return a quantitative distance based on a seed matrix.
