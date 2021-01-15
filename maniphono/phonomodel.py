@@ -659,8 +659,9 @@ class PhonoModel:
         """
 
         # Get the fvalues from the grapheme if `source` is a string
+        # TODO: remove sort_fvalues() when moving from set to tuple
         if isinstance(source, str):
-            source_fvalues = self._x["grapheme2fvalues"][source]
+            source_fvalues = self.sort_fvalues(self.parse_grapheme(source))
         else:
             source_fvalues = source
 
