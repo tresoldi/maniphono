@@ -29,7 +29,7 @@ class TestUtils(unittest.TestCase):
     def test_read_distance_matrix(self):
         dm = maniphono.read_distance_matrix()
         assert len(dm) == 181
-        self.assertAlmostEqual(dm["a"]["b"], 9.42, places=2)
+        self.assertAlmostEqual(dm["a"]["b"], 10.42, places=2)
 
 
 if __name__ == "__main__":

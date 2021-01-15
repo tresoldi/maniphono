@@ -8,7 +8,7 @@ import csv
 import unicodedata
 
 # Pattern for unicode codepoint replacement
-RE_CODEPOINT = re.compile("[Uu]\+[0-9A-Fa-f]{4}")
+RE_CODEPOINT = re.compile("[Uu]+[0-9A-Fa-f]{4}")
 
 # Define regular expression for accepting names
 RE_FEATURE = re.compile(r"^[a-z][-_a-z]*$")
@@ -201,6 +201,6 @@ def startswithset(string, candidates):
     candidates = sorted(candidates, reverse=True, key=lambda s: len(s))
     for cand in candidates:
         if string.startswith(cand):
-            return string[len(cand) :], cand
+            return string[len(cand):], cand
 
     return string, None

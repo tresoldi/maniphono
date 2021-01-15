@@ -175,7 +175,7 @@ class PhonoModel:
                     ]
                 )
                 raise ValueError(
-                    f"At least one description {desc} is used for more than one sound ({at_fault})"
+                    f"`{desc}` is used for more than one sound ({at_fault})"
                 )
 
         # Check for bad fvalue names
@@ -244,8 +244,7 @@ class PhonoModel:
                     modifier.append(val)
                 elif val != best_features[feat]:
                     modifier.append(val)
-            # TODO: use default method
-            modifier = sorted(modifier, key=lambda v: self.fvalues[v]["rank"])
+            modifier = self.sort_fvalues(modifier)
 
             # Add all modifiers as diacritics whenever possible; those without a
             # diacritic are collected in an `expression` list and will be given
@@ -309,7 +308,6 @@ class PhonoModel:
         prev_fvalue = None
         if new_fvalue[0] == "-":
             if new_fvalue[1:] in fvalues:
-                # TODO make sure to return prev_fvalue only if it was there
                 fvalues.discard(new_fvalue[1:])
                 prev_fvalue = new_fvalue[1:]
         else:
@@ -464,7 +462,6 @@ class PhonoModel:
 
         return offending
 
-    # TODO: make sure it accepts lists as well strings
     def fvalues2graphemes(self, fvalues_str, classes=False):
         """
         Collect the set of graphemes in the model that satisfy a list of fvalues.
@@ -521,7 +518,6 @@ class PhonoModel:
 
         return pass_test
 
-    # TODO: parse general graphemes, not only in model
     def minimal_matrix(self, sounds, vector=False):
         """
         Compute the minimal feature matrix for a set of sounds or graphemes.
@@ -583,7 +579,6 @@ class PhonoModel:
 
     # While this method is to a good extend similar to `.minimal_matrix`, it is not
     # reusing its codebase as it would add an unnecessary level of abstraction.
-    # TODO: parse general graphemes, not only in model
     def class_features(self, sounds):
         """
         Compute the class features for a set of graphemes or sounds.
@@ -628,9 +623,7 @@ class PhonoModel:
 
         return features
 
-    # TODO: parse general graphemes, not only in model
-    # TODO: rename binary/categorical
-    def fvalue_vector(self, source, binary=True):
+    def fvalue_vector(self, source, categorical=False):
         """
         Build a vector representation of a sound from its fvalues.
 
@@ -642,8 +635,9 @@ class PhonoModel:
         source : str or list
             Either a string with a grapheme or a feature value tuple for the sound
             to serve as basis for the vector.
-        binary : bool
-            Whether to build a binary vector (default) or a categorical one.
+        categorical : bool
+            Whether to build a categorical vector instead of a binary one
+            (default: `False`).
 
         Return
         ------
@@ -666,7 +660,7 @@ class PhonoModel:
             source_fvalues = source
 
         # Collect vector data in categorical or binary form
-        if not binary:
+        if categorical:
             # First get all features that are set, and later add those that
             # are not set as `None` (it is up to the user to filter them out, if
             # not wanted)
@@ -699,11 +693,10 @@ class PhonoModel:
 
         return features, vector
 
-    # TODO: parse general graphemes, not only in model
-    # TODO: allow used defined group of sounds, not only the model
+    # TODO: allow user defined group of sounds, not only the model
     # TODO: rename to coarsing
     # TODO: optionally allow to use `distance`
-    def closest_grapheme(self, fvalues, classes=True):
+    def closest_grapheme(self, source, classes=True):
         """
         Find the sound in the model that is the closest to a given value tuple.
 
@@ -711,9 +704,9 @@ class PhonoModel:
 
         Parameters
         ----------
-        fvalues : tuple
+        source : tuple or str
             A feature value tuple, usually coming from the `.values` attributed of
-            a sound.
+            a sound,  or a string with a grapheme to be parsed.
         classes : bool
             Whether to allow a grapheme marked as a class to be returned; note that,
             if a grapheme class is passed but `classes` is set to `False`, a different
@@ -727,8 +720,14 @@ class PhonoModel:
             A tuple with the values for the closest match.
         """
 
-        # Check if the grapheme happens to be already in our list, also making sure
-        # the tuple is sorted
+        # Get the features if a grapheme was passed, or, in case of a feature tuple,
+        # check if the corresponding grapheme happens to be already in our
+        # internal list
+        if isinstance(source, str):
+            fvalues = self.parse_grapheme(source)
+        else:
+            fvalues = source
+
         fvalues = self.sort_fvalues(fvalues)
         if fvalues in self._x["fvalues2grapheme"]:
             grapheme = self._x["fvalues2grapheme"][fvalues]
@@ -831,17 +830,13 @@ class PhonoModel:
                 print("Skipping over unmapped [%s] grapheme..." % grapheme)
 
         # Collect (X,y) vectors
-        # TODO: deal with the +1 -- just rebuild table
         X, y = [], []  # pylint: disable=invalid-name
         for grapheme_a in raw_matrix:
             if grapheme_a in vector:
                 for grapheme_b, dist in raw_matrix[grapheme_a].items():
                     if grapheme_b in vector:
                         X.append(vector[grapheme_a] + vector[grapheme_b])
-                        if dist == 0.0:
-                            y.append(dist)
-                        else:
-                            y.append(dist + 1.0)
+                        y.append(dist)
 
         # Train regressor; setting the random value for reproducibility
         np.random.seed(42)

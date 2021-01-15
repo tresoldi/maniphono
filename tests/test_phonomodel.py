@@ -184,7 +184,7 @@ class TestPhonoModel(unittest.TestCase):
         assert fnames[0] == "aspiration_aspirated"
         assert vec[0] is False
 
-        fnames, vec = maniphono.model_mipa.fvalue_vector("a", binary=False)
+        fnames, vec = maniphono.model_mipa.fvalue_vector("a", categorical=True)
         assert len(fnames) == 20
         assert fnames[0] == "aspiration"
         assert vec[0] is None
