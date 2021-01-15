@@ -24,7 +24,7 @@ from .utils import (
     _split_fvalues,
     RE_FEATURE,
     RE_FVALUE,
-    startswithset,
+    match_initial,
 )
 
 # TODO: extend documentation after blog post
@@ -356,7 +356,7 @@ class PhonoModel:
         # the modifiers explicitly listed as value names are consumed at the end.
         base_grapheme = ""
         while grapheme:
-            grapheme, diacritic = startswithset(grapheme, self._x["diacritics"])
+            grapheme, diacritic = match_initial(grapheme, self._x["diacritics"])
             if not diacritic:
                 base_grapheme += grapheme[0]
                 grapheme = grapheme[1:]
@@ -677,9 +677,6 @@ class PhonoModel:
 
         return features, vector
 
-    # TODO: allow user defined group of sounds, not only the model
-    # TODO: rename to coarsing
-    # TODO: optionally allow to use `distance`
     def closest_grapheme(self, source, classes=True):
         """
         Find the sound in the model that is the closest to a given value tuple.
@@ -804,7 +801,7 @@ class PhonoModel:
 
         # Read raw distance data and cache vectors, also allowing to
         # skip over unmapped graphemes
-        # TODO: check why some graphemes are still failing
+        # TODO: some graphemes are failing because of unknown diacritics
         raw_matrix = read_distance_matrix(matrix_file)
         vector = {}
         for grapheme in raw_matrix:
