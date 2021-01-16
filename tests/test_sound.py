@@ -23,6 +23,12 @@ class TestSound(unittest.TestCase):
     Suite of tests for sounds.
     """
 
+    def test_init(self):
+        with self.assertRaises(ValueError):
+            snd = maniphono.Sound(
+                "p", description="voiceless bilabial plosive consonant"
+            )
+
     def test_from_grapheme(self):
         snd1 = maniphono.Sound("p")
         snd2 = maniphono.Sound("a", model=maniphono.model_tresoldi)
@@ -82,6 +88,38 @@ class TestSound(unittest.TestCase):
         snd = maniphono.Sound(description="voiced bilabial aspirated plosive consonant")
         snd -= "aspirated"
         assert str(snd) == "b"
+
+    def test_eq(self):
+        # This also tests the __hash__ method
+        snd1 = maniphono.Sound("p")
+        snd2 = maniphono.Sound(description="voiceless bilabial plosive consonant")
+        snd3 = maniphono.Sound("b")
+
+        assert snd1 == snd2
+        assert snd1 != snd3
+
+    def test_lt_gt(self):
+        snd1 = maniphono.Sound("p")
+        snd2 = snd1 + "aspirated"
+
+        assert snd1 < snd2
+        assert snd1 <= snd2
+        assert snd2 > snd1
+        assert snd2 >= snd1
+
+    def test_feature_dict(self):
+        snd = maniphono.Sound("p")
+        assert tuple(sorted(snd.feature_dict().items())) == (
+            ("manner", "plosive"),
+            ("phonation", "voiceless"),
+            ("place", "bilabial"),
+            ("type", "consonant"),
+        )
+
+    def test_getattr(self):
+        snd = maniphono.Sound("p")
+        assert snd.manner == "plosive"
+        assert snd.height is None
 
     def test_cache(self):
         """
