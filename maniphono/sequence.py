@@ -14,11 +14,32 @@ This module holds the code for the sequence model.
 
 
 class Sequence:
-    def __init__(self, segments):
+    def __init__(self, segments, boundaries=True):
         self.segments = segments
+        self.boundaries = boundaries
+
+        # Initialize index for iteration
+        self._iter_idx = None
 
     def __len__(self):
         return len(self.segments)
 
+    def __iter__(self):
+        self._iter_idx = 0
+        return self
+
+    def __next__(self):
+        if self._iter_idx == len(self.segments):
+            raise StopIteration
+
+        ret = self.segments[self._iter_idx]
+        self._iter_idx += 1
+
+        return ret
+
     def __str__(self):
-        return "[" + " ".join([str(seg) for seg in self.segments]) + "]"
+        graphemes = [str(seg) for seg in self.segments]
+        if self.boundaries:
+            graphemes = ["#"] + graphemes + ["#"]
+
+        return "[" + " ".join(graphemes) + "]"

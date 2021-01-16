@@ -35,22 +35,22 @@ class TestSequence(unittest.TestCase):
         # Test single-sound sequence
         seq1 = maniphono.Sequence([seg1])
         assert len(seq1) == 1
-        assert str(seq1) == "[p]"
+        assert str(seq1) == "[# p #]"
 
         # Test two-sound sequence (without diphthong)
         seq2 = maniphono.Sequence([seg1, seg2])
         assert len(seq2) == 2
-        assert str(seq2) == "[p a]"
+        assert str(seq2) == "[# p a #]"
 
         # Test two-sound sequence (with diphthong)
         seq3 = maniphono.Sequence([seg1, seg3])
         assert len(seq3) == 2
-        assert str(seq3) == "[p a+w]"
+        assert str(seq3) == "[# p a+w #]"
 
         # Test complex sequence
         seq4 = maniphono.Sequence([seg1, seg2, seg1, seg3])
         assert len(seq4) == 4
-        assert str(seq4) == "[p a p a+w]"
+        assert str(seq4) == "[# p a p a+w #]"
 
 
 if __name__ == "__main__":
