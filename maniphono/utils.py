@@ -8,7 +8,7 @@ import csv
 import unicodedata
 
 # Pattern for unicode codepoint replacement
-RE_CODEPOINT = re.compile("[Uu]\+[0-9A-Fa-f]{4}")
+RE_CODEPOINT = re.compile(r"[Uu]\+[0-9A-Fa-f]{4}")
 
 # Define regular expression for accepting names
 RE_FEATURE = re.compile(r"^[a-z][-_a-z]*$")
@@ -54,6 +54,10 @@ def parse_constraints(constraints_str):
         if not re.match(RE_FVALUE, value_name):
             raise ValueError(f"Invalid value name `{value_name}` in constraint")
 
+    # In case of an empty string, there is nothing to parse
+    if not constraints_str:
+        return []
+
     # Obtain all constraints and check for disjunctions
     constraints = []
     for constr_str in _split_fvalues(constraints_str):
@@ -79,10 +83,9 @@ def parse_constraints(constraints_str):
     return constraints
 
 
-# TODO: rename as it is used to split contraints as well
 def _split_fvalues(fvalues):
     """
-    Split a string with multiple feature values.
+    Split a string with multiple feature values or constraints.
 
     This function, intended for internal usage, allows to use different
     delimiters and guarantees that all methods will allow all delimiters.
@@ -191,14 +194,37 @@ def read_distance_matrix(filepath=None):
     return matrix
 
 
-# given a list of `candidates`, returns the one (with a greedy search) that is
-# found at the beginning of the string and the strng itself
-# TODO: rename to something more appropriate and less confusing with Python standard
-# TODO: what if there is an empty string among candidates?
-def startswithset(string, candidates):
-    # sort the candidates by inverse length -- this is a bit expensive computationally,
-    # but it is better to perform it each time to make the function more general
-    candidates = sorted(candidates, reverse=True, key=lambda s: len(s))
+def match_initial(string, candidates):
+    """
+    Returns the longest match at the initial position among a list of candidates.
+
+    The function will check if any candidate among the list is found at the beginning
+    of the string, making sure to match longer candidates first (so that it will
+    match "abc" before "ab").
+
+    Parameters
+    ----------
+    string : str
+        The string to matched at the beginning.
+    candidates : list of str
+        A list of string candidates for initial match. The list does not need to
+        be sorted in any way.
+
+    Return
+    ------
+    string : str
+        The original string stripped of the initial match, if any. If no candidate
+        matched the beginning of the string, it will be a copy of the original one.
+    cand : str or None
+        The candidate that was matched at the beginning of the string, or `None` if
+        no match could be found.
+    """
+
+    # Sort the candidates by inverse length -- this is a bit expensive computationally,
+    # but it is better to perform it each time to make the function more general.
+    # Note that we make sure to remove any empty string inadvertedly passed among the
+    # `candidates`.
+    candidates = sorted([cand for cand in candidates if cand], reverse=True, key=len)
     for cand in candidates:
         if string.startswith(cand):
             return string[len(cand) :], cand

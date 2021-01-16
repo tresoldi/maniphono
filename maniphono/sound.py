@@ -39,8 +39,8 @@ class Sound:
         Initialization method.
         """
 
-        # Initialize the main property, the set of values
-        self.fvalues = set()
+        # Initialize the main property, the tuple of values
+        self.fvalues = tuple()
 
         # Store model (defaulting to MIPA)
         self.model = model or model_mipa
@@ -209,7 +209,7 @@ class Sound:
         Return a hash of the current sound.
         """
 
-        return hash(self.model.sort_values(self.fvalues))
+        return hash(self.model.sort_fvalues(self.fvalues))
 
     def __eq__(self, other):
         """
@@ -224,7 +224,7 @@ class Sound:
         """
 
         other_dict = other.feature_dict()
-        for feature, fvalue in self.feature_dict():
+        for feature, fvalue in self.feature_dict().items():
             if feature not in other_dict:
                 return False
             if other_dict[feature] != fvalue:
@@ -238,13 +238,19 @@ class Sound:
         """
 
         this_dict = self.feature_dict()
-        for feature, fvalue in other.feature_dict():
+        for feature, fvalue in other.feature_dict().items():
             if feature not in this_dict:
                 return False
             if this_dict[feature] != fvalue:
                 return False
 
         return True
+
+    def __le__(self, other):
+        return any([self == other, self < other])
+
+    def __ge__(self, other):
+        return any([self == other, self > other])
 
     def __getattr__(self, feature):
         """
@@ -259,7 +265,7 @@ class Sound:
         """
 
         for fvalue in self.fvalues:
-            if self.model.values[fvalue]["feature"] == feature:
+            if self.model.fvalues[fvalue]["feature"] == feature:
                 return fvalue
 
         return None
