@@ -116,8 +116,8 @@ class TestPhonoModel(unittest.TestCase):
         with self.assertRaises(ValueError):
             maniphono.PhonoModel("G", TEST_DIR / "test_models" / "g")
 
-        # Invalid value name in sound description
-        with self.assertRaises(KeyError):
+        # Invalid fvalue name in sound description
+        with self.assertRaises(ValueError):
             maniphono.PhonoModel("H", TEST_DIR / "test_models" / "h")
 
         # Constraint not met in sound description
@@ -158,6 +158,10 @@ class TestPhonoModel(unittest.TestCase):
         )  # /t/
         assert "manner" not in mtx["voiced", "alveolar", "plosive", "consonant"]  # /d/
 
+        vct = maniphono.model_mipa.minimal_matrix(["t", "d"], vector=True)
+        assert len(vct) == 2
+        assert tuple(vct[0].items()) == (("phonation", "voiceless"),)
+
         mtx = maniphono.model_mipa.minimal_matrix(["t", "d", "s"])
         assert len(mtx) == 3
         assert len(mtx["voiceless", "alveolar", "plosive", "consonant"]) == 2  # /t/
@@ -188,6 +192,26 @@ class TestPhonoModel(unittest.TestCase):
         assert len(fnames) == 20
         assert fnames[0] == "aspiration"
         assert vec[0] is None
+
+    def test_parse_grapheme(self):
+        TESTS = {
+            "a": ("unrounded", "open", "front", "vowel"),
+            "b": ("voiced", "bilabial", "plosive", "consonant"),
+            "p[voiced]": ("voiced", "bilabial", "plosive", "consonant"),
+            "b[voiceless]": ("voiceless", "bilabial", "plosive", "consonant"),
+        }
+        for grapheme, ret in TESTS.items():
+            assert ret == maniphono.model_mipa.parse_grapheme(grapheme)
+
+    def test_str(self):
+        assert (
+            str(maniphono.model_mipa)
+            == "[`mipa` model (20 features, 63 fvalues, 224 graphemes)]"
+        )
+        assert (
+            str(maniphono.model_tresoldi)
+            == "[`tresoldi` model (30 features, 60 fvalues, 570 graphemes)]"
+        )
 
 
 if __name__ == "__main__":

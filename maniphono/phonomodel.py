@@ -151,12 +151,16 @@ class PhonoModel:
         """
 
         # Load the the descriptions as an internal dictionary; we also
-        # normalize the grapheme by default
+        # normalize the grapheme by default; note that here we only sort for
+        # comparison, alphabetically, with the actual rank sorting only performed
+        # at the end if all checks pass
         with open(model_path / "sounds.csv") as csvfile:
             _graphemes = {}
             for row in csv.DictReader(csvfile):
                 grapheme = normalize(row["GRAPHEME"])
-                _graphemes[grapheme] = self.sort_fvalues(row["DESCRIPTION"])
+                _graphemes[grapheme] = self.sort_fvalues(
+                    row["DESCRIPTION"], no_rank=True
+                )
 
                 if row["CLASS"] == "True":
                     self._x["classes"].append(grapheme)
@@ -373,17 +377,24 @@ class PhonoModel:
         # No need to sort, as it is already returned as a sorted tuple by .set_fvalue()
         return fvalues
 
-    def sort_fvalues(self, fvalues):
+    def sort_fvalues(self, fvalues, no_rank=False):
         """
         Sort a list of values according to the model.
 
-        In case of multiple values with the same rank, these are sorted alphabetically.
+        By default, the method sorts by rank first and, in case of multiple values with
+        the same rank, alphabetically later. It is possible to perform a simple
+        alphabetical sorting.
 
         Parameters
         ----------
         fvalues : list or str
             A list (or other iterable) of values or a string description of them. If
             a string is provided, the method will split them in the standard way.
+        no_rank : bool
+            Whether to perform a plain alphabetical sorting, not using the rank
+            information. This is convenient in some cases and better than a simple
+            Python `sorted()` operation as it takes care of splitting strings and
+            accepting both strings and lists (default: `False`).
 
         Return
         ------
@@ -393,6 +404,9 @@ class PhonoModel:
 
         if isinstance(fvalues, str):
             fvalues = _split_fvalues(fvalues)
+
+        if no_rank:
+            return tuple(sorted(fvalues))
 
         return tuple(sorted(fvalues, key=lambda v: (-self.fvalues[v]["rank"], v)))
 
@@ -796,8 +810,7 @@ class PhonoModel:
             if filename.is_file():
                 self._regressor = joblib.load(filename.as_posix())
                 return
-
-            raise ValueError(f"Unable to read regressor from {filename}")
+            raise RuntimeError(f"Unable to read regressor from {filename}")
 
         # Read raw distance data and cache vectors, also allowing to
         # skip over unmapped graphemes
