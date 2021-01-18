@@ -50,6 +50,12 @@ class Sequence:
 
         return "[" + " ".join(graphemes) + "]"
 
+    def __eq__(self, other):
+        return hash(self) == hash(other)
+
+    def __hash__(self):
+        return hash(tuple(self.segments, self.boundaries))
+
 
 # TODO: this is a temporary holder that assumes monosonic segments separated by
 # spaces; a proper parser is later needed for alteruphono

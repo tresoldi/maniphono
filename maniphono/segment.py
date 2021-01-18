@@ -26,6 +26,8 @@ from . import sound
 
 class Segment:
     def __init__(self, sounds, delimiter="+"):
+        self._iter_idx = None
+
         self.delimiter = delimiter
 
         if isinstance(sounds, sound.Sound):
@@ -36,5 +38,53 @@ class Segment:
     def __len__(self):
         return len(self.sounds)
 
+    def __getitem__(self, idx):
+        return self.sounds[idx]
+
+    def __iter__(self):
+        self._iter_idx = 0
+        return self
+
+    def __next__(self):
+        if self._iter_idx == len(self.sounds):
+            raise StopIteration
+
+        ret = self.sounds[self._iter_idx]
+        self._iter_idx += 1
+
+        return ret
+
     def __str__(self):
         return self.delimiter.join([str(snd) for snd in self.sounds])
+
+    def __hash__(self):
+        return hash(tuple(self.sounds))
+
+
+# TODO: holder that only accepts monosonic segments
+def parse_segment(grapheme):
+    # look for negation, if there is one
+    # TODO: use `negate`
+    if grapheme[0] == "!":
+        negate = True
+        grapheme = grapheme[1:]
+    else:
+        negate = False
+
+    ## TODO: temporary holders for complex classes in alteruphno
+    if grapheme == "SVL":
+        return Segment(sound.Sound(description="voiceless plosive consonant"))
+    elif grapheme == "R":  # TODO: how to deal with resonant=-stop?
+        return Segment(sound.Sound(description="fricative consonant"))
+    elif grapheme == "SV":
+        return Segment(sound.Sound(description="voiced plosive consonant"))
+    elif grapheme == "VN":
+        return Segment(sound.Sound(description="nasalized vowel"))
+    elif grapheme == "VL":
+        return Segment(sound.Sound(description="long vowel"))
+    elif grapheme == "CV":
+        return Segment(sound.Sound(description="voiced consonant"))
+
+    grapheme = grapheme.replace("g", "ɡ")
+
+    return Segment(sound.Sound(grapheme))
