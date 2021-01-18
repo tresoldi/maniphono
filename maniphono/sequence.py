@@ -12,6 +12,9 @@ This module holds the code for the sequence model.
 # TODO: add method to syllabify
 # TODO: add suprasegmentals
 
+from .sound import Sound
+from .segment import Segment
+
 
 class Sequence:
     def __init__(self, segments, boundaries=True):
@@ -23,6 +26,9 @@ class Sequence:
 
     def __len__(self):
         return len(self.segments)
+
+    def __getitem__(self, idx):
+        return self.segments[idx]
 
     def __iter__(self):
         self._iter_idx = 0
@@ -43,3 +49,16 @@ class Sequence:
             graphemes = ["#"] + graphemes + ["#"]
 
         return "[" + " ".join(graphemes) + "]"
+
+
+# TODO: this is a temporary holder that assumes monosonic segments separated by
+# spaces; a proper parser is later needed for alteruphono
+def parse_sequence(seq):
+    seq = seq.strip()
+    seq = seq.replace("g", "ɡ")
+
+    segments = []
+    for grapheme in seq.split():
+        segments.append(Segment([Sound(grapheme)]))
+
+    return Sequence(segments)
