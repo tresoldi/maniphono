@@ -326,6 +326,7 @@ class PhonoModel:
         # Sort the new `fvalues`, which also makes sure we return a tuple
         return self.sort_fvalues(fvalues), prev_fvalue
 
+    # TODO: add comment on partially defined
     def parse_grapheme(self, grapheme):
         """
         Parse a grapheme according to the library standard.
@@ -343,7 +344,7 @@ class PhonoModel:
 
         # Used model/cache graphemes if available; it is already a sorted tuple
         if grapheme in self._x["grapheme2fvalues"]:
-            return self._x["grapheme2fvalues"][grapheme]
+            return self._x["grapheme2fvalues"][grapheme], False
 
         # Capture list of modifiers, if any; no need to go full regex
         if "[" in grapheme and grapheme[-1] == "]":
@@ -358,6 +359,8 @@ class PhonoModel:
         # while updating the modifier list, and again add the modifier at the end.
         # Note that diacritics are inserted to the beginning of the list, so that
         # the modifiers explicitly listed as value names are consumed at the end.
+        # TODO: as the diacritics are now defined as single characters, we could just
+        #       iterate over characters
         base_grapheme = ""
         while grapheme:
             grapheme, diacritic = match_initial(grapheme, self._x["diacritics"])
@@ -374,8 +377,15 @@ class PhonoModel:
             check = mod == modifiers[-1]
             fvalues, _ = self.set_fvalue(fvalues, mod, check=check)
 
+        # If the `base_grapheme` is a class, we inform that it is a partially
+        # defined sound
+        if base_grapheme in self._x["classes"]:
+            partial = True
+        else:
+            partial = False
+
         # No need to sort, as it is already returned as a sorted tuple by .set_fvalue()
-        return fvalues
+        return fvalues, partial
 
     def sort_fvalues(self, fvalues, no_rank=False):
         """
@@ -544,9 +554,11 @@ class PhonoModel:
         """
 
         # If source is a collection of strings, assume they are graphemes from
-        # the model; otherwise, just take them as lists of values
+        # the model; otherwise, just take them as lists of values. The [0] indexing
+        # is in place so we only extract the fvalues, discarding information on
+        # sound partial definition
         sounds = [
-            item if not isinstance(item, str) else self.parse_grapheme(item)
+            item if not isinstance(item, str) else self.parse_grapheme(item)[0]
             for item in sounds
         ]
 
@@ -599,9 +611,11 @@ class PhonoModel:
         """
 
         # If source is a collection of strings, assume they are graphemes from
-        # the model; otherwise, just take them as lists of values
+        # the model; otherwise, just take them as lists of values. The [0] indexing
+        # is in place so we only extract the fvalues, discarding information on
+        # sound partial definition
         sounds = [
-            item if not isinstance(item, str) else self.parse_grapheme(item)
+            item if not isinstance(item, str) else self.parse_grapheme(item)[0]
             for item in sounds
         ]
 
@@ -653,7 +667,8 @@ class PhonoModel:
 
         # Get the fvalues from the grapheme if `source` is a string
         if isinstance(source, str):
-            source_fvalues = self.parse_grapheme(source)
+            # [0] to discard information on partial definition
+            source_fvalues = self.parse_grapheme(source)[0]
         else:
             source_fvalues = source
 
@@ -719,7 +734,8 @@ class PhonoModel:
         # check if the corresponding grapheme happens to be already in our
         # internal list
         if isinstance(source, str):
-            fvalues = self.parse_grapheme(source)
+            # [0] to discard information of partial definition
+            fvalues = self.parse_grapheme(source)[0]
         else:
             fvalues = source
 

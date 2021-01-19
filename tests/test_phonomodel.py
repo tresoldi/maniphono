@@ -184,7 +184,7 @@ class TestPhonoModel(unittest.TestCase):
     # TODO: add test with other models
     def test_value_vector(self):
         fnames, vec = maniphono.model_mipa.fvalue_vector("a")
-        assert len(fnames) == 63
+        assert len(fnames) == 64
         assert fnames[0] == "aspiration_aspirated"
         assert vec[0] is False
 
@@ -200,13 +200,15 @@ class TestPhonoModel(unittest.TestCase):
             "p[voiced]": ("voiced", "bilabial", "plosive", "consonant"),
             "b[voiceless]": ("voiceless", "bilabial", "plosive", "consonant"),
         }
-        for grapheme, ret in TESTS.items():
-            assert ret == maniphono.model_mipa.parse_grapheme(grapheme)
+        for grapheme, ref in TESTS.items():
+            ret, partial = maniphono.model_mipa.parse_grapheme(grapheme)
+            assert ref == ret
+            assert partial is False
 
     def test_str(self):
         assert (
             str(maniphono.model_mipa)
-            == "[`mipa` model (20 features, 63 fvalues, 224 graphemes)]"
+            == "[`mipa` model (20 features, 64 fvalues, 224 graphemes)]"
         )
         assert (
             str(maniphono.model_tresoldi)

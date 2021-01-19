@@ -6,6 +6,8 @@ Module for Sound abstraction and operations.
 from .phonomodel import model_mipa
 from .utils import _split_fvalues
 
+# TODO: Comment on partially defined sounds
+
 
 class Sound:
     """
@@ -34,13 +36,15 @@ class Sound:
         `phonomodel.model_mipa`).
     """
 
-    def __init__(self, grapheme=None, description=None, model=None):
+    def __init__(self, grapheme=None, description=None, partial=None, model=None):
         """
         Initialization method.
         """
 
-        # Initialize the main property, the tuple of values
+        # Initialize the main property, the tuple of values, and information on
+        # partial sounds
         self.fvalues = tuple()
+        self.partial = partial
 
         # Store model (defaulting to MIPA)
         self.model = model or model_mipa
@@ -50,7 +54,10 @@ class Sound:
         if all([grapheme, description]) or not any([grapheme, description]):
             raise ValueError("Either a `grapheme` or a `description` must be provided.")
         elif grapheme:
-            self.fvalues = self.model.parse_grapheme(grapheme)
+            fvalues, parser_partial = self.model.parse_grapheme(grapheme)
+            self.fvalues = fvalues
+            if self.partial is None:
+                self.partial = parser_partial
         else:
             self.add_fvalues(description)
 
