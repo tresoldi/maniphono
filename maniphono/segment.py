@@ -60,6 +60,12 @@ class Segment:
     def __hash__(self):
         return hash(tuple(self.sounds))
 
+    def __eq__(self, other):
+        return hash(self) == hash(other)
+
+    def __ne__(self,other):
+        return hash(self) != hash(other)
+
 
 # TODO: holder that only accepts monosonic segments
 def parse_segment(grapheme):
