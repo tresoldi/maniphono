@@ -344,7 +344,7 @@ class PhonoModel:
 
         # Used model/cache graphemes if available; it is already a sorted tuple
         if grapheme in self._x["grapheme2fvalues"]:
-            return self._x["grapheme2fvalues"][grapheme], False
+            return self._x["grapheme2fvalues"][grapheme], grapheme in self._x["classes"]
 
         # Capture list of modifiers, if any; no need to go full regex
         if "[" in grapheme and grapheme[-1] == "]":
