@@ -28,9 +28,9 @@ class TestSequence(unittest.TestCase):
         snd3 = maniphono.Sound("w")
 
         # Define the segments that will be used
-        seg1 = maniphono.Segment(snd1)
-        seg2 = maniphono.Segment(snd2)
-        seg3 = maniphono.Segment([snd2, snd3])
+        seg1 = maniphono.SoundSegment(snd1)
+        seg2 = maniphono.SoundSegment(snd2)
+        seg3 = maniphono.SoundSegment([snd2, snd3])
 
         # Test single-sound sequence
         seq1 = maniphono.Sequence([seg1])

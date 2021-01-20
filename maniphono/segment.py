@@ -21,16 +21,25 @@ to behave as a Sound class when it is composed of a single sound.
 # TODO: allow add/sub operations, and most from Sound
 # TODO: should allow gaps? i.e., zero-sounds segments?
 
-from . import sound
+from .sound import Sound
 
 
 class Segment:
-    def __init__(self, sounds, delimiter="+"):
-        self._iter_idx = None
+    def __init__(self):
+        self.type = None
 
-        self.delimiter = delimiter
 
-        if isinstance(sounds, sound.Sound):
+# TODO: different boundaries: start/end/any
+class BoundarySegment(Segment):
+    def __init__(self):
+        self.type = "boundary"
+
+
+class SoundSegment(Segment):
+    def __init__(self, sounds):
+        self.type = "soundsegment"
+
+        if isinstance(sounds, Sound):
             self.sounds = [sounds]
         else:
             self.sounds = sounds
@@ -42,28 +51,29 @@ class Segment:
         return self.sounds[idx]
 
     def __iter__(self):
-        self._iter_idx = 0
-        return self
-
-    def __next__(self):
-        if self._iter_idx == len(self.sounds):
-            raise StopIteration
-
-        ret = self.sounds[self._iter_idx]
-        self._iter_idx += 1
-
-        return ret
+        _iter_idx = 0
+        while _iter_idx < len(self.sounds):
+            yield self.sounds[_iter_idx]
+            _iter_idx += 1
 
     def __str__(self):
-        return self.delimiter.join([str(snd) for snd in self.sounds])
+        return "+".join([str(snd) for snd in self.sounds])
 
     def __hash__(self):
         return hash(tuple(self.sounds))
 
+    # TODO: comment that if self.sounds holds a single sound, and `other` is a sound,
+    # we try to match
     def __eq__(self, other):
+        if len(self.sounds) == 1 and isinstance(other, Sound):
+            return self.sounds[0] == other
+
         return hash(self) == hash(other)
 
     def __ne__(self, other):
+        if len(self.sounds) == 1 and isinstance(other, Sound):
+            return self.sounds[0] != other
+
         return hash(self) != hash(other)
 
 
@@ -79,22 +89,18 @@ def parse_segment(grapheme):
 
     ## TODO: temporary holders for complex classes in alteruphno
     if grapheme == "SVL":
-        return Segment(
-            sound.Sound(description="voiceless plosive consonant", partial=True)
-        )
+        return Segment(Sound(description="voiceless plosive consonant", partial=True))
     elif grapheme == "R":  # TODO: how to deal with resonant=-stop?
-        return Segment(sound.Sound(description="fricative consonant", partial=True))
+        return Segment(Sound(description="fricative consonant", partial=True))
     elif grapheme == "SV":
-        return Segment(
-            sound.Sound(description="voiced plosive consonant", partial=True)
-        )
+        return Segment(Sound(description="voiced plosive consonant", partial=True))
     elif grapheme == "VN":
-        return Segment(sound.Sound(description="nasalized vowel", partial=True))
+        return Segment(Sound(description="nasalized vowel", partial=True))
     elif grapheme == "VL":
-        return Segment(sound.Sound(description="long vowel", partial=True))
+        return Segment(Sound(description="long vowel", partial=True))
     elif grapheme == "CV":
-        return Segment(sound.Sound(description="voiced consonant", partial=True))
+        return Segment(Sound(description="voiced consonant", partial=True))
 
     grapheme = grapheme.replace("g", "ɡ")
 
-    return Segment(sound.Sound(grapheme))
+    return Segment(Sound(grapheme))
