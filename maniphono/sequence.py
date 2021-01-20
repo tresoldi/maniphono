@@ -13,7 +13,7 @@ This module holds the code for the sequence model.
 # TODO: add suprasegmentals
 
 from .sound import Sound
-from .segment import Segment
+from .segment import SoundSegment
 
 
 class Sequence:
@@ -100,6 +100,6 @@ def parse_sequence(seq):
 
     segments = []
     for grapheme in seq.split():
-        segments.append(Segment([Sound(grapheme)]))
+        segments.append(SoundSegment([Sound(grapheme)]))
 
     return Sequence(segments)

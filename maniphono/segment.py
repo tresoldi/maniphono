@@ -89,18 +89,20 @@ def parse_segment(grapheme):
 
     ## TODO: temporary holders for complex classes in alteruphno
     if grapheme == "SVL":
-        return Segment(Sound(description="voiceless plosive consonant", partial=True))
+        return SoundSegment(
+            Sound(description="voiceless plosive consonant", partial=True)
+        )
     elif grapheme == "R":  # TODO: how to deal with resonant=-stop?
-        return Segment(Sound(description="fricative consonant", partial=True))
+        return SoundSegment(Sound(description="fricative consonant", partial=True))
     elif grapheme == "SV":
-        return Segment(Sound(description="voiced plosive consonant", partial=True))
+        return SoundSegment(Sound(description="voiced plosive consonant", partial=True))
     elif grapheme == "VN":
-        return Segment(Sound(description="nasalized vowel", partial=True))
+        return SoundSegment(Sound(description="nasalized vowel", partial=True))
     elif grapheme == "VL":
-        return Segment(Sound(description="long vowel", partial=True))
+        return SoundSegment(Sound(description="long vowel", partial=True))
     elif grapheme == "CV":
-        return Segment(Sound(description="voiced consonant", partial=True))
+        return SoundSegment(Sound(description="voiced consonant", partial=True))
 
     grapheme = grapheme.replace("g", "ɡ")
 
-    return Segment(Sound(grapheme))
+    return SoundSegment(Sound(grapheme))
