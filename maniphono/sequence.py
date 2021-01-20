@@ -13,16 +13,30 @@ This module holds the code for the sequence model.
 # TODO: add suprasegmentals
 
 from .sound import Sound
-from .segment import SoundSegment
+from .segment import SoundSegment, BoundarySegment
 
 
 class Sequence:
     def __init__(self, segments, boundaries=True):
-        self.segments = segments
         self.boundaries = boundaries
 
-        # Initialize index for iteration
-        self._iter_idx = None
+        self.segments = segments
+        self._update()
+
+    # makes sure that, when the list of segments change, boundaries are added/removed
+    # if necessary
+    def _update(self):
+        # self.boundaries can be None
+        if self.boundaries is True:
+            if self.segments[0].type != "boundary":
+                self.segments = [BoundarySegment()] + self.segments
+            if self.segments[-1].type != "boundary":
+                self.segments.append(BoundarySegment())
+        elif self.boundaries is False:
+            if self.segments[0].type == "boundary":
+                self.segments = self.segments[1:]
+            if self.segments[-1].type == "boundary":
+                self.segments = self.segments[:-1]
 
     def __len__(self):
         return len(self.segments)
@@ -30,51 +44,14 @@ class Sequence:
     def __getitem__(self, idx):
         return self.segments[idx]
 
-    # TODO: note that this should be used when there are boundaries
-    def as_list(self):
-        if self.boundaries:
-            return ["#"] + self.segments + ["#"]
-
-        return self.segments
-
     def __iter__(self):
-        # When using boundaries, we start at -1 so to add a boundary mark as the
-        # first element of the iterator
-        if self.boundaries:
-            self._iter_idx = -1
-        else:
-            self._iter_idx = 0
-
-        #       self._iter_idx = 0
-
-        return self
-
-    def __next__(self):
-        # Make sure we correctly deal with boundaries; index=-1 is the first one
-        if self._iter_idx == -1:
-            self._iter_idx = 0
-            return "#"
-
-        if self.boundaries:
-            if self._iter_idx == len(self.segments):
-                self.iter_idx += 1
-                return "#"
-            elif self._iter_idx == len(self.segments) + 1:
-                raise StopIteration
-        else:
-            if self._iter_idx == len(self.segments):
-                raise StopIteration
-
-        # normal operation
-        ret = self.segments[self._iter_idx]
-        self._iter_idx += 1
-
-        return ret
+        _iter_idx = 0
+        while _iter_idx < len(self.segments):
+            yield self.segments[_iter_idx]
+            _iter_idx += 1
 
     def __str__(self):
         graphemes = [str(seg) for seg in self.segments]
-        if self.boundaries:
-            graphemes = ["#"] + graphemes + ["#"]
 
         return "[" + " ".join(graphemes) + "]"
 

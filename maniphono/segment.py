@@ -34,6 +34,9 @@ class BoundarySegment(Segment):
     def __init__(self):
         self.type = "boundary"
 
+    def __str__(self):
+        return "#"
+
 
 class SoundSegment(Segment):
     def __init__(self, sounds):

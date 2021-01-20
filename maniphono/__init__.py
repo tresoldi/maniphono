@@ -15,7 +15,12 @@ from maniphono.phonomodel import (
     model_tresoldi,
 )  # pyflakes.ignore
 from maniphono.sound import Sound  # noqa: F401
-from maniphono.segment import Segment, SoundSegment, parse_segment  # noqa: F401
+from maniphono.segment import (
+    Segment,
+    SoundSegment,
+    BoundarySegment,
+    parse_segment,
+)  # noqa: F401
 from maniphono.sequence import Sequence, parse_sequence  # noqa: F401
 from maniphono.utils import (
     codepoint2glyph,
