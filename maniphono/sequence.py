@@ -30,14 +30,42 @@ class Sequence:
     def __getitem__(self, idx):
         return self.segments[idx]
 
+    # TODO: note that this should be used when there are boundaries
+    def as_list(self):
+        if self.boundaries:
+            return ["#"] + self.segments + ["#"]
+
+        return self.segments
+
     def __iter__(self):
-        self._iter_idx = 0
+        # When using boundaries, we start at -1 so to add a boundary mark as the
+        # first element of the iterator
+        if self.boundaries:
+            self._iter_idx = -1
+        else:
+            self._iter_idx = 0
+
+        #       self._iter_idx = 0
+
         return self
 
     def __next__(self):
-        if self._iter_idx == len(self.segments):
-            raise StopIteration
+        # Make sure we correctly deal with boundaries; index=-1 is the first one
+        if self._iter_idx == -1:
+            self._iter_idx = 0
+            return "#"
 
+        if self.boundaries:
+            if self._iter_idx == len(self.segments):
+                self.iter_idx += 1
+                return "#"
+            elif self._iter_idx == len(self.segments) + 1:
+                raise StopIteration
+        else:
+            if self._iter_idx == len(self.segments):
+                raise StopIteration
+
+        # normal operation
         ret = self.segments[self._iter_idx]
         self._iter_idx += 1
 
@@ -55,6 +83,13 @@ class Sequence:
 
     def __hash__(self):
         return hash(tuple(self.segments, self.boundaries))
+
+    # TODO: deal with differences in boundaries
+    def __add__(self, material):
+        if isinstance(material, Sequence):
+            self.segments += material.segments
+
+        self.segments.append(material)
 
 
 # TODO: this is a temporary holder that assumes monosonic segments separated by
