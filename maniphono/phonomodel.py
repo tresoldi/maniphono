@@ -192,8 +192,7 @@ class PhonoModel:
         # constraints are met
         for grapheme, fvalues in _graphemes.items():
             # Check the grapheme constraints; we can adopt the walrus operator later
-            failed = self.fail_constraints(fvalues)
-            if failed:
+            if failed := self.fail_constraints(fvalues):
                 raise ValueError(f"/{grapheme}/ fails constraint check on {failed}")
 
             # Update the internal catalog
@@ -326,7 +325,6 @@ class PhonoModel:
         # Sort the new `fvalues`, which also makes sure we return a tuple
         return self.sort_fvalues(fvalues), prev_fvalue
 
-    # TODO: add comment on partially defined
     def parse_grapheme(self, grapheme):
         """
         Parse a grapheme according to the library standard.
@@ -340,6 +338,14 @@ class PhonoModel:
         ------
         fvalues : set
             A set with the feature values from the parsed grapheme.
+        partial : bool
+            A boolean indicating whether the grapheme should be consider the
+            representation of a partiallly defined sound (i.e., a sound class), like
+            for "C" in most models. This information is currently obtained from the
+            `self._x["classes"]` internal structure. Note that, while the information
+            is always returned, it is up to the calling function (usually the
+            homonymous `.parse_grapheme()` method of the `Sound` class) to decide
+            whether and how to use this information.
         """
 
         # Used model/cache graphemes if available; it is already a sorted tuple
@@ -377,15 +383,8 @@ class PhonoModel:
             check = mod == modifiers[-1]
             fvalues, _ = self.set_fvalue(fvalues, mod, check=check)
 
-        # If the `base_grapheme` is a class, we inform that it is a partially
-        # defined sound
-        if base_grapheme in self._x["classes"]:
-            partial = True
-        else:
-            partial = False
-
         # No need to sort, as it is already returned as a sorted tuple by .set_fvalue()
-        return fvalues, partial
+        return fvalues, base_grapheme in self._x["classes"]
 
     def sort_fvalues(self, fvalues, no_rank=False):
         """

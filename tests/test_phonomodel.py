@@ -208,7 +208,7 @@ class TestPhonoModel(unittest.TestCase):
     def test_str(self):
         assert (
             str(maniphono.model_mipa)
-            == "[`mipa` model (20 features, 64 fvalues, 224 graphemes)]"
+            == "[`mipa` model (20 features, 64 fvalues, 226 graphemes)]"
         )
         assert (
             str(maniphono.model_tresoldi)

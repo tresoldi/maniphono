@@ -6,8 +6,6 @@ Module for Sound abstraction and operations.
 from .phonomodel import model_mipa
 from .utils import _split_fvalues
 
-# TODO: Comment on partially defined sounds
-
 
 class Sound:
     """
@@ -31,6 +29,13 @@ class Sound:
         A string with a list of feature values separated by one of the accepted
         delimiters.
         Either a `grapheme` or a `description` can be provided for initialization.
+    partial : bool
+        A boolean indicating whether the sound should be considered a partially
+        defined one. Partially defined sounds (in most cases, the equivalent of
+        "sound classes") work differently in terms of comparison, and might be used
+        differently by the user. The argument defaults to `None`, indicating that
+        the user should decide how to treat sounds when there is not explicit
+        information on them being partially defined or not.
     model : PhonoModel
         A phonological model in the `PhonoModel` class (default:
         `phonomodel.model_mipa`).
@@ -42,7 +47,9 @@ class Sound:
         """
 
         # Initialize the main property, the tuple of values, and information on
-        # partial sounds
+        # partial sounds. By default, `partial` will be `None`; if a sound initialized
+        # with a `description` is supposed to be a partial one, this must explicitly
+        # informed by the user
         self.fvalues = tuple()
         self.partial = partial
 
@@ -50,12 +57,14 @@ class Sound:
         self.model = model or model_mipa
 
         # Either a description or a grapheme must be provided
-        # # pylint: disable=no-else-raise
         if all([grapheme, description]) or not any([grapheme, description]):
             raise ValueError("Either a `grapheme` or a `description` must be provided.")
-        elif grapheme:
-            fvalues, parser_partial = self.model.parse_grapheme(grapheme)
-            self.fvalues = fvalues
+
+        if grapheme:
+            # Set the new `.fvalues` and, if it does not override a user-provided one,
+            # the information on partially that mostly comes from a `class` attribute
+            # in the sound list of the model
+            self.fvalues, parser_partial = self.model.parse_grapheme(grapheme)
             if self.partial is None:
                 self.partial = parser_partial
         else:
@@ -127,10 +136,8 @@ class Sound:
         replaced = [fvalue for fvalue in replaced if fvalue]
 
         # Run a check if so requested (default)
-        if check:
-            offending = self.model.fail_constraints(self.fvalues)
-            if offending:
-                raise ValueError(f"At least one constraint unsatisfied by {offending}")
+        if check and (offending := self.model.fail_constraints(self.fvalues)):
+            raise ValueError(f"At least one constraint unsatisfied by {offending}")
 
         return replaced
 
@@ -190,6 +197,7 @@ class Sound:
 
         return self.grapheme()
 
+    # TODO: decide what to do with `.partial`
     def __add__(self, other):
         """
         Overload the `+` operator.
@@ -200,6 +208,7 @@ class Sound:
 
         return snd
 
+    # TODO: decide what to do with `.partial`
     def __sub__(self, other):
         """
         Overload the `-` operator.
@@ -211,6 +220,7 @@ class Sound:
 
         return Sound(description=" ".join(fvalues), model=self.model)
 
+    # TODO: decide what to do with `.partial`, as this will interfere also with <= and >=
     def __hash__(self):
         """
         Return a hash of the current sound.
@@ -218,6 +228,7 @@ class Sound:
 
         return hash(self.model.sort_fvalues(self.fvalues))
 
+    # TODO: decide what to do with `.partial`, as this will interfere also with <= and >=
     def __eq__(self, other):
         """
         Compare two sounds in terms of their fvalues.
