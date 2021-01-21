@@ -53,7 +53,7 @@ class Sequence:
     def __str__(self):
         graphemes = [str(seg) for seg in self.segments]
 
-        return "[" + " ".join(graphemes) + "]"
+        return " ".join(graphemes)
 
     def __eq__(self, other):
         return hash(self) == hash(other)
@@ -61,17 +61,16 @@ class Sequence:
     def __hash__(self):
         return hash(tuple(self.segments, self.boundaries))
 
-    # TODO: deal with differences in boundaries
     def __add__(self, material):
         if isinstance(material, Sequence):
             self.segments += material.segments
-
-        self.segments.append(material)
+        else:
+            self.segments.append(material)
 
 
 # TODO: this is a temporary holder that assumes monosonic segments separated by
 # spaces; a proper parser is later needed for alteruphono
-def parse_sequence(seq):
+def parse_sequence(seq, boundaries=True):
     seq = seq.strip()
     seq = seq.replace("g", "ɡ")
 
@@ -79,4 +78,4 @@ def parse_sequence(seq):
     for grapheme in seq.split():
         segments.append(SoundSegment([Sound(grapheme)]))
 
-    return Sequence(segments)
+    return Sequence(segments, boundaries=boundaries)

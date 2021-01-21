@@ -28,6 +28,13 @@ class Segment:
     def __init__(self):
         self.type = None
 
+    # Each subclass with implement it, if necessary
+    def add_fvalues(self, fvalues):
+        pass
+
+    def __repr__(self):
+        return f"{self.type}:{str(self)}"
+
 
 # TODO: different boundaries: start/end/any
 class BoundarySegment(Segment):
@@ -44,8 +51,14 @@ class SoundSegment(Segment):
 
         if isinstance(sounds, Sound):
             self.sounds = [sounds]
+        elif isinstance(sounds, str):  # TODO: assume it is a grpaheme, good enoguh?
+            self.sounds = [Sound("a")]
         else:
             self.sounds = sounds
+
+    def add_fvalues(self, fvalues):
+        if len(self.sounds) == 1:
+            self.sounds[0].add_fvalues(fvalues)
 
     def __len__(self):
         return len(self.sounds)

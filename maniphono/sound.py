@@ -101,6 +101,7 @@ class Sound:
 
         return prev_fvalue
 
+    # TODO: rename to set_fvalues?
     def add_fvalues(self, fvalues, check=True):
         """
         Add multiple feature values to the sound.
@@ -123,6 +124,10 @@ class Sound:
             A list of strings with the feature values that were replaced, in no
             particular order.
         """
+
+        # If `fvalues` is empty, just return
+        if not fvalues:
+            return []
 
         # If `fvalues` is a string, we assume it is space-separated list of
         # feature values, which can preprocess. Note that this allows to use a

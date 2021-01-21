@@ -294,6 +294,7 @@ class PhonoModel:
 
         # If the feature value is already set, not need to do the whole operation,
         # including clearing the cache, so just return to confirm
+        # TODO: check how this performs with `-` and `+` leading chars
         if new_fvalue in fvalues:
             return fvalues, new_fvalue
 
@@ -306,6 +307,10 @@ class PhonoModel:
                 prev_fvalue = new_fvalue[1:]
                 fvalues = [fv for fv in fvalues if fv != prev_fvalue]
         else:
+            # Remove the implied `+`, if present
+            if new_fvalue[0] == "+":
+                new_fvalue = new_fvalue[1:]
+
             # Get the feature related to the value, cache its previous value (if any),
             # and remove it; we set `idx` to `None` in the beginning to avoid
             # false positives of non-initialization
