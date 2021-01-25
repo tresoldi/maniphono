@@ -26,4 +26,6 @@ from maniphono.utils import (
     codepoint2glyph,
     replace_codepoints,
     read_distance_matrix,
+    parse_constraints,
+    _split_fvalues,
 )  # pyflakes.ignore

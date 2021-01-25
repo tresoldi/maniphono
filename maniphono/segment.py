@@ -92,6 +92,13 @@ class SoundSegment(Segment):
 
         return hash(self) != hash(other)
 
+    def __add__(self, modifier):
+        # TODO: work on multisonic segments
+        if len(self.sounds) != 1:
+            raise ValueError("more than one sound")
+
+        self.sounds[0] += modifier
+
 
 # TODO: holder that only accepts monosonic segments
 def parse_segment(grapheme):
