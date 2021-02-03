@@ -186,7 +186,7 @@ def read_distance_matrix(filepath=None):
         filepath = filepath.as_posix()
 
     matrix = {}
-    with open(filepath) as tsvfile:
+    with open(filepath, encoding="utf-8") as tsvfile:
         for row in csv.DictReader(tsvfile, delimiter="\t"):
             grapheme = row.pop("GRAPHEME")
             matrix[grapheme] = {gr: float(dist) for gr, dist in row.items()}
