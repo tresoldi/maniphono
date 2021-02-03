@@ -208,7 +208,7 @@ class Sound:
         Overload the `+` operator.
         """
 
-        snd = Sound(description=self.fvalues, model=self.model)
+        snd = Sound(description=self.fvalues, partial=self.partial, model=self.model)
         snd.add_fvalues(other)
 
         return snd
