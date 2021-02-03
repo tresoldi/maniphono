@@ -87,7 +87,7 @@ class PhonoModel:
         """
 
         # Parse file with feature definitions
-        with open(model_path / "model.csv") as csvfile:
+        with open(model_path / "model.csv", encoding="utf-8") as csvfile:
             for row in csv.DictReader(csvfile):
                 # Extract and clean strings as much as we can
                 feature = row["FEATURE"].strip()
@@ -154,7 +154,7 @@ class PhonoModel:
         # normalize the grapheme by default; note that here we only sort for
         # comparison, alphabetically, with the actual rank sorting only performed
         # at the end if all checks pass
-        with open(model_path / "sounds.csv") as csvfile:
+        with open(model_path / "sounds.csv", encoding="utf-8") as csvfile:
             _graphemes = {}
             for row in csv.DictReader(csvfile):
                 grapheme = normalize(row["GRAPHEME"])
