@@ -5,7 +5,7 @@ from setuptools import setup, find_packages
 LOCAL_PATH = pathlib.Path(__file__).parent
 
 # The text of the README file
-README_FILE = (LOCAL_PATH / "README.md").read_text()
+README_FILE = (LOCAL_PATH / "README.md").read_text(encoding="utf-8")
 
 
 # Load requirements, so they are listed in a single place
