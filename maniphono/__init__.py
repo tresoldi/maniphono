@@ -21,7 +21,7 @@ from maniphono.segment import (
     BoundarySegment,
     parse_segment,
 )  # noqa: F401
-from maniphono.sequence import Sequence, parse_sequence  # noqa: F401
+from maniphono.segsequence import SegSequence, parse_sequence  # noqa: F401
 from maniphono.utils import (
     codepoint2glyph,
     replace_codepoints,

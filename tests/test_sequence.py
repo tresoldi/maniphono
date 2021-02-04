@@ -5,7 +5,7 @@
 test_sequence
 =============
 
-Tests for the Sequence class of the `maniphono` package.
+Tests for the SegSequence class of the `maniphono` package.
 """
 
 # Import Python libraries
@@ -33,22 +33,22 @@ class TestSequence(unittest.TestCase):
         seg3 = maniphono.SoundSegment([snd2, snd3])
 
         # Test single-sound sequence
-        seq1 = maniphono.Sequence([seg1])
+        seq1 = maniphono.SegSequence([seg1])
         assert len(seq1) == 3 # TODO: should really include boundaries?
         assert str(seq1) == "# p #"
 
         # Test two-sound sequence (without diphthong)
-        seq2 = maniphono.Sequence([seg1, seg2])
+        seq2 = maniphono.SegSequence([seg1, seg2])
         assert len(seq2) == 4
         assert str(seq2) == "# p a #"
 
         # Test two-sound sequence (with diphthong)
-        seq3 = maniphono.Sequence([seg1, seg3])
+        seq3 = maniphono.SegSequence([seg1, seg3])
         assert len(seq3) == 4
         assert str(seq3) == "# p a+w #"
 
         # Test complex sequence
-        seq4 = maniphono.Sequence([seg1, seg2, seg1, seg3])
+        seq4 = maniphono.SegSequence([seg1, seg2, seg1, seg3])
         assert len(seq4) == 6
         assert str(seq4) == "# p a p a+w #"
 

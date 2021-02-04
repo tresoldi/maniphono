@@ -329,7 +329,7 @@ class PhonoModel:
         whether and how to use this information.
 
         @param grapheme: A graphemic representation to be parsed.
-        @return: The first element of the tuple is a Sequence with the feature values from the parsed grapheme. The
+        @return: The first element of the tuple is a SegSequence with the feature values from the parsed grapheme. The
             second element is a boolean indicating whether the grapheme should be consider the
             representation of a partially defined sound (i.e., a sound class).
         """

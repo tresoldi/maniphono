@@ -21,6 +21,8 @@ to behave as a Sound class when it is composed of a single sound.
 # TODO: allow add/sub operations, and most from Sound
 # TODO: should allow gaps? i.e., zero-sounds segments?
 
+from typing import Union, List
+
 from .sound import Sound
 
 
@@ -32,38 +34,43 @@ class Segment:
     def add_fvalues(self, fvalues):
         pass
 
-    def __repr__(self):
+    def __repr__(self) -> str:
         return f"{self.type}:{str(self)}"
 
 
 # TODO: different boundaries: start/end/any
+# TODO: rename type to "boundarysegment"
 class BoundarySegment(Segment):
     def __init__(self):
+        super().__init__()
         self.type = "boundary"
 
-    def __str__(self):
+    def __str__(self) -> str:
         return "#"
 
 
 class SoundSegment(Segment):
-    def __init__(self, sounds):
+    def __init__(self, sounds: Union[str, Sound, List[Sound]]):
+        super().__init__()
         self.type = "soundsegment"
 
         if isinstance(sounds, Sound):
             self.sounds = [sounds]
-        elif isinstance(sounds, str):  # TODO: assume it is a grpaheme, good enoguh?
-            self.sounds = [Sound("a")]
+        elif isinstance(sounds, str):
+            # TODO: this currently assumes that, if a string, `sounds` carry a single grapheme; a parser using
+            # long matches is necessary for more complex situations
+            self.sounds = [Sound(sounds)]
         else:
             self.sounds = sounds
 
-    def add_fvalues(self, fvalues):
+    def add_fvalues(self, fvalues: Union[str, list]):
         if len(self.sounds) == 1:
-            self.sounds[0].add_fvalues(fvalues)
+            self.sounds[0].set_fvalues(fvalues)
 
-    def __len__(self):
+    def __len__(self) -> int:
         return len(self.sounds)
 
-    def __getitem__(self, idx):
+    def __getitem__(self, idx) -> Sound:
         return self.sounds[idx]
 
     def __iter__(self):
@@ -72,7 +79,7 @@ class SoundSegment(Segment):
             yield self.sounds[_iter_idx]
             _iter_idx += 1
 
-    def __str__(self):
+    def __str__(self) -> str:
         return "+".join([str(snd) for snd in self.sounds])
 
     def __hash__(self):
@@ -80,13 +87,13 @@ class SoundSegment(Segment):
 
     # TODO: comment that if self.sounds holds a single sound, and `other` is a sound,
     # we try to match
-    def __eq__(self, other):
+    def __eq__(self, other) -> bool:
         if len(self.sounds) == 1 and isinstance(other, Sound):
             return self.sounds[0] == other
 
         return hash(self) == hash(other)
 
-    def __ne__(self, other):
+    def __ne__(self, other) -> bool:
         if len(self.sounds) == 1 and isinstance(other, Sound):
             return self.sounds[0] != other
 
@@ -97,11 +104,15 @@ class SoundSegment(Segment):
         if len(self.sounds) != 1:
             raise ValueError("more than one sound")
 
-        self.sounds[0] += modifier
+        new_sound = self.sounds[0] + modifier
+        return SoundSegment(new_sound)
 
 
 # TODO: holder that only accepts monosonic segments
-def parse_segment(grapheme):
+def parse_segment(grapheme) -> Segment:
+    if grapheme == "#":
+        return BoundarySegment
+
     # look for negation, if there is one
     # TODO: use `negate`
     if grapheme[0] == "!":
@@ -110,7 +121,7 @@ def parse_segment(grapheme):
     else:
         negate = False
 
-    ## TODO: temporary holders for complex classes in alteruphno
+    # TODO: temporary holders for complex classes in alteruphno
     if grapheme == "SVL":
         return SoundSegment(
             Sound(description="voiceless plosive consonant", partial=True)

@@ -2,6 +2,8 @@
 Module for Sound abstraction and operations.
 """
 
+from typing import Optional, Union
+
 # Import local modules
 from .phonomodel import model_mipa
 from .utils import split_fvalues_str
@@ -68,9 +70,9 @@ class Sound:
             if self.partial is None:
                 self.partial = parser_partial
         else:
-            self.add_fvalues(description)
+            self.set_fvalues(description)
 
-    def set_fvalue(self, fvalue, check=True):
+    def set_fvalue(self, fvalue: str, check: bool = True) -> Optional[str]:
         """
         Set a single feature value to the sound.
 
@@ -80,18 +82,10 @@ class Sound:
         This method works as a convenient wrapper to the equivalent method in
         `PhonoModel`.
 
-        Parameters
-        ----------
-        fvalue : str
-            The feature value to be added to the sound.
-        check : bool
-            Whether to run constraints check after adding the new feature
+        @param fvalue: The feature value to be added to the sound.
+        @param check: Whether to run constraints check after adding the new feature
             value (default: True).
-
-        Returns
-        -------
-        prev_value : str or None
-            The previous feature value for the feature, in case it was replaced, or
+        @return: The previous feature value for the feature, in case it was replaced, or
             None, in case no replacement happened. If the method is called to add a
             feature value which is already set, it will be returned as well
             (indicating that there was already a value for the corresponding feature).
@@ -101,27 +95,18 @@ class Sound:
 
         return prev_fvalue
 
-    # TODO: rename to set_fvalues?
-    def add_fvalues(self, fvalues, check=True):
+    def set_fvalues(self, fvalues: Union[str, list], check: bool = True) -> list:
         """
         Add multiple feature values to the sound.
 
         The method will remove all conflicting feature values before setting the new
-        ones. The method acts as a wrapper to `.add_value()`
+        ones. The method acts as a wrapper to `.set_fvalue()`
 
-        Parameters
-        ----------
-        fvalues : list or str
-            A list of strings with the feature values to be added to the sound, a string
+        @param fvalues: A list of strings with the feature values to be added to the sound, a string
             with values separated by the delimiters specified in `_split_values()`.
-        check : bool
-            Whether to run constraint checks after adding the new feature values
+        @param check: Whether to run constraint checks after adding the new feature values
             (default: True).
-
-        Returns
-        -------
-        replaced : list
-            A list of strings with the feature values that were replaced, in no
+        @return: A list of strings with the feature values that were replaced, in no
             particular order.
         """
 
@@ -137,41 +122,40 @@ class Sound:
 
         # Add all fvalues, collecting the replacements which are stripped of `None`s;
         # note that we don't run checks here, but only after all values have been added
-        replaced = [self.set_fvalue(fvalue, check=False) for fvalue in fvalues]
-        replaced = [fvalue for fvalue in replaced if fvalue]
+        replaced = []
+        for fvalue in fvalues:
+            rep = self.set_fvalue(fvalue, check=False)
+            if rep:
+                replaced.append(rep)
 
         # Run a check if so requested (default)
-        if check and (offending := self.model.fail_constraints(self.fvalues)):
-            raise ValueError(f"At least one constraint unsatisfied by {offending}")
+        if check:
+            offending = self.model.fail_constraints(self.fvalues)
+            if offending:
+                raise ValueError(f"At least one constraint unsatisfied by {offending}")
 
         return replaced
 
-    def grapheme(self):
+    def grapheme(self) -> str:
         """
         Return a graphemic representation of the current sound.
 
-        Return
-        ------
-        grapheme : str
-            A string withthe graphemic representation of the sound.
+        @return: A string withthe graphemic representation of the sound.
         """
 
         return self.model.build_grapheme(self.fvalues)
 
-    def feature_dict(self):
+    def feature_dict(self) -> dict:
         """
         Return a dictionary of features and feature values that are defined.
 
-        Return
-        ------
-        fdict : dict
-            A dictionary of all feature values that are defined for the current sound,
+        @return: A dictionary of all feature values that are defined for the current sound,
             with features as keys and feature values as values.
         """
 
         return self.model.feature_dict(self.fvalues)
 
-    def __repr__(self):
+    def __repr__(self) -> str:
         """
         Return a representation with full name values.
 
@@ -179,25 +163,19 @@ class Sound:
         feature value rank first and, in case of feature values with equal ranks,
         alphabetically second.
 
-        Return
-        ------
-        r : str
-            A string with a representation of the current sound.
+        @return: A string with a representation of the current sound.
         """
 
         return " ".join(self.model.sort_fvalues(self.fvalues))
 
-    def __str__(self):
+    def __str__(self) -> str:
         """
         Return a graphemic representation of the sound.
 
         By design, the `str()` command will return the same value of the
         `.grapheme()` method.
 
-        Return
-        ------
-        s : str
-            A string with the graphemic representation of the sound.
+        @return: A string with a representation of the current sound.
         """
 
         return self.grapheme()
@@ -208,8 +186,10 @@ class Sound:
         Overload the `+` operator.
         """
 
-        snd = Sound(description=self.fvalues, partial=self.partial, model=self.model)
-        snd.add_fvalues(other)
+        # The [:] syntax guarantees we make a copy of self.fvalues if it is a list
+        # TODO: call the phonomodel on a copy of self.values and set that to the new Sound
+        snd = Sound(description=self.fvalues[:], partial=self.partial, model=self.model)
+        snd.set_fvalues(other)
 
         return snd
 
@@ -223,7 +203,7 @@ class Sound:
             fvalue for fvalue in self.fvalues if fvalue not in split_fvalues_str(other)
         ]
 
-        return Sound(description=" ".join(fvalues), model=self.model)
+        return Sound(description=" ".join(fvalues), partial=self.partial, model=self.model)
 
     # TODO: decide what to do with `.partial`, as this will interfere also with <= and >=
     def __hash__(self):
@@ -234,14 +214,14 @@ class Sound:
         return hash(self.model.sort_fvalues(self.fvalues))
 
     # TODO: decide what to do with `.partial`, as this will interfere also with <= and >=
-    def __eq__(self, other):
+    def __eq__(self, other) -> bool:
         """
         Compare two sounds in terms of their fvalues.
         """
 
         return hash(self) == hash(other)
 
-    def __lt__(self, other):
+    def __lt__(self, other) -> bool:
         """
         Checks if the fvalues of the current sound are a subset of the other.
         """
@@ -255,7 +235,7 @@ class Sound:
 
         return True
 
-    def __gt__(self, other):
+    def __gt__(self, other) -> bool:
         """
         Checks if the fvalues of the current sound are a superset of the other.
         """
@@ -269,10 +249,10 @@ class Sound:
 
         return True
 
-    def __le__(self, other):
+    def __le__(self, other) -> bool:
         return any([self == other, self < other])
 
-    def __ge__(self, other):
+    def __ge__(self, other) -> bool:
         return any([self == other, self > other])
 
     def __getattr__(self, feature):

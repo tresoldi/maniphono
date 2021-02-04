@@ -12,19 +12,27 @@ This module holds the code for the sequence model.
 # TODO: add method to syllabify
 # TODO: add suprasegmentals
 
+from typing import List
+
+from .segment import Segment, SoundSegment, BoundarySegment
 from .sound import Sound
-from .segment import SoundSegment, BoundarySegment
 
 
-class Sequence:
-    def __init__(self, segments, boundaries=True):
-        self.boundaries = boundaries
+class SegSequence:
+    def __init__(self, segments: List[Segment], boundaries: bool = True):
+        """
+        @param segments:
+        @param boundaries:
+        """
 
         self.segments = segments
+        self.boundaries = boundaries
+
         self._update()
 
     # makes sure that, when the list of segments change, boundaries are added/removed
     # if necessary
+    # TODO: could return a boolean on whether it was changed
     def _update(self):
         # self.boundaries can be None
         if self.boundaries is True:
@@ -38,10 +46,10 @@ class Sequence:
             if self.segments[-1].type == "boundary":
                 self.segments = self.segments[:-1]
 
-    def __len__(self):
+    def __len__(self) -> int:
         return len(self.segments)
 
-    def __getitem__(self, idx):
+    def __getitem__(self, idx) -> Segment:
         return self.segments[idx]
 
     def __iter__(self):
@@ -50,22 +58,23 @@ class Sequence:
             yield self.segments[_iter_idx]
             _iter_idx += 1
 
-    def __str__(self):
+    def __str__(self) -> str:
         graphemes = [str(seg) for seg in self.segments]
 
         return " ".join(graphemes)
 
-    def __eq__(self, other):
+    def __eq__(self, other) -> bool:
         return hash(self) == hash(other)
 
     def __hash__(self):
-        return hash(tuple(self.segments, self.boundaries))
+        return hash(tuple(self.segments)) ^ hash(self.boundaries)
 
-    def __add__(self, material):
-        if isinstance(material, Sequence):
-            self.segments += material.segments
+    # TODO: make sure it is a copy
+    def __add__(self, other):
+        if isinstance(other, SegSequence):
+            self.segments += other.segments
         else:
-            self.segments.append(material)
+            self.segments.append(other)
 
 
 # TODO: this is a temporary holder that assumes monosonic segments separated by
@@ -78,4 +87,4 @@ def parse_sequence(seq, boundaries=True):
     for grapheme in seq.split():
         segments.append(SoundSegment([Sound(grapheme)]))
 
-    return Sequence(segments, boundaries=boundaries)
+    return SegSequence(segments, boundaries=boundaries)
