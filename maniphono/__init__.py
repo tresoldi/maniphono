@@ -27,5 +27,5 @@ from maniphono.utils import (
     replace_codepoints,
     read_distance_matrix,
     parse_constraints,
-    _split_fvalues,
+    split_fvalues_str,
 )  # pyflakes.ignore

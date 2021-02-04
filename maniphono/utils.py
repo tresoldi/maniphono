@@ -2,10 +2,11 @@
 Utility functions for `maniphono`.
 """
 
-from pathlib import Path
-import re
 import csv
+import re
 import unicodedata
+from pathlib import Path
+from typing import List
 
 # Pattern for unicode codepoint replacement
 RE_CODEPOINT = re.compile(r"[Uu]\+[0-9A-Fa-f]{4}")
@@ -15,7 +16,7 @@ RE_FEATURE = re.compile(r"^[a-z][-_a-z]*$")
 RE_FVALUE = re.compile(r"^[a-z][-_a-z]*$")
 
 
-def normalize(grapheme):
+def normalize(grapheme: str) -> str:
     """
     Normalize the string representation of a grapheme.
 
@@ -23,22 +24,14 @@ def normalize(grapheme):
     any leading and trailing white spaces. As these might change in the future, it
     is suggested to always use this functions instead of reimplementing it in code.
 
-    Parameters
-    ----------
-    grapheme : str
-        The grapheme to be normalized.
-
-    Return
-    ------
-    grapheme : str
-        The normalized version of the grapheme.
+    @param grapheme: The grapheme to be normalized.
+    @return: The normalized version of the grapheme.
     """
 
     return unicodedata.normalize("NFD", grapheme).strip()
 
 
-# TODO: extend documentation
-def parse_constraints(constraints_str):
+def parse_constraints(constraints_str: str) -> list:
     """
     Parses a string of constraints into a constraint structure.
     """
@@ -60,7 +53,8 @@ def parse_constraints(constraints_str):
 
     # Obtain all constraints and check for disjunctions
     constraints = []
-    for constr_str in _split_fvalues(constraints_str):
+    for constr_str in split_fvalues_str(constraints_str):
+        # Collect each constraint group
         constr_group = []
         for constr in constr_str.split("|"):
             if constr[0] in "-!":
@@ -73,7 +67,6 @@ def parse_constraints(constraints_str):
                 _assert_valid_name(constr)
                 constr_group.append({"type": "presence", "fvalue": constr})
 
-        # Collect constraint group
         constraints.append(constr_group)
 
     # Check for duplicates/inconsistencies
@@ -83,7 +76,7 @@ def parse_constraints(constraints_str):
     return constraints
 
 
-def _split_fvalues(fvalues):
+def split_fvalues_str(fvalues: str) -> list:
     """
     Split a string with multiple feature values or constraints.
 
@@ -113,7 +106,7 @@ def _split_fvalues(fvalues):
     return fvalues.split()
 
 
-def codepoint2glyph(codepoint):
+def codepoint2glyph(codepoint: str) -> str:
     """
     Convert a Unicode codepoint, given as a string, to its glyph.
 
@@ -138,7 +131,7 @@ def codepoint2glyph(codepoint):
     return chr(value)
 
 
-def replace_codepoints(text):
+def replace_codepoints(text: str) -> str:
     """
     Replaces Unicode codepoints in a string with the corresponding glyphs.
 
@@ -194,7 +187,7 @@ def read_distance_matrix(filepath=None):
     return matrix
 
 
-def match_initial(string, candidates):
+def match_initial(string: str, candidates: List[str]):
     """
     Returns the longest match at the initial position among a list of candidates.
 
@@ -227,6 +220,6 @@ def match_initial(string, candidates):
     candidates = sorted([cand for cand in candidates if cand], reverse=True, key=len)
     for cand in candidates:
         if string.startswith(cand):
-            return string[len(cand) :], cand
+            return string[len(cand):], cand
 
     return string, None

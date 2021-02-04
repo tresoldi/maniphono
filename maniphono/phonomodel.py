@@ -3,17 +3,18 @@ Module for phonological model abstraction and operations.
 """
 
 # Import Python standard libraries
-from collections import defaultdict, Counter
-from pathlib import Path
 import csv
 import itertools
+import pathlib
 import re
+from collections import defaultdict, Counter
+from typing import Optional, Sequence
 
 # Import 3rd party libraries
-from sklearn.neural_network import MLPRegressor
-from sklearn.svm import SVR
 import joblib
 import numpy as np
+from sklearn.neural_network import MLPRegressor
+from sklearn.svm import SVR
 
 # Import local modules
 from .utils import (
@@ -21,18 +22,16 @@ from .utils import (
     read_distance_matrix,
     parse_constraints,
     normalize,
-    _split_fvalues,
+    split_fvalues_str,
     RE_FEATURE,
     RE_FVALUE,
     match_initial,
 )
 
-# TODO: extend documentation after blog post
+
 class PhonoModel:
     """
     Class for representing a phonological model.
-
-    As per the extended documentation, phonological models are made of...
 
     Parameters
     ----------
@@ -44,7 +43,7 @@ class PhonoModel:
         its package.
     """
 
-    def __init__(self, name, model_path=None):
+    def __init__(self, name: str, model_path: Optional[str] = None):
         """
         Initialize a phonological model.
         """
@@ -52,7 +51,7 @@ class PhonoModel:
         # Setup model and defaults
         self.name = name  # model name
         self.features = defaultdict(set)  # set of features in the model
-        self.fvalues = {}  # dictionary of fvalue structures, as from CSV file
+        self.fvalues = {}  # dictionary of structures with fvalues, as from CSV file
 
         # Dictionary with extra, internal material
         self._x = {
@@ -71,14 +70,14 @@ class PhonoModel:
         # lives in the `model/` directory), and then load the features/values first
         # and the sounds later
         if not model_path:
-            model_path = Path(__file__).parent.parent / "models" / name
+            model_path = pathlib.Path(__file__).parent.parent / "models" / name
         else:
-            model_path = Path(model_path).absolute()
+            model_path = pathlib.Path(model_path).absolute()
 
         self._init_model(model_path)
         self._init_sounds(model_path)
 
-    def _init_model(self, model_path):
+    def _init_model(self, model_path: pathlib.Path):
         """
         Internal method for initializing a model.
 
@@ -143,7 +142,7 @@ class PhonoModel:
         if missing_fvalues:
             raise ValueError(f"Contraints have undefined fvalue(s): {missing_fvalues}")
 
-    def _init_sounds(self, model_path):
+    def _init_sounds(self, model_path: pathlib.Path):
         """
         Internal method for initializing the sounds of a model.
 
@@ -200,13 +199,13 @@ class PhonoModel:
             self._x["grapheme2fvalues"][grapheme] = fvalues
             self._x["fvalues2grapheme"][fvalues] = grapheme
 
-    def build_grapheme(self, fvalues):
+    def build_grapheme(self, fvalues: Sequence) -> str:
         """
         Return a graphemic representation for a collection of feature values.
 
         Parameters
         ----------
-        fvalues : list or tuple
+        fvalues : Sequence
             A collection of feature values.
 
         Return
@@ -268,7 +267,7 @@ class PhonoModel:
 
         return normalize(grapheme)
 
-    def set_fvalue(self, fvalues, new_fvalue, check=True):
+    def set_fvalue(self, fvalues: Sequence, new_fvalue: str, check: bool = True):
         """
         Set a single value in a collection of feature values.
 
@@ -277,6 +276,7 @@ class PhonoModel:
 
         Parameters
         ----------
+        fvalues: Sequence
         new_fvalue : str
             The value to be added to the sound.
         check : bool
@@ -325,12 +325,12 @@ class PhonoModel:
 
         # Run a check if so requested (default)
         if check and self.fail_constraints(fvalues):
-            raise ValueError(f"FValue {new_fvalue} ({feature}) breaks a constraint")
+            raise ValueError(f"FValue {new_fvalue} breaks a constraint")
 
         # Sort the new `fvalues`, which also makes sure we return a tuple
         return self.sort_fvalues(fvalues), prev_fvalue
 
-    def parse_grapheme(self, grapheme):
+    def parse_grapheme(self, grapheme: str):
         """
         Parse a grapheme according to the library standard.
 
@@ -345,7 +345,7 @@ class PhonoModel:
             A set with the feature values from the parsed grapheme.
         partial : bool
             A boolean indicating whether the grapheme should be consider the
-            representation of a partiallly defined sound (i.e., a sound class), like
+            representation of a partially defined sound (i.e., a sound class), like
             for "C" in most models. This information is currently obtained from the
             `self._x["classes"]` internal structure. Note that, while the information
             is always returned, it is up to the calling function (usually the
@@ -358,11 +358,10 @@ class PhonoModel:
             return self._x["grapheme2fvalues"][grapheme], grapheme in self._x["classes"]
 
         # Capture list of modifiers, if any; no need to go full regex
+        modifiers = []
         if "[" in grapheme and grapheme[-1] == "]":
             grapheme, _, modifier = grapheme.partition("[")
-            modifiers = [mod.strip() for mod in _split_fvalues(modifier[:-1])]
-        else:
-            modifiers = []
+            modifiers = [mod.strip() for mod in split_fvalues_str(modifier[:-1])]
 
         # If the base is among the list of graphemes, we can just return the
         # grapheme values and apply the modifier. Otherwise, we take all characters
@@ -391,7 +390,7 @@ class PhonoModel:
         # No need to sort, as it is already returned as a sorted tuple by .set_fvalue()
         return fvalues, base_grapheme in self._x["classes"]
 
-    def sort_fvalues(self, fvalues, no_rank=False):
+    def sort_fvalues(self, fvalues: Sequence, no_rank: bool = False):
         """
         Sort a list of values according to the model.
 
@@ -417,14 +416,14 @@ class PhonoModel:
         """
 
         if isinstance(fvalues, str):
-            fvalues = _split_fvalues(fvalues)
+            fvalues = split_fvalues_str(fvalues)
 
         if no_rank:
             return tuple(sorted(fvalues))
 
         return tuple(sorted(fvalues, key=lambda v: (-self.fvalues[v]["rank"], v)))
 
-    def feature_dict(self, fvalues):
+    def feature_dict(self, fvalues: Sequence) -> dict:
         """
         Return a dictionary version of a feature value tuple.
 
@@ -442,7 +441,7 @@ class PhonoModel:
 
         return {self.fvalues[fvalue]["feature"]: fvalue for fvalue in fvalues}
 
-    def fail_constraints(self, fvalues):
+    def fail_constraints(self, fvalues: Sequence):
         """
         Checks if a list of feature values has any constraint failure.
 
@@ -775,7 +774,7 @@ class PhonoModel:
 
         return grapheme, best_fvalues
 
-    def distance(self, sound_a, sound_b):
+    def distance(self, sound_a, sound_b) -> float:
         """
         Return a quantitative distance based on a seed matrix.
 
@@ -826,7 +825,7 @@ class PhonoModel:
 
         # Load serialized model, if provided and existing
         if filename:
-            filename = Path(filename)
+            filename = pathlib.Path(filename)
             if filename.is_file():
                 self._regressor = joblib.load(filename.as_posix())
                 return
@@ -843,13 +842,13 @@ class PhonoModel:
             except KeyError:
                 print("Skipping over grapheme [%s]..." % grapheme)
 
-        # Collect (X,y) vectors
-        X, y = [], []  # pylint: disable=invalid-name
+        # Collect (x,y) vectors
+        x, y = [], []
         for grapheme_a in raw_matrix:
             if grapheme_a in vector:
                 for grapheme_b, dist in raw_matrix[grapheme_a].items():
                     if grapheme_b in vector:
-                        X.append(vector[grapheme_a] + vector[grapheme_b])
+                        x.append(vector[grapheme_a] + vector[grapheme_b])
                         y.append(dist)
 
         # Train regressor; setting the random value for reproducibility
@@ -859,7 +858,7 @@ class PhonoModel:
         elif regtype == "svr":  # default
             self._regressor = SVR()
 
-        self._regressor.fit(X, y)
+        self._regressor.fit(x, y)
 
     def write_regressor(self, regressor_file):
         """
@@ -883,11 +882,11 @@ class PhonoModel:
             raise ValueError("No regressor to serialize.")
 
         # Build a pathlib object, create the directory (if necessary), and write
-        regressor_file = Path(regressor_file).absolute()
+        regressor_file = pathlib.Path(regressor_file).absolute()
         regressor_file.parent.mkdir(parents=True, exist_ok=True)
         joblib.dump(self._regressor, regressor_file.as_posix())
 
-    def __str__(self):
+    def __str__(self) -> str:
         """
         Return a textual representation of the model.
 

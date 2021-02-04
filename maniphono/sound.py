@@ -4,7 +4,7 @@ Module for Sound abstraction and operations.
 
 # Import local modules
 from .phonomodel import model_mipa
-from .utils import _split_fvalues
+from .utils import split_fvalues_str
 
 
 class Sound:
@@ -133,7 +133,7 @@ class Sound:
         # feature values, which can preprocess. Note that this allows to use a
         # string with a single descriptor without any special treatment.
         if isinstance(fvalues, str):
-            fvalues = _split_fvalues(fvalues)
+            fvalues = split_fvalues_str(fvalues)
 
         # Add all fvalues, collecting the replacements which are stripped of `None`s;
         # note that we don't run checks here, but only after all values have been added
@@ -220,7 +220,7 @@ class Sound:
         """
 
         fvalues = [
-            fvalue for fvalue in self.fvalues if fvalue not in _split_fvalues(other)
+            fvalue for fvalue in self.fvalues if fvalue not in split_fvalues_str(other)
         ]
 
         return Sound(description=" ".join(fvalues), model=self.model)
