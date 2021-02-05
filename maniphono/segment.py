@@ -21,8 +21,10 @@ to behave as a Sound class when it is composed of a single sound.
 # TODO: allow add/sub operations, and most from Sound
 # TODO: should allow gaps? i.e., zero-sounds segments?
 
+# Import Python standard libraries
 from typing import Union, List
 
+# Import local modules
 from .sound import Sound
 
 
@@ -34,36 +36,44 @@ class Segment:
     def add_fvalues(self, fvalues):
         pass
 
-    def __repr__(self) -> str:
-        return f"{self.type}:{str(self)}"
-
 
 # TODO: different boundaries: start/end/any
 # TODO: rename type to "boundarysegment"
 class BoundarySegment(Segment):
-    def __init__(self):
+    def __init__(self) -> None:
         super().__init__()
 
     def __str__(self) -> str:
         return "#"
 
+    def __repr__(self) -> str:
+        return f"boundary_seg:{str(self)}"
+
 
 class SoundSegment(Segment):
-    def __init__(self, sounds: Union[str, Sound, List[Sound]]):
+    def __init__(self, sounds: Union[str, Sound, List[Sound]]) -> None:
+        """
+        Initialize a sound segment.
+
+        @param sounds:
+        """
         super().__init__()
 
         if isinstance(sounds, Sound):
             self.sounds = [sounds]
         elif isinstance(sounds, str):
-            # TODO: this currently assumes that, if a string, `sounds` carry a single grapheme; a parser using
-            # long matches is necessary for more complex situations
+            # TODO: write a proper parser, as this assumes that, when a string, `sounds`
+            #       carries a single grapheme (dealing with diacritics might get tricky)
             self.sounds = [Sound(sounds)]
         else:
+            # Must be a list of Sounds
             self.sounds = sounds
 
-    def add_fvalues(self, fvalues: Union[str, list]):
+    def add_fvalues(self, fvalues: Union[str, list]) -> None:
         if len(self.sounds) == 1:
             self.sounds[0].set_fvalues(fvalues)
+        else:
+            raise ValueError("Not implemented for multisonic segments.")
 
     def __len__(self) -> int:
         return len(self.sounds)
@@ -71,6 +81,7 @@ class SoundSegment(Segment):
     def __getitem__(self, idx) -> Sound:
         return self.sounds[idx]
 
+    # TODO: would better rewrite as common __init__/__next__
     def __iter__(self):
         _iter_idx = 0
         while _iter_idx < len(self.sounds):
@@ -80,36 +91,43 @@ class SoundSegment(Segment):
     def __str__(self) -> str:
         return "+".join([str(snd) for snd in self.sounds])
 
-    def __hash__(self):
+    def __repr__(self) -> str:
+        return f"sound_seg:{str(self)}"
+
+    def __hash__(self) -> int:
         return hash(tuple(self.sounds))
 
     # TODO: comment that if self.sounds holds a single sound, and `other` is a sound,
     # we try to match
-    def __eq__(self, other) -> bool:
+    def __eq__(self, other: Union[Sound, Segment]) -> bool:
         if len(self.sounds) == 1 and isinstance(other, Sound):
             return self.sounds[0] == other
 
         return hash(self) == hash(other)
 
-    def __ne__(self, other) -> bool:
+    def __ne__(self, other: Union[Sound, Segment]) -> bool:
         if len(self.sounds) == 1 and isinstance(other, Sound):
             return self.sounds[0] != other
 
         return hash(self) != hash(other)
 
-    def __add__(self, modifier):
+    def __add__(self, modifier) -> Segment:
         # TODO: work on multisonic segments
         if len(self.sounds) != 1:
             raise ValueError("more than one sound")
 
-        new_sound = self.sounds[0] + modifier
-        return SoundSegment(new_sound)
+        return SoundSegment(self.sounds[0] + modifier)
 
 
 # TODO: holder that only accepts monosonic segments
-def parse_segment(grapheme) -> Segment:
-    if grapheme == "#":
-        return BoundarySegment
+def parse_segment(grapheme:str) -> Segment:
+    """
+    @param grapheme:
+    @return:
+    """
+    # TODO: make sure to implement context-specific boundaries (^and $)
+    if grapheme in ["#", "^", "$"]:
+        return BoundarySegment()
 
     # look for negation, if there is one
     # TODO: use `negate`

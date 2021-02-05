@@ -25,11 +25,11 @@ class Sound:
     """
 
     def __init__(
-            self,
-            grapheme: Optional[str] = None,
-            description: Optional[str] = None,
-            partial: Optional[bool] = None,
-            model: Optional[PhonoModel] = None,
+        self,
+        grapheme: Optional[str] = None,
+        description: Optional[str] = None,
+        partial: Optional[bool] = None,
+        model: Optional[PhonoModel] = None,
     ) -> None:
         """
         Initialization method.
