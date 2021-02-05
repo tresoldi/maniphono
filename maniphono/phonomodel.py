@@ -29,7 +29,7 @@ from .utils import (
 )
 
 
-# TODO: Setup an "fvalue budle" type, extending tuple, always sorted
+# TODO: Setup an "fvalue bundle" type, extending tuple, always sorted
 
 # TODO: Replace the ._x solution with normal properties, even though pylint complains
 class PhonoModel:
@@ -68,6 +68,7 @@ class PhonoModel:
         # Build a path for reading the model (if it was not provided, we assume it
         # lives in the `model/` directory), and then load the features/values first
         # and the sounds later
+        # TODO: store `model_path` in self and remove as parameter from init methods
         if not model_path:
             model_path = pathlib.Path(__file__).parent.parent / "models" / name
         else:
@@ -108,27 +109,20 @@ class PhonoModel:
                 self.features[feature].add(fvalue)
 
                 # Store values structs, which includes parsing the diacritics and
-                # the constraint string (`constr` will be an empty list if
-                # `constraint_str` is empty)
-                prefix = replace_codepoints(row["PREFIX"])
-                suffix = replace_codepoints(row["SUFFIX"])
-
-                constraint_str = row.get("CONSTRAINTS")
-                constr = parse_constraints(constraint_str)
+                # the constraint string ("constraints" will be an empty list if
+                # row["CONSTRAINTS"] is empty)
+                if (prefix := replace_codepoints(row["PREFIX"])):
+                    self._x["diacritics"][prefix] = fvalue
+                if (suffix := replace_codepoints(row["SUFFIX"])):
+                    self._x["diacritics"][suffix] = fvalue
 
                 self.fvalues[fvalue] = {
                     "feature": feature,
                     "rank": rank,
                     "prefix": prefix,
                     "suffix": suffix,
-                    "constraints": constr,
+                    "constraints": parse_constraints(row.get("CONSTRAINTS")),
                 }
-
-                # Store diacritics
-                if prefix:
-                    self._x["diacritics"][prefix] = fvalue
-                if suffix:
-                    self._x["diacritics"][suffix] = fvalue
 
         # Check if all constraints refer to existing fvalues; this cannot be done
         # before the entire model has been loaded
@@ -264,7 +258,7 @@ class PhonoModel:
         return normalize(grapheme)
 
     def set_fvalue(
-        self, fvalues: Sequence, new_fvalue: str, check: bool = True
+            self, fvalues: Sequence, new_fvalue: str, check: bool = True
     ) -> Tuple[Sequence, Optional[str]]:
         """
         Set a single value in a collection of feature values.
@@ -333,7 +327,7 @@ class PhonoModel:
         decide whether and how to use this information.
 
         @param grapheme: A grapheme representation to be parsed.
-        @return: The first element of the tuple is a SegSequence with the feature values
+        @return: The first element of the tuple is a Sequence with the feature values
             from the parsed grapheme. The second element is a boolean indicating whether
             the grapheme should be consider the representation of a partially defined
             sound (i.e., a sound class).
@@ -376,6 +370,7 @@ class PhonoModel:
         # No need to sort, as it is already returned as a sorted tuple by .set_fvalue()
         return fvalues, base_grapheme in self._x["classes"]
 
+    # TODO: `no_rank` is confusing as a name, look for an alternative
     def sort_fvalues(self, fvalues: Sequence, no_rank: bool = False) -> Tuple:
         """
         Sort a list of values according to the model.
@@ -597,7 +592,7 @@ class PhonoModel:
         return features
 
     def fvalue_vector(
-        self, source: Union[str, list], categorical: bool = False
+            self, source: Union[str, list], categorical: bool = False
     ) -> Tuple[list, list]:
         """
         Build a vector representation of a sound from its fvalues.
@@ -725,6 +720,7 @@ class PhonoModel:
 
         return grapheme, best_fvalues
 
+    # TODO: decide if we should really build a regressor by default
     def distance(self, sound_a: Union[str, list], sound_b: Union[str, list]) -> float:
         """
         Return a quantitative distance based on a seed matrix.
@@ -800,6 +796,7 @@ class PhonoModel:
 
         self._regressor.fit(x, y)
 
+    # TODO: rename to `serialize` or something similar?
     def write_regressor(self, regressor_file: str):
         """
         Serialize the model's regressor to disk.
