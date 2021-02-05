@@ -2,10 +2,11 @@
 Module for Sound abstraction and operations.
 """
 
+# Import Python standard libraries
 from typing import Optional, Union
 
 # Import local modules
-from .phonomodel import model_mipa
+from .phonomodel import PhonoModel, model_mipa
 from .utils import split_fvalues_str
 
 
@@ -21,37 +22,39 @@ class Sound:
 
     A sound can be initialized with either a `grapheme` (the default) or a
     `description`.
-
-    Parameters
-    ----------
-    grapheme : str
-        A string with a grapheme to be parsed or read directly from the model.
-        Either a `grapheme` or a `description` can be provided for initialization.
-    description : str
-        A string with a list of feature values separated by one of the accepted
-        delimiters.
-        Either a `grapheme` or a `description` can be provided for initialization.
-    partial : bool
-        A boolean indicating whether the sound should be considered a partially
-        defined one. Partially defined sounds (in most cases, the equivalent of
-        "sound classes") work differently in terms of comparison, and might be used
-        differently by the user. The argument defaults to `None`, indicating that
-        the user should decide how to treat sounds when there is not explicit
-        information on them being partially defined or not.
-    model : PhonoModel
-        A phonological model in the `PhonoModel` class (default:
-        `phonomodel.model_mipa`).
     """
 
-    def __init__(self, grapheme=None, description=None, partial=None, model=None):
+    def __init__(
+            self,
+            grapheme: Optional[str] = None,
+            description: Optional[str] = None,
+            partial: Optional[bool] = None,
+            model: Optional[PhonoModel] = None,
+    ) -> None:
         """
         Initialization method.
+
+        @param grapheme: A string with a grapheme to be parsed or read directly from the
+            model. Either a `grapheme` or a `description` can be provided for
+            initialization.
+        @param description: A string with a list of feature values separated by one of
+            the accepted delimiters. Either a `grapheme` or a `description` can be
+            provided for initialization.
+        @param partial: A boolean indicating whether the sound should be considered a
+            partially defined one. Partially defined sounds (in most cases, the
+            equivalent of "sound classes") work differently in terms of comparison, and
+            might be used differently by the user. The argument defaults to `None`,
+            indicating that the user should decide how to treat sounds when there is not
+            explicit information on them being partially defined or not.
+        @param model: A phonological model in the `PhonoModel` class (default:
+            `phonomodel.model_mipa`).
         """
 
         # Initialize the main property, the tuple of values, and information on
         # partial sounds. By default, `partial` will be `None`; if a sound initialized
         # with a `description` is supposed to be a partial one, this must explicitly
         # informed by the user
+        # TODO: Use the "feature bundle" to be implemented
         self.fvalues = tuple()
         self.partial = partial
 
@@ -76,11 +79,9 @@ class Sound:
         """
         Set a single feature value to the sound.
 
-        The method will remove all other feature values for the same feature
-        before setting the new one.
-
-        This method works as a convenient wrapper to the equivalent method in
-        `PhonoModel`.
+        The method will remove all other feature values for the same feature before
+        setting the new one. This method works as a convenient wrapper to the equivalent
+        method in `PhonoModel`.
 
         @param fvalue: The feature value to be added to the sound.
         @param check: Whether to run constraints check after adding the new feature
@@ -102,10 +103,10 @@ class Sound:
         The method will remove all conflicting feature values before setting the new
         ones. The method acts as a wrapper to `.set_fvalue()`
 
-        @param fvalues: A list of strings with the feature values to be added to the sound, a string
-            with values separated by the delimiters specified in `_split_values()`.
-        @param check: Whether to run constraint checks after adding the new feature values
-            (default: True).
+        @param fvalues: A list of strings with the feature values to be added to the
+            sound, a string with values separated by the standard delimiters.
+        @param check: Whether to run constraint checks after adding the new feature
+            values (default: True).
         @return: A list of strings with the feature values that were replaced, in no
             particular order.
         """
@@ -124,8 +125,7 @@ class Sound:
         # note that we don't run checks here, but only after all values have been added
         replaced = []
         for fvalue in fvalues:
-            rep = self.set_fvalue(fvalue, check=False)
-            if rep:
+            if rep := self.set_fvalue(fvalue, check=False):
                 replaced.append(rep)
 
         # Run a check if so requested (default)
@@ -149,8 +149,8 @@ class Sound:
         """
         Return a dictionary of features and feature values that are defined.
 
-        @return: A dictionary of all feature values that are defined for the current sound,
-            with features as keys and feature values as values.
+        @return: A dictionary of all feature values that are defined for the current
+            sound, with features as keys and feature values as values.
         """
 
         return self.model.feature_dict(self.fvalues)
@@ -187,7 +187,6 @@ class Sound:
         """
 
         # The [:] syntax guarantees we make a copy of self.fvalues if it is a list
-        # TODO: call the phonomodel on a copy of self.values and set that to the new Sound
         snd = Sound(description=self.fvalues[:], partial=self.partial, model=self.model)
         snd.set_fvalues(other)
 
@@ -257,14 +256,12 @@ class Sound:
     def __ge__(self, other) -> bool:
         return any([self == other, self > other])
 
-    def __getattr__(self, feature):
+    def __getattr__(self, feature: str) -> Optional[str]:
         """
         Get feature values from their features as object attributes.
 
-        Return
-        ------
-        fvalue : string
-            A string with the feature value for the requested `feature`, or `None`
+        @param feature:
+        @return: A string with the feature value for the requested `feature`, or `None`
             if no feature value associated with the requested `feature` has been
             set.
         """

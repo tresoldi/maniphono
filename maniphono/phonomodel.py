@@ -111,9 +111,9 @@ class PhonoModel:
                 # Store values structs, which includes parsing the diacritics and
                 # the constraint string ("constraints" will be an empty list if
                 # row["CONSTRAINTS"] is empty)
-                if (prefix := replace_codepoints(row["PREFIX"])):
+                if (prefix := replace_codepoints(row["PREFIX"])) :
                     self._x["diacritics"][prefix] = fvalue
-                if (suffix := replace_codepoints(row["SUFFIX"])):
+                if (suffix := replace_codepoints(row["SUFFIX"])) :
                     self._x["diacritics"][suffix] = fvalue
 
                 self.fvalues[fvalue] = {
@@ -258,7 +258,7 @@ class PhonoModel:
         return normalize(grapheme)
 
     def set_fvalue(
-            self, fvalues: Sequence, new_fvalue: str, check: bool = True
+        self, fvalues: Sequence, new_fvalue: str, check: bool = True
     ) -> Tuple[Sequence, Optional[str]]:
         """
         Set a single value in a collection of feature values.
@@ -592,7 +592,7 @@ class PhonoModel:
         return features
 
     def fvalue_vector(
-            self, source: Union[str, list], categorical: bool = False
+        self, source: Union[str, list], categorical: bool = False
     ) -> Tuple[list, list]:
         """
         Build a vector representation of a sound from its fvalues.
