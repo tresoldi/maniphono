@@ -18,33 +18,33 @@ from sklearn.svm import SVR
 
 # Import local modules
 from .utils import (
-    replace_codepoints,
-    read_distance_matrix,
-    parse_constraints,
-    normalize,
-    split_fvalues_str,
     RE_FEATURE,
     RE_FVALUE,
     match_initial,
+    normalize,
+    parse_constraints,
+    read_distance_matrix,
+    replace_codepoints,
+    split_fvalues_str,
 )
 
 
-# TODO: Setup an "fvalue" type, extending tuple, which makes sure it is always sorted (call "bundle"?)
+# TODO: Setup an "fvalue budle" type, extending tuple, always sorted
 
-
+# TODO: Replace the ._x solution with normal properties, even though pylint complains
 class PhonoModel:
     """
     Class for representing a phonological model.
     """
 
-    def __init__(self, name: str, model_path: Optional[str] = None):
+    def __init__(self, name: str, model_path: Optional[str] = None) -> None:
         """
         Initialize a phonological model.
 
         @param name: Name of the model.
-        @param model_path: The path to the directory holding the model configuration files. If not
-        provided, the library will default to the resources distributed along with
-        its package.
+        @param model_path: The path to the directory holding the model configuration
+            files. If not provided, the library will default to the resources distributed
+            along with its package.
         """
 
         # Setup model and defaults
@@ -76,7 +76,7 @@ class PhonoModel:
         self._init_model(model_path)
         self._init_sounds(model_path)
 
-    def _init_model(self, model_path: pathlib.Path):
+    def _init_model(self, model_path: pathlib.Path) -> None:
         """
         Internal method for initializing a model.
 
@@ -143,7 +143,7 @@ class PhonoModel:
         if missing_fvalues:
             raise ValueError(f"Contraints have undefined fvalue(s): {missing_fvalues}")
 
-    def _init_sounds(self, model_path: pathlib.Path):
+    def _init_sounds(self, model_path: pathlib.Path) -> None:
         """
         Internal method for initializing the sounds of a model.
 
@@ -204,10 +204,10 @@ class PhonoModel:
 
     def build_grapheme(self, fvalues: Sequence) -> str:
         """
-        Return a graphemic representation for a collection of feature values.
+        Return a grapheme representation for a collection of feature values.
 
         @param fvalues: A collection of feature values.
-        @return: A graphemic representation of the provided collection of feature values.
+        @return: A grapheme representation of the provided collection of feature values.
         """
 
         # We first make sure the value_tuple is actually an expected, sorted tuple
@@ -264,7 +264,7 @@ class PhonoModel:
         return normalize(grapheme)
 
     def set_fvalue(
-            self, fvalues: Sequence, new_fvalue: str, check: bool = True
+        self, fvalues: Sequence, new_fvalue: str, check: bool = True
     ) -> Tuple[Sequence, Optional[str]]:
         """
         Set a single value in a collection of feature values.
@@ -274,7 +274,8 @@ class PhonoModel:
 
         @param fvalues:
         @param new_fvalue: The value to be added to the sound.
-        @param check: Whether to run constraints check after adding the new value (default: True).
+        @param check: Whether to run constraints check after adding the new value
+            (default: True).
         @return: The previous feature value for the feature, in case it was replaced, or
             `None` in case no replacement happened. If the method is called to add a
             feature value which is already set, the same feature value will be returned
@@ -325,16 +326,17 @@ class PhonoModel:
         """
         Parse a grapheme according to the library standard.
 
-        The information on partiality, the second element of the returned tuple, is currently obtained from the
-        `self._x["classes"]` internal structure. Note that, while the information
-        is always returned, it is up to the calling function (usually the
-        homonymous `.parse_grapheme()` method of the `Sound` class) to decide
-        whether and how to use this information.
+        The information on partiality, the second element of the returned tuple, is
+        currently obtained from the `self._x["classes"]` internal structure. Note that,
+        while the information is always returned, it is up to the calling function
+        (usually the homonym `.parse_grapheme()` method of the `Sound` class) to
+        decide whether and how to use this information.
 
-        @param grapheme: A graphemic representation to be parsed.
-        @return: The first element of the tuple is a SegSequence with the feature values from the parsed grapheme. The
-            second element is a boolean indicating whether the grapheme should be consider the
-            representation of a partially defined sound (i.e., a sound class).
+        @param grapheme: A grapheme representation to be parsed.
+        @return: The first element of the tuple is a SegSequence with the feature values
+            from the parsed grapheme. The second element is a boolean indicating whether
+            the grapheme should be consider the representation of a partially defined
+            sound (i.e., a sound class).
         """
 
         # Used model/cache graphemes if available; it is already a sorted tuple
@@ -382,10 +384,11 @@ class PhonoModel:
         the same rank, alphabetically later. It is possible to perform a simple
         alphabetical sorting.
 
-        @param fvalues: A list (or other iterable) of values or a string description of them. If
-            a string is provided, the method will split them in the standard way.
-        @param no_rank: Whether to perform a plain alphabetical sorting, not using the rank
-            information. This is convenient in some cases and better than a simple
+        @param fvalues: A list (or other iterable) of values or a string description of
+            them. If a string is provided, the method will split them in the standard
+            way.
+        @param no_rank: Whether to perform a plain alphabetical sorting, not using the
+            rank information. This is convenient in some cases and better than a simple
             Python `sorted()` operation as it takes care of splitting strings and
             accepting both strings and lists (default: `False`).
         @return: A tuple with the sorted values.
@@ -422,8 +425,8 @@ class PhonoModel:
         of feature values will be consider a valid one (as it will return an empty list
         of failing feature values).
 
-        @param fvalues: A list, or another iterable, of the feature values to be checked, such as
-            those stored in `self._grapheme2fvalues`.
+        @param fvalues: A list, or another iterable, of the feature values to be checked,
+            such as those stored in `self._grapheme2fvalues`.
         @return: A list of strings with the feature values that fail constraint check; it
             will be empty if all feature values pass the checks.
         """
@@ -594,7 +597,7 @@ class PhonoModel:
         return features
 
     def fvalue_vector(
-            self, source: Union[str, list], categorical: bool = False
+        self, source: Union[str, list], categorical: bool = False
     ) -> Tuple[list, list]:
         """
         Build a vector representation of a sound from its fvalues.
@@ -602,17 +605,17 @@ class PhonoModel:
         Vectors compiled with this method are mostly intended for statistical analyses,
         and can be either binary or categorical.
 
-        @param source: Either a string with a grapheme or a feature value tuple for the sound
-            to serve as basis for the vector.
+        @param source: Either a string with a grapheme or a feature value tuple for the
+            sound to serve as basis for the vector.
         @param categorical: Whether to build a categorical vector instead of a binary one
             (default: `False`).
-        @return: A tuple whose first element is a list with the feature names represented in the vector. The names will
-            match the model features' names in the case of categorical vectors,
-            or follow the pattern `feature_featurevalue` in the case of binary ones. The second element is a
-            list with the actual vector. The elements will be the feature values
-            strings when set and `None` when not set in the case of categorical vectors,
-            or booleans indicating the presence or absence of the corresponding
-            feature value in the case of binary vectors.
+        @return: A tuple whose first element is a list with the feature names represented
+            in the vector. The names will match the model features' names in the case of
+            categorical vectors, or follow the pattern `feature_featurevalue` in the case
+            of binary ones. The second element is a list with the actual vector. The
+            elements will be the feature values strings when set and `None` when not set
+            in the case of categorical vectors, or booleans indicating the presence or
+            absence of the corresponding feature value in the case of binary vectors.
         """
 
         # Get the fvalues from the grapheme if `source` is a string
@@ -722,29 +725,18 @@ class PhonoModel:
 
         return grapheme, best_fvalues
 
-    def distance(self, sound_a, sound_b) -> float:
+    def distance(self, sound_a: Union[str, list], sound_b: Union[str, list]) -> float:
         """
         Return a quantitative distance based on a seed matrix.
 
-        The distance is by definition 0.0 for equal sounds.
-        If no regressor has previously been trained, one will be trained with
-        default values and cached for future calls.
-        Note that this method, as all methods related to quantitative
+        The distance is by definition 0.0 for equal sounds. If no regressor has
+        previously been trained, one will be trained with default values and cached for
+        future calls. Note that this method, as all methods related to quantitative
         distances, uses the `sklearn` library.
 
-        Parameters
-        ==========
-
-        sound_a : str
-            The first sound to be used for distance computation.
-        sound_b : str
-            The second sound to be used for distance computation.
-
-        Returns
-        =======
-
-        dist : float
-            The distance between the two sounds.
+        @param sound_a: The first sound to be used for distance computation.
+        @param sound_b: The second sound to be used for distance computation.
+        @return: The distance between the two sounds.
         """
 
         # Build and cache a regressor with default parameters
@@ -838,10 +830,7 @@ class PhonoModel:
         """
         Return a textual representation of the model.
 
-        Return
-        ------
-        s : str
-            A string with the textual representation of the model.
+        @return: A string with a textual description of the model.
         """
 
         _str = f"[`{self.name}` model ({len(self.features)} features, "
