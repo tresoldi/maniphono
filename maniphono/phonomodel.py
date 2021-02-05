@@ -31,6 +31,7 @@ from .utils import (
 
 # TODO: Setup an "fvalue" type, extending tuple, which makes sure it is always sorted (call "bundle"?)
 
+
 class PhonoModel:
     """
     Class for representing a phonological model.
@@ -262,7 +263,9 @@ class PhonoModel:
 
         return normalize(grapheme)
 
-    def set_fvalue(self, fvalues: Sequence, new_fvalue: str, check: bool = True) -> Tuple[Sequence, Optional[str]]:
+    def set_fvalue(
+            self, fvalues: Sequence, new_fvalue: str, check: bool = True
+    ) -> Tuple[Sequence, Optional[str]]:
         """
         Set a single value in a collection of feature values.
 
@@ -590,7 +593,9 @@ class PhonoModel:
 
         return features
 
-    def fvalue_vector(self, source: Union[str, list], categorical: bool = False) -> Tuple[list, list]:
+    def fvalue_vector(
+            self, source: Union[str, list], categorical: bool = False
+    ) -> Tuple[list, list]:
         """
         Build a vector representation of a sound from its fvalues.
 

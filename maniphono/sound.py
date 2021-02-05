@@ -203,7 +203,9 @@ class Sound:
             fvalue for fvalue in self.fvalues if fvalue not in split_fvalues_str(other)
         ]
 
-        return Sound(description=" ".join(fvalues), partial=self.partial, model=self.model)
+        return Sound(
+            description=" ".join(fvalues), partial=self.partial, model=self.model
+        )
 
     # TODO: decide what to do with `.partial`, as this will interfere also with <= and >=
     def __hash__(self):
