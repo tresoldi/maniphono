@@ -12,14 +12,16 @@ This module holds the code for the sequence model.
 # TODO: add method to syllabify
 # TODO: add suprasegmentals
 
+# Import Python standard libraries
 from typing import List
 
+# Import local modules
 from .segment import Segment, SoundSegment, BoundarySegment
 from .sound import Sound
 
 
 class SegSequence:
-    def __init__(self, segments: List[Segment], boundaries: bool = True):
+    def __init__(self, segments: List[Segment], boundaries: bool = True) -> None:
         """
         @param segments:
         @param boundaries:
@@ -33,7 +35,15 @@ class SegSequence:
     # makes sure that, when the list of segments change, boundaries are added/removed
     # if necessary
     # TODO: could return a boolean on whether it was changed
-    def _update(self):
+    def _update(self) -> None:
+        """
+        Internal method for automatic update of boundaries.
+
+        This method makes sure that, when the list of segments change, boundaries are
+        added or removed as necessary, following the value of `self.boundaries`.
+        All operations that alter `self.segments` must call this method once they are
+        done.
+        """
         # self.boundaries can be None
         if self.boundaries is True:
             if not isinstance(self.segments[0], BoundarySegment):
@@ -52,6 +62,7 @@ class SegSequence:
     def __getitem__(self, idx) -> Segment:
         return self.segments[idx]
 
+    # TODO: properly organize __iter__ and __next__, following the Segment implementation
     def __iter__(self):
         _iter_idx = 0
         while _iter_idx < len(self.segments):
@@ -59,9 +70,7 @@ class SegSequence:
             _iter_idx += 1
 
     def __str__(self) -> str:
-        graphemes = [str(seg) for seg in self.segments]
-
-        return " ".join(graphemes)
+        return " ".join([str(seg) for seg in self.segments])
 
     def __eq__(self, other) -> bool:
         return hash(self) == hash(other)
@@ -77,11 +86,17 @@ class SegSequence:
             self.segments.append(other)
 
 
-# TODO: this is a temporary holder that assumes monosonic segments separated by
-# spaces; a proper parser is later needed for alteruphono
-def parse_sequence(seq, boundaries=True):
+# TODO: write a proper parser accepting multisonic segments
+def parse_sequence(seq: str, boundaries: bool = True) -> SegSequence:
+    """
+    Parses a string sequence as a SegSequence.
+
+    @param seq: A textual representation of the sequence to be parsed.
+    @param boundaries: Whether the SegSequence should use boundaries (default: True)
+    @return: The parsed SegSequence.
+    """
+    # TODO: can this reuse the common pre-processing functions?
     seq = seq.strip()
-    seq = seq.replace("g", "ɡ")
 
     segments = []
     for grapheme in seq.split():

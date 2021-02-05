@@ -120,7 +120,7 @@ class SoundSegment(Segment):
 
 
 # TODO: holder that only accepts monosonic segments
-def parse_segment(grapheme:str) -> Segment:
+def parse_segment(grapheme: str) -> Segment:
     """
     @param grapheme:
     @return:
