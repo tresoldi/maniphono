@@ -28,7 +28,7 @@ from .sound import Sound
 
 class Segment:
     def __init__(self):
-        self.type = None
+        pass
 
     # Each subclass with implement it, if necessary
     def add_fvalues(self, fvalues):
@@ -43,7 +43,6 @@ class Segment:
 class BoundarySegment(Segment):
     def __init__(self):
         super().__init__()
-        self.type = "boundary"
 
     def __str__(self) -> str:
         return "#"
@@ -52,7 +51,6 @@ class BoundarySegment(Segment):
 class SoundSegment(Segment):
     def __init__(self, sounds: Union[str, Sound, List[Sound]]):
         super().__init__()
-        self.type = "soundsegment"
 
         if isinstance(sounds, Sound):
             self.sounds = [sounds]

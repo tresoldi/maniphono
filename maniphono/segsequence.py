@@ -36,14 +36,14 @@ class SegSequence:
     def _update(self):
         # self.boundaries can be None
         if self.boundaries is True:
-            if self.segments[0].type != "boundary":
+            if not isinstance(self.segments[0], BoundarySegment):
                 self.segments = [BoundarySegment()] + self.segments
-            if self.segments[-1].type != "boundary":
+            if not isinstance(self.segments[-1], BoundarySegment):
                 self.segments.append(BoundarySegment())
         elif self.boundaries is False:
-            if self.segments[0].type == "boundary":
+            if isinstance(self.segments[0], BoundarySegment):
                 self.segments = self.segments[1:]
-            if self.segments[-1].type == "boundary":
+            if isinstance(self.segments[-1], BoundarySegment):
                 self.segments = self.segments[:-1]
 
     def __len__(self) -> int:
