@@ -142,16 +142,16 @@ Sequences can be represented with `__str__` and always use a white space as a de
 (following CLDF convention) as well as leading and trailing square brackets (`[` and `]`).
 
 ```python
->>> snd1, snd2, snd3 = maniphono.Sound("p"), maniphono.Sound("a"), maniphono.Sound("w")
->>> seg1, seg2, seg3 = maniphono.Segment(snd1), maniphono.Segment(snd2), maniphono.Segment([snd3])
->>> seg4 = maniphono.Segment([snd2, snd3])
->>> str(seg1), str(seg2), str(seg3), str(seg4)
+>> > snd1, snd2, snd3 = maniphono.Sound("p"), maniphono.Sound("a"), maniphono.Sound("w")
+>> > seg1, seg2, seg3 = maniphono.Segment(snd1), maniphono.Segment(snd2), maniphono.Segment([snd3])
+>> > seg4 = maniphono.Segment([snd2, snd3])
+>> > str(seg1), str(seg2), str(seg3), str(seg4)
 ('p', 'a', 'w', 'a+w')
->>> seq1 = maniphono.Sequence([seg1, seg2])
->>> seq2 = maniphono.Sequence([seg1, seg2, seg3])
->>> seq3 = maniphono.Sequence([seg1, seg4])
->>> seq4 = maniphono.Sequence([seg1, seg2, seg3, seg1, seg4])
->>> str(seq1), str(seq2), str(seq3), str(seq4)
+>> > seq1 = maniphono.SegSequence([seg1, seg2])
+>> > seq2 = maniphono.SegSequence([seg1, seg2, seg3])
+>> > seq3 = maniphono.SegSequence([seg1, seg4])
+>> > seq4 = maniphono.SegSequence([seg1, seg2, seg3, seg1, seg4])
+>> > str(seq1), str(seq2), str(seq3), str(seq4)
 ('[p a]', '[p a w]', '[p a+w]', '[p a w p a+w]')
 ```
 

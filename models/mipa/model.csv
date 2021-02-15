@@ -29,8 +29,9 @@ nasality,nasal,3,,,plosive|click -epiglottal -glottal
 nasalization,nasalized,4,,U+0303,vowel
 palatalization,palatalized,7,,ʲ,consonant
 pharyngealization,pharyngealized,7,,ˤ,
-phonation,voiced,5,,U+032C,consonant
-phonation,voiceless,5,,U+0325,consonant
+phonation,voiced,5,,U+032C,
+phonation,voiceless,5,,U+0325,
+phonation,breathy,5,,ʱ,
 place,alveolar,4,,,consonant
 place,alveolo-palatal,4,,,consonant
 place,bilabial,4,,,consonant

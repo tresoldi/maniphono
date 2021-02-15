@@ -5,11 +5,11 @@ from setuptools import setup, find_packages
 LOCAL_PATH = pathlib.Path(__file__).parent
 
 # The text of the README file
-README_FILE = (LOCAL_PATH / "README.md").read_text()
+README_FILE = (LOCAL_PATH / "README.md").read_text(encoding="utf-8")
 
 
 # Load requirements, so they are listed in a single place
-with open("requirements.txt") as fp:
+with open("requirements.txt", encoding="utf-8") as fp:
     install_requires = [dep.strip() for dep in fp.readlines()]
 
 # This call to setup() does all the work
@@ -32,7 +32,7 @@ setup(
     long_description=README_FILE,
     name="maniphono",
     packages=["maniphono", "models"],
-    python_requires=">=3.7",
+    python_requires=">=3.8",
     test_suite="tests",
     tests_require=[],
     url="https://github.com/tresoldi/maniphono",

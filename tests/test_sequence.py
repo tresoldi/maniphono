@@ -5,7 +5,7 @@
 test_sequence
 =============
 
-Tests for the Sequence class of the `maniphono` package.
+Tests for the SegSequence class of the `maniphono` package.
 """
 
 # Import Python libraries
@@ -28,29 +28,29 @@ class TestSequence(unittest.TestCase):
         snd3 = maniphono.Sound("w")
 
         # Define the segments that will be used
-        seg1 = maniphono.Segment(snd1)
-        seg2 = maniphono.Segment(snd2)
-        seg3 = maniphono.Segment([snd2, snd3])
+        seg1 = maniphono.SoundSegment(snd1)
+        seg2 = maniphono.SoundSegment(snd2)
+        seg3 = maniphono.SoundSegment([snd2, snd3])
 
         # Test single-sound sequence
-        seq1 = maniphono.Sequence([seg1])
-        assert len(seq1) == 1
-        assert str(seq1) == "[# p #]"
+        seq1 = maniphono.SegSequence([seg1])
+        assert len(seq1) == 3 # TODO: should really include boundaries?
+        assert str(seq1) == "# p #"
 
         # Test two-sound sequence (without diphthong)
-        seq2 = maniphono.Sequence([seg1, seg2])
-        assert len(seq2) == 2
-        assert str(seq2) == "[# p a #]"
+        seq2 = maniphono.SegSequence([seg1, seg2])
+        assert len(seq2) == 4
+        assert str(seq2) == "# p a #"
 
         # Test two-sound sequence (with diphthong)
-        seq3 = maniphono.Sequence([seg1, seg3])
-        assert len(seq3) == 2
-        assert str(seq3) == "[# p a+w #]"
+        seq3 = maniphono.SegSequence([seg1, seg3])
+        assert len(seq3) == 4
+        assert str(seq3) == "# p a+w #"
 
         # Test complex sequence
-        seq4 = maniphono.Sequence([seg1, seg2, seg1, seg3])
-        assert len(seq4) == 4
-        assert str(seq4) == "[# p a p a+w #]"
+        seq4 = maniphono.SegSequence([seg1, seg2, seg1, seg3])
+        assert len(seq4) == 6
+        assert str(seq4) == "# p a p a+w #"
 
 
 if __name__ == "__main__":

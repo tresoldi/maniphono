@@ -28,17 +28,17 @@ class TestSegment(unittest.TestCase):
         snd2 = maniphono.Sound("j", model=maniphono.model_tresoldi)
 
         # Test single-sound segment
-        seg1 = maniphono.Segment(snd1)
+        seg1 = maniphono.SoundSegment(snd1)
         assert len(seg1) == 1
         assert str(seg1) == "a"
 
         # Test two-sound segment
-        seg2 = maniphono.Segment([snd1, snd2])
+        seg2 = maniphono.SoundSegment([snd1, snd2])
         assert len(seg2) == 2
         assert str(seg2) == "a+j"
 
         # Test three-sound segment
-        seg3 = maniphono.Segment([snd0, snd1, snd2])
+        seg3 = maniphono.SoundSegment([snd0, snd1, snd2])
         assert len(seg3) == 3
         assert str(seg3) == "w+a+j"
 
