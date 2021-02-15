@@ -127,6 +127,10 @@ class Sound:
         for fvalue in fvalues:
             if rep := self.set_fvalue(fvalue, check=False):
                 replaced.append(rep)
+            # Mark the sound as partial in all cases of removal
+            # TODO: in some cases the sound might not be partial, like removing an aspiration, check this
+            if fvalue[0] == "-":
+                self.partial = True
 
         # Run a check if so requested (default)
         if check:
