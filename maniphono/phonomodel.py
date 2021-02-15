@@ -279,9 +279,9 @@ class PhonoModel:
 
         # If the feature value is already set, not need to do the whole operation,
         # including clearing the cache, so just return to confirm
-        if new_fvalue[0] != "+" and new_fvalue in fvalues:
+        if new_fvalue[0] not in "+-" and new_fvalue in fvalues:
             return fvalues, new_fvalue
-        elif new_fvalue[1:] in fvalues:
+        elif new_fvalue[0] == "+" and new_fvalue[1:] in fvalues:
             return fvalues, new_fvalue[1:]
 
         # We need a different treatment for setting positive values (i.e. "voiced")

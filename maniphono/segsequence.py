@@ -19,7 +19,7 @@ from typing import List
 from .segment import Segment, SoundSegment, BoundarySegment
 from .sound import Sound
 
-
+# TODO: accept a SeqSequence where it is accepting a List[Segment]?
 class SegSequence:
     def __init__(self, segments: List[Segment], boundaries: bool = True) -> None:
         """
