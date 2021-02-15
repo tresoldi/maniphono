@@ -100,6 +100,9 @@ def parse_sequence(seq: str, boundaries: bool = True) -> SegSequence:
 
     segments = []
     for grapheme in seq.split():
-        segments.append(SoundSegment([Sound(grapheme)]))
+        if grapheme == "#":
+            segments.append(BoundarySegment())
+        else:
+            segments.append(SoundSegment([Sound(grapheme)]))
 
     return SegSequence(segments, boundaries=boundaries)
