@@ -4,9 +4,9 @@
 maniphono __init__.py
 """
 
-__version__ = "0.2.1"
+__version__ = "0.3rc1"
 __author__ = "Tiago Tresoldi"
-__email__ = "tresoldi@shh.mpg.de"
+__email__ = "tiago.tresoldi@lingfil.uu.se"
 
 # Build the namespace
 from maniphono.phonomodel import (

@@ -14,7 +14,7 @@ with open("requirements.txt", encoding="utf-8") as fp:
 
 # This call to setup() does all the work
 setup(
-    author_email="tresoldi@shh.mpg.de",
+    author_email="tiago.tresoldi@lingfil.uu.se",
     author="Tiago Tresoldi",
     classifiers=[
         "License :: OSI Approved :: MIT License",
@@ -36,6 +36,6 @@ setup(
     test_suite="tests",
     tests_require=[],
     url="https://github.com/tresoldi/maniphono",
-    version="0.2.1",  # remember to sync with __init__.py
+    version="0.3rc1",  # remember to sync with __init__.py
     zip_safe=False,
 )
