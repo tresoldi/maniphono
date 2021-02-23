@@ -32,7 +32,7 @@ setup(
     long_description=README_FILE,
     name="maniphono",
     packages=["maniphono", "models"],
-    python_requires=">=3.8",
+    python_requires=">=3.6",
     test_suite="tests",
     tests_require=[],
     url="https://github.com/tresoldi/maniphono",
