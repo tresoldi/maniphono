@@ -4,7 +4,7 @@
 maniphono __init__.py
 """
 
-__version__ = "0.3rc1"
+__version__ = "0.3"
 __author__ = "Tiago Tresoldi"
 __email__ = "tiago.tresoldi@lingfil.uu.se"
 

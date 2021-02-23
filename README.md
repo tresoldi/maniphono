@@ -4,7 +4,7 @@
 [![PyPI](https://img.shields.io/pypi/v/maniphono.svg)](https://pypi.org/project/maniphono)
 ![build](https://github.com/tresoldi/maniphono/workflows/Python%20package/badge.svg)
 
-Python library for the symbolic manipulation of phoneme representations
+A Python library for the symbolic manipulation of phonological entities
 
 ## Installation
 
@@ -212,4 +212,36 @@ and `sklearn` regressor, which can take a while.
 3.7590891821444608
 >>> maniphono.model_mipa.distance("a", "ʒ")
 30.419280377524366
+```
+
+## Author and citation
+
+The library is developed by Tiago Tresoldi (tiago.tresoldi@lingfil.uu.se).
+
+The author has received funding from the Riksbankens Jubileumsfond
+(grant agreement ID: [MXM19-1087:1](https://www.rj.se/en/anslag/2019/cultural-evolution-of-texts/),
+[Cultural Evolution of Texts](https://github.com/evotext/)).
+
+During the first stages of development, the author received funding from the
+European Research Council (ERC) under the European Union’s Horizon 2020
+research and innovation programme (grant agreement
+No. [ERC Grant #715618](https://cordis.europa.eu/project/rcn/206320/factsheet/en),
+[Computer-Assisted Language Comparison](https://digling.org/calc/)).
+
+If you use `maniphono`, please cite it as:
+
+  > Tresoldi, Tiago (2021). Maniphono, a library for the symbolic manipulation of phonological
+  > entities. Version 0.3. Uppsala: Uppsala Universitet.
+
+In BibTeX:
+
+```bibtex
+@misc{Tresoldi2021polyvector,
+  author = {Tresoldi, Tiago},
+  title = {Maniphono, a library for the symbolic manipulation of phonological entities. Version 0.3},
+  howpublished = {\url{https://github.com/tresoldi/maniphono}},
+  address = {Uppsala},
+  publisher = {Uppsala Universitet}
+  year = {2021},
+}
 ```
