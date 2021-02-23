@@ -190,7 +190,8 @@ class PhonoModel:
         # constraints are met
         for grapheme, fvalues in _graphemes.items():
             # Check the grapheme constraints; we can adopt the walrus operator later
-            if failed := self.fail_constraints(fvalues):
+            failed = self.fail_constraints(fvalues)
+            if failed:
                 raise ValueError(f"/{grapheme}/ fails constraint check on {failed}")
 
             # Update the internal catalog
