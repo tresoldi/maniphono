@@ -236,7 +236,7 @@ If you use `maniphono`, please cite it as:
 In BibTeX:
 
 ```bibtex
-@misc{Tresoldi2021polyvector,
+@misc{Tresoldi2021maniphono,
   author = {Tresoldi, Tiago},
   title = {Maniphono, a library for the symbolic manipulation of phonological entities. Version 0.3},
   howpublished = {\url{https://github.com/tresoldi/maniphono}},
