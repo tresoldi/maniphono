@@ -111,9 +111,11 @@ class PhonoModel:
                 # Store values structs, which includes parsing the diacritics and
                 # the constraint string ("constraints" will be an empty list if
                 # row["CONSTRAINTS"] is empty)
-                if (prefix := replace_codepoints(row["PREFIX"])) :
+                prefix = replace_codepoints(row["PREFIX"])
+                suffix = replace_codepoints(row["SUFFIX"])
+                if prefix:
                     self._x["diacritics"][prefix] = fvalue
-                if (suffix := replace_codepoints(row["SUFFIX"])) :
+                if suffix:
                     self._x["diacritics"][suffix] = fvalue
 
                 self.fvalues[fvalue] = {

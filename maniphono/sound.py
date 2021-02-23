@@ -125,7 +125,8 @@ class Sound:
         # note that we don't run checks here, but only after all values have been added
         replaced = []
         for fvalue in fvalues:
-            if rep := self.set_fvalue(fvalue, check=False):
+            rep = self.set_fvalue(fvalue, check=False)
+            if rep:
                 replaced.append(rep)
             # Mark the sound as partial in all cases of removal
             # TODO: in some cases the sound might not be partial, like removing an aspiration, check this
