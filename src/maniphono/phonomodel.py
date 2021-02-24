@@ -70,7 +70,7 @@ class PhonoModel:
         # and the sounds later
         # TODO: store `model_path` in self and remove as parameter from init methods
         if not model_path:
-            model_path = pathlib.Path(__file__).parent.parent / "models" / name
+            model_path = pathlib.Path(__file__).parent.parent.parent / "models" / name
         else:
             model_path = pathlib.Path(model_path).absolute()
 
