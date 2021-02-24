@@ -231,14 +231,14 @@ No. [ERC Grant #715618](https://cordis.europa.eu/project/rcn/206320/factsheet/en
 If you use `maniphono`, please cite it as:
 
   > Tresoldi, Tiago (2021). Maniphono, a library for the symbolic manipulation of phonological
-  > entities. Version 0.3. Uppsala: Uppsala Universitet.
+  > entities. Version 0.3.1. Uppsala: Uppsala Universitet.
 
 In BibTeX:
 
 ```bibtex
 @misc{Tresoldi2021maniphono,
   author = {Tresoldi, Tiago},
-  title = {Maniphono, a library for the symbolic manipulation of phonological entities. Version 0.3},
+  title = {Maniphono, a library for the symbolic manipulation of phonological entities. Version 0.3.1},
   howpublished = {\url{https://github.com/tresoldi/maniphono}},
   address = {Uppsala},
   publisher = {Uppsala Universitet}

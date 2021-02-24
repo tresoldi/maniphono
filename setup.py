@@ -1,5 +1,8 @@
+"""Setup file."""
+
+# Import Python standard libraries
+from setuptools import setup
 import pathlib
-from setuptools import setup, find_packages
 
 # The directory containing this file
 LOCAL_PATH = pathlib.Path(__file__).parent
@@ -36,6 +39,6 @@ setup(
     test_suite="tests",
     tests_require=[],
     url="https://github.com/tresoldi/maniphono",
-    version="0.3",  # remember to sync with __init__.py
+    version="0.3.1",  # remember to sync with __init__.py
     zip_safe=False,
 )
