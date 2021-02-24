@@ -21,8 +21,9 @@ def normalize(grapheme: str) -> str:
     Normalize the string representation of a grapheme.
 
     Currently, normalization involves NFD Unicode normalization and stripping any leading
-    and trailing white spaces. As these might change in the future, it is suggested to
-    always use this function instead of reimplementing it in code each time.
+    and trailing white spaces. As these opeations might change in the future, it is
+    suggested to always use this function instead of reimplementing it in code
+    each time.
 
     @param grapheme: The grapheme to be normalized.
     @return: The normalized version of the grapheme.
@@ -150,7 +151,7 @@ def read_distance_matrix(filepath: Optional[str] = None) -> dict:
     """
 
     if not filepath:
-        filepath = Path(__file__).parent.parent / "distances" / "default.tsv"
+        filepath = Path(__file__).parent.parent.parent / "distances" / "default.tsv"
         filepath = filepath.as_posix()
 
     matrix = {}
