@@ -1,6 +1,3 @@
-#!/usr/bin/env python3
-# pylint: disable=no-self-use
-
 """
 test_sequence
 =============
@@ -16,44 +13,33 @@ from pathlib import Path
 import maniphono
 
 
-class TestSequence(unittest.TestCase):
-    """
-    Suite of tests for sequences.
-    """
+def test_from_segments():
+    # Define the sounds that will be used
+    snd1 = maniphono.Sound("p")
+    snd2 = maniphono.Sound("a")
+    snd3 = maniphono.Sound("w")
 
-    def test_from_segments(self):
-        # Define the sounds that will be used
-        snd1 = maniphono.Sound("p")
-        snd2 = maniphono.Sound("a")
-        snd3 = maniphono.Sound("w")
+    # Define the segments that will be used
+    seg1 = maniphono.SoundSegment(snd1)
+    seg2 = maniphono.SoundSegment(snd2)
+    seg3 = maniphono.SoundSegment([snd2, snd3])
 
-        # Define the segments that will be used
-        seg1 = maniphono.SoundSegment(snd1)
-        seg2 = maniphono.SoundSegment(snd2)
-        seg3 = maniphono.SoundSegment([snd2, snd3])
+    # Test single-sound sequence
+    seq1 = maniphono.SegSequence([seg1])
+    assert len(seq1) == 3  # TODO: should really include boundaries?
+    assert str(seq1) == "# p #"
 
-        # Test single-sound sequence
-        seq1 = maniphono.SegSequence([seg1])
-        assert len(seq1) == 3 # TODO: should really include boundaries?
-        assert str(seq1) == "# p #"
+    # Test two-sound sequence (without diphthong)
+    seq2 = maniphono.SegSequence([seg1, seg2])
+    assert len(seq2) == 4
+    assert str(seq2) == "# p a #"
 
-        # Test two-sound sequence (without diphthong)
-        seq2 = maniphono.SegSequence([seg1, seg2])
-        assert len(seq2) == 4
-        assert str(seq2) == "# p a #"
+    # Test two-sound sequence (with diphthong)
+    seq3 = maniphono.SegSequence([seg1, seg3])
+    assert len(seq3) == 4
+    assert str(seq3) == "# p a+w #"
 
-        # Test two-sound sequence (with diphthong)
-        seq3 = maniphono.SegSequence([seg1, seg3])
-        assert len(seq3) == 4
-        assert str(seq3) == "# p a+w #"
-
-        # Test complex sequence
-        seq4 = maniphono.SegSequence([seg1, seg2, seg1, seg3])
-        assert len(seq4) == 6
-        assert str(seq4) == "# p a p a+w #"
-
-
-if __name__ == "__main__":
-    # Explicitly creating and running a test suite allows to profile it
-    suite = unittest.TestLoader().loadTestsFromTestCase(TestSequence)
-    unittest.TextTestRunner(verbosity=2).run(suite)
+    # Test complex sequence
+    seq4 = maniphono.SegSequence([seg1, seg2, seg1, seg3])
+    assert len(seq4) == 6
+    assert str(seq4) == "# p a p a+w #"
