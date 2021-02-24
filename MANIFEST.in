@@ -3,6 +3,7 @@ include CODE_OF_CONDUCT.md
 include CONTRIBUTING.md
 include AUTHORS.md
 include LICENSE
+include requirements.txt
 recursive-include distances *.csv *.tsv
 recursive-include docs *.csv *.tsv
 recursive-include models *.csv *.tsv
