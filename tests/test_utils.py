@@ -19,4 +19,3 @@ def test_codepoint2glyph():
 
 def test_replace_codepoints():
     assert maniphono.replace_codepoints("aU+0283o") == "aʃo"
-

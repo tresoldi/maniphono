@@ -27,10 +27,12 @@ def test_parse_constraints():
     assert ret[0][0] == {"type": "presence", "fvalue": "consonant"}
 
     # Test multiple values with positive and negative
+    # Note that we test the various positions, as there is no point in making `parse_contraints()` sort its
+    # output each time just to make the test easiert
     ret = maniphono.phonomodel.parse_constraints("+cons;plos/-voiceless;!front")
     assert len(ret) == 4
     assert len(ret[0]) == 1
-    assert ret[3][0] == {"type": "absence", "fvalue": "front"}
+    assert {"type": "absence", "fvalue": "front"} in [entry[0] for entry in ret]
 
     # Test invalid value names
     with pytest.raises(ValueError):
@@ -147,11 +149,16 @@ def test_values2graphemes():
 def test_minimal_matrix():
     mtx = maniphono.model_mipa.minimal_matrix(["t", "d"])
     assert len(mtx) == 2
-    assert len(mtx["voiceless", "alveolar", "plosive", "consonant"]) == 1  # /t/
     assert (
-        mtx["voiceless", "alveolar", "plosive", "consonant"]["phonation"] == "voiceless"
+        len(mtx[frozenset(["voiceless", "alveolar", "plosive", "consonant"])]) == 1
     )  # /t/
-    assert "manner" not in mtx["voiced", "alveolar", "plosive", "consonant"]  # /d/
+    assert (
+        mtx[frozenset(["voiceless", "alveolar", "plosive", "consonant"])]["phonation"]
+        == "voiceless"
+    )  # /t/
+    assert (
+        "manner" not in mtx[frozenset(["voiced", "alveolar", "plosive", "consonant"])]
+    )  # /d/
 
     vct = maniphono.model_mipa.minimal_matrix(["t", "d"], vector=True)
     assert len(vct) == 2
@@ -159,11 +166,16 @@ def test_minimal_matrix():
 
     mtx = maniphono.model_mipa.minimal_matrix(["t", "d", "s"])
     assert len(mtx) == 3
-    assert len(mtx["voiceless", "alveolar", "plosive", "consonant"]) == 2  # /t/
     assert (
-        mtx["voiceless", "alveolar", "plosive", "consonant"]["phonation"] == "voiceless"
+        len(mtx[frozenset(["voiceless", "alveolar", "plosive", "consonant"])]) == 2
     )  # /t/
-    assert "manner" in mtx["voiced", "alveolar", "plosive", "consonant"]  # /d/
+    assert (
+        mtx[frozenset(["voiceless", "alveolar", "plosive", "consonant"])]["phonation"]
+        == "voiceless"
+    )  # /t/
+    assert (
+        "manner" in mtx[frozenset(["voiced", "alveolar", "plosive", "consonant"])]
+    )  # /d/
 
 
 # TODO: add test with other models
@@ -192,10 +204,10 @@ def test_value_vector():
 
 def test_parse_grapheme():
     TESTS = {
-        "a": ("unrounded", "open", "front", "vowel"),
-        "b": ("voiced", "bilabial", "plosive", "consonant"),
-        "p[voiced]": ("voiced", "bilabial", "plosive", "consonant"),
-        "b[voiceless]": ("voiceless", "bilabial", "plosive", "consonant"),
+        "a": frozenset(["unrounded", "open", "front", "vowel"]),
+        "b": frozenset(["voiced", "bilabial", "plosive", "consonant"]),
+        "p[voiced]": frozenset(["voiced", "bilabial", "plosive", "consonant"]),
+        "b[voiceless]": frozenset(["voiceless", "bilabial", "plosive", "consonant"]),
     }
     for grapheme, ref in TESTS.items():
         ret, partial = maniphono.model_mipa.parse_grapheme(grapheme)

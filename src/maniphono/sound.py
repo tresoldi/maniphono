@@ -191,8 +191,10 @@ class Sound:
         Overload the `+` operator.
         """
 
-        # The [:] syntax guarantees we make a copy of self.fvalues if it is a list
-        snd = Sound(description=self.fvalues[:], partial=self.partial, model=self.model)
+        # TODO: make sure we can pass a frozendict, instead of list casting
+        snd = Sound(
+            description=list(self.fvalues), partial=self.partial, model=self.model
+        )
         snd.set_fvalues(other)
 
         return snd

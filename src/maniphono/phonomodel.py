@@ -2,14 +2,14 @@
 Module for phonological model abstraction and operations.
 """
 
-# Import Python standard libraries
 import csv
 import itertools
 import pathlib
 import re
+
+# Import Python standard libraries
 from collections import defaultdict, Counter
 from typing import Optional, Union, Sequence, Tuple
-
 
 # Import local modules
 from .utils import (
@@ -22,8 +22,6 @@ from .utils import (
     split_fvalues_str,
 )
 
-
-# TODO: Setup an "fvalue bundle" type, extending tuple, always sorted
 
 class PhonoModel:
     """
@@ -54,7 +52,6 @@ class PhonoModel:
         # Build a path for reading the model (if it was not provided, we assume it
         # lives in the `model/` directory), and then load the features/values first
         # and the sounds later
-        # TODO: store `model_path` in self and remove as parameter from init methods
         if not model_path:
             model_path = pathlib.Path(__file__).parent.parent.parent / "models" / name
         else:
@@ -142,26 +139,23 @@ class PhonoModel:
             _graphemes = {}
             for row in csv.DictReader(csvfile):
                 grapheme = normalize(row["GRAPHEME"])
-                _graphemes[grapheme] = self.sort_fvalues(
-                    row["DESCRIPTION"], no_rank=True
-                )
-
+                _graphemes[grapheme] = split_fvalues_str(row["DESCRIPTION"])
                 if row["CLASS"] == "True":
                     self._classes.append(grapheme)
 
-        # Check for duplicate descriptions
-        for desc, count in Counter(_graphemes.values()).items():
-            if count > 1:
-                at_fault = "/".join(
-                    [
-                        grapheme
-                        for grapheme, description in _graphemes.items()
-                        if description == desc
-                    ]
-                )
-                raise ValueError(
-                    f"`{desc}` is used for more than one sound ({at_fault})"
-                )
+        # Check for duplicate descriptions.
+        dupl_desc = [
+            desc for desc, count in Counter(_graphemes.values()).items() if count > 1
+        ]
+        for desc in dupl_desc:
+            at_fault = "/".join(
+                [
+                    grapheme
+                    for grapheme, description in _graphemes.items()
+                    if description == desc
+                ]
+            )
+            raise ValueError(f"`{desc}` is used for more than one sound ({at_fault})")
 
         # Check for bad fvalues names
         bad_model_fvalues = [
@@ -181,7 +175,6 @@ class PhonoModel:
                 raise ValueError(f"/{grapheme}/ fails constraint check on {failed}")
 
             # Update the internal catalog
-            fvalues = self.sort_fvalues(fvalues)
             self._grapheme2fvalues[grapheme] = fvalues
             self._fvalues2grapheme[fvalues] = grapheme
 
@@ -194,7 +187,9 @@ class PhonoModel:
         """
 
         # We first make sure the value_tuple is actually an expected, sorted tuple
-        fvalues = self.sort_fvalues(fvalues)
+        # TODO: can we drop this isinstance check?
+        if isinstance(fvalues, str):
+            fvalues = split_fvalues_str(fvalues)
         grapheme = self._fvalues2grapheme.get(fvalues, None)
 
         # If no match, we look for the closest one
@@ -303,7 +298,8 @@ class PhonoModel:
             raise ValueError(f"FValue {new_fvalue} breaks a constraint")
 
         # Sort the new `fvalues`, which also makes sure we return a tuple
-        return self.sort_fvalues(fvalues), prev_fvalue
+        # return self.sort_fvalues(fvalues), prev_fvalue
+        return frozenset(fvalues), prev_fvalue
 
     def parse_grapheme(self, grapheme: str) -> Tuple[Sequence, bool]:
         """
@@ -470,9 +466,7 @@ class PhonoModel:
 
         # Remove sounds that are classes
         if not classes:
-            pass_test = [
-                sound for sound in pass_test if sound not in self._classes
-            ]
+            pass_test = [sound for sound in pass_test if sound not in self._classes]
 
         return pass_test
 
@@ -525,7 +519,7 @@ class PhonoModel:
             for sound_fvalues in sounds:
                 for fvalue in sound_fvalues:
                     if fvalue in fvalues:
-                        matrix[sound_fvalues][feature] = fvalue
+                        matrix[frozenset(sound_fvalues)][feature] = fvalue
                         break
 
         # Return only fvalues, if a vector was requested, or a dict (instead of a
@@ -677,7 +671,7 @@ class PhonoModel:
         else:
             fvalues = source
 
-        fvalues = self.sort_fvalues(fvalues)
+        # fvalues = self.sort_fvalues(fvalues)
         if fvalues in self._fvalues2grapheme:
             grapheme = self._fvalues2grapheme[fvalues]
             if not all([classes, grapheme in self._classes]):

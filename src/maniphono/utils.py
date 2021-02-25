@@ -81,7 +81,8 @@ def parse_constraints(constraints_str: str) -> list:
 
 
 # TODO: write test with all delimiters
-def split_fvalues_str(fvalues: str) -> list:
+# TODO: rename to show set return
+def split_fvalues_str(fvalues: str) -> frozenset:
     """
     Split a string with multiple feature values or constraints.
 
@@ -99,7 +100,7 @@ def split_fvalues_str(fvalues: str) -> list:
 
     fvalues = re.sub(r"\s+", " ", fvalues.strip())
 
-    return fvalues.split()
+    return frozenset(fvalues.split())
 
 
 def codepoint2glyph(codepoint: str) -> str:
@@ -136,7 +137,6 @@ def replace_codepoints(text: str) -> str:
         return codepoint2glyph(match.group())
 
     return RE_CODEPOINT.sub(_match_repr, text)
-
 
 
 def match_initial(string: str, candidates: List[str]) -> Tuple[str, Optional[str]]:

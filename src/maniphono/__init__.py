@@ -23,6 +23,13 @@ from maniphono.metrics import DistanceRegressor
 # Build the exported namespace; note that functions from
 # the common/utils module are not included (but they are available
 # with full qualified usage, like `maniphono.codepoint2glyph`)
-__all__ = ["PhonoModel", "model_mipa", "model_tresoldi",
-           "Sound", "SoundSegment", "SegSequence", "parse_sequence",
-           "DistanceRegressor"]
+__all__ = [
+    "PhonoModel",
+    "model_mipa",
+    "model_tresoldi",
+    "Sound",
+    "SoundSegment",
+    "SegSequence",
+    "parse_sequence",
+    "DistanceRegressor",
+]
