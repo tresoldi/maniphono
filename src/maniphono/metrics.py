@@ -1,5 +1,5 @@
 from typing import Optional, Union
-from pathlib import Path
+import pathlib
 import csv
 
 # Import 3rd party libraries
