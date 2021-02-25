@@ -26,7 +26,6 @@ from .utils import (
 
 # TODO: Setup an "fvalue bundle" type, extending tuple, always sorted
 
-# TODO: Replace the ._x solution with normal properties, even though pylint complains
 class PhonoModel:
     """
     Class for representing a phonological model.
@@ -48,12 +47,10 @@ class PhonoModel:
         self.fvalues = {}  # dictionary of structures with fvalues, as from CSV file
 
         # Dictionary with extra, internal material
-        self._x = {
-            "grapheme2fvalues": {},  # auxiliary dict for mapping
-            "fvalues2grapheme": {},  # auxiliary dict for mapping
-            "diacritics": {},  # auxiliary dict for parsing/representation
-            "classes": [],  # auxiliary list to distinguish phonemes/classes
-        }
+        self._grapheme2fvalues = {}
+        self._fvalues2grapheme = {}
+        self._diacritics = {}
+        self._classes = []
 
         # Build a path for reading the model (if it was not provided, we assume it
         # lives in the `model/` directory), and then load the features/values first
@@ -104,9 +101,9 @@ class PhonoModel:
                 prefix = replace_codepoints(row["PREFIX"])
                 suffix = replace_codepoints(row["SUFFIX"])
                 if prefix:
-                    self._x["diacritics"][prefix] = fvalue
+                    self._diacritics[prefix] = fvalue
                 if suffix:
-                    self._x["diacritics"][suffix] = fvalue
+                    self._diacritics[suffix] = fvalue
 
                 self.fvalues[fvalue] = {
                     "feature": feature,
@@ -151,7 +148,7 @@ class PhonoModel:
                 )
 
                 if row["CLASS"] == "True":
-                    self._x["classes"].append(grapheme)
+                    self._classes.append(grapheme)
 
         # Check for duplicate descriptions
         for desc, count in Counter(_graphemes.values()).items():
@@ -186,8 +183,8 @@ class PhonoModel:
 
             # Update the internal catalog
             fvalues = self.sort_fvalues(fvalues)
-            self._x["grapheme2fvalues"][grapheme] = fvalues
-            self._x["fvalues2grapheme"][fvalues] = grapheme
+            self._grapheme2fvalues[grapheme] = fvalues
+            self._fvalues2grapheme[fvalues] = grapheme
 
     def build_grapheme(self, fvalues: Sequence) -> str:
         """
@@ -199,7 +196,7 @@ class PhonoModel:
 
         # We first make sure the value_tuple is actually an expected, sorted tuple
         fvalues = self.sort_fvalues(fvalues)
-        grapheme = self._x["fvalues2grapheme"].get(fvalues, None)
+        grapheme = self._fvalues2grapheme.get(fvalues, None)
 
         # If no match, we look for the closest one
         if not grapheme:
@@ -314,7 +311,7 @@ class PhonoModel:
         Parse a grapheme according to the library standard.
 
         The information on partiality, the second element of the returned tuple, is
-        currently obtained from the `self._x["classes"]` internal structure. Note that,
+        currently obtained from the `self._classes` internal structure. Note that,
         while the information is always returned, it is up to the calling function
         (usually the homonym `.parse_grapheme()` method of the `Sound` class) to
         decide whether and how to use this information.
@@ -327,8 +324,8 @@ class PhonoModel:
         """
 
         # Used model/cache graphemes if available; it is already a sorted tuple
-        if grapheme in self._x["grapheme2fvalues"]:
-            return self._x["grapheme2fvalues"][grapheme], grapheme in self._x["classes"]
+        if grapheme in self._grapheme2fvalues:
+            return self._grapheme2fvalues[grapheme], grapheme in self._classes
 
         # Capture list of modifiers, if any; no need to go full regex
         modifiers = []
@@ -346,22 +343,22 @@ class PhonoModel:
         #       iterate over characters
         base_grapheme = ""
         while grapheme:
-            grapheme, diacritic = match_initial(grapheme, self._x["diacritics"])
+            grapheme, diacritic = match_initial(grapheme, self._diacritics)
             if not diacritic:
                 base_grapheme += grapheme[0]
                 grapheme = grapheme[1:]
             else:
-                modifiers.insert(0, self._x["diacritics"][diacritic])
+                modifiers.insert(0, self._diacritics[diacritic])
 
         # Add base character and modifiers
-        fvalues = self._x["grapheme2fvalues"][base_grapheme]
+        fvalues = self._grapheme2fvalues[base_grapheme]
         for mod in modifiers:
             # We only perform the check when adding the last modifier in the list
             check = mod == modifiers[-1]
             fvalues, _ = self.set_fvalue(fvalues, mod, check=check)
 
         # No need to sort, as it is already returned as a sorted tuple by .set_fvalue()
-        return fvalues, base_grapheme in self._x["classes"]
+        return fvalues, base_grapheme in self._classes
 
     # TODO: `no_rank` is confusing as a name, look for an alternative
     def sort_fvalues(self, fvalues: Sequence, no_rank: bool = False) -> Tuple:
@@ -456,7 +453,7 @@ class PhonoModel:
         # slower. It is better to perform a separately implemented check here,
         # unless we refactor the entire class.
         pass_test = []
-        for fvalues, sound in self._x["fvalues2grapheme"].items():
+        for fvalues, sound in self._fvalues2grapheme.items():
             satisfy = itertools.chain.from_iterable(
                 [
                     [
@@ -475,7 +472,7 @@ class PhonoModel:
         # Remove sounds that are classes
         if not classes:
             pass_test = [
-                sound for sound in pass_test if sound not in self._x["classes"]
+                sound for sound in pass_test if sound not in self._classes
             ]
 
         return pass_test
@@ -682,10 +679,10 @@ class PhonoModel:
             fvalues = source
 
         fvalues = self.sort_fvalues(fvalues)
-        if fvalues in self._x["fvalues2grapheme"]:
-            grapheme = self._x["fvalues2grapheme"][fvalues]
-            if not all([classes, grapheme in self._x["classes"]]):
-                return self._x["fvalues2grapheme"][fvalues], fvalues
+        if fvalues in self._fvalues2grapheme:
+            grapheme = self._fvalues2grapheme[fvalues]
+            if not all([classes, grapheme in self._classes]):
+                return self._fvalues2grapheme[fvalues], fvalues
 
         # Compute a similarity score based on inverse rank for all
         # graphemes, building a string with the representation if we hit a
@@ -693,9 +690,9 @@ class PhonoModel:
         best_score = 0.0
         best_fvalues = None
         grapheme = None
-        for candidate_v, candidate_g in self._x["fvalues2grapheme"].items():
+        for candidate_v, candidate_g in self._fvalues2grapheme.items():
             # Don't include classes if asked so
-            if not classes and candidate_g in self._x["classes"]:
+            if not classes and candidate_g in self._classes:
                 continue
 
             # Compute a score for the closest match; note that there is a penalty for
@@ -722,7 +719,7 @@ class PhonoModel:
 
         _str = f"[`{self.name}` model ({len(self.features)} features, "
         _str += f"{len(self.fvalues)} fvalues, "
-        _str += f"{len(self._x['grapheme2fvalues'])} graphemes)]"
+        _str += f"{len(self._grapheme2fvalues)} graphemes)]"
 
         return _str
 
