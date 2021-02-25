@@ -138,30 +138,6 @@ def replace_codepoints(text: str) -> str:
     return RE_CODEPOINT.sub(_match_repr, text)
 
 
-# TODO: extend return annotation
-def read_distance_matrix(filepath: Optional[str] = None) -> dict:
-    """
-    Read a distance matrix, used to seed a regressor.
-
-    @param filepath: Path to the TSV file containing the distance matrix used to seed the
-        regressor. If not provided, will default to one derived from data presented in
-        Mielke (2012) and included with the library.
-    @return: A dictionary of dictionaries with the distances as floating-point
-        values.
-    """
-
-    if not filepath:
-        filepath = Path(__file__).parent.parent.parent / "distances" / "default.tsv"
-        filepath = filepath.as_posix()
-
-    matrix = {}
-    with open(filepath, encoding="utf-8") as tsvfile:
-        for row in csv.DictReader(tsvfile, delimiter="\t"):
-            grapheme = row.pop("GRAPHEME")
-            matrix[grapheme] = {gr: float(dist) for gr, dist in row.items()}
-
-    return matrix
-
 
 def match_initial(string: str, candidates: List[str]) -> Tuple[str, Optional[str]]:
     """

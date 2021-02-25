@@ -9,14 +9,20 @@ __email__ = "tiago.tresoldi@lingfil.uu.se"
 
 # Import from the various modules
 from maniphono.phonomodel import PhonoModel, model_mipa, model_tresoldi
-from maniphono.sound import Sound  # noqa: F401
+from maniphono.sound import Sound
 from maniphono.segment import SoundSegment
-from maniphono.segsequence import SegSequence, parse_sequence  # noqa: F401
+from maniphono.segsequence import SegSequence, parse_sequence
 from maniphono.utils import (
     codepoint2glyph,
     replace_codepoints,
-    read_distance_matrix,
     parse_constraints,
     split_fvalues_str,
-)  # pyflakes.ignore
+)
 from maniphono.metrics import DistanceRegressor
+
+# Build the exported namespace; note that functions from
+# the common/utils module are not included (but they are available
+# with full qualified usage, like `maniphono.codepoint2glyph`)
+__all__ = ["PhonoModel", "model_mipa", "model_tresoldi",
+           "Sound", "SoundSegment", "SegSequence", "parse_sequence",
+           "DistanceRegressor"]

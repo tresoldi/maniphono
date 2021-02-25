@@ -20,8 +20,3 @@ def test_codepoint2glyph():
 def test_replace_codepoints():
     assert maniphono.replace_codepoints("aU+0283o") == "aʃo"
 
-
-def test_read_distance_matrix():
-    dm = maniphono.read_distance_matrix()
-    assert len(dm) == 181
-    assert dm["a"]["b"] == pytest.approx(10.42)

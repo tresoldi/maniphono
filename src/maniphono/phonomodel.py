@@ -18,7 +18,6 @@ from .utils import (
     match_initial,
     normalize,
     parse_constraints,
-    read_distance_matrix,
     replace_codepoints,
     split_fvalues_str,
 )
