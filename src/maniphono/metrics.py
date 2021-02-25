@@ -132,7 +132,7 @@ class DistanceRegressor:
         """
 
         if not filepath:
-            filepath = Path(__file__).parent.parent.parent / "distances" / "default.tsv"
+            filepath = pathlib.Path(__file__).parent.parent.parent / "distances" / "default.tsv"
             filepath = filepath.as_posix()
 
         matrix = {}
