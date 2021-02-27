@@ -12,11 +12,11 @@ from maniphono.phonomodel import PhonoModel, model_mipa, model_tresoldi
 from maniphono.sound import Sound
 from maniphono.segment import SoundSegment
 from maniphono.segsequence import SegSequence, parse_sequence
-from maniphono.utils import (
+from maniphono.common import (
     codepoint2glyph,
     replace_codepoints,
     parse_constraints,
-    split_fvalues_str,
+    parse_fvalues,
 )
 from maniphono.metrics import DistanceRegressor
 

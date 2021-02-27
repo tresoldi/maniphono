@@ -137,7 +137,7 @@ def parse_segment(grapheme: str) -> Segment:
     else:
         negate = False
 
-    # TODO: temporary holders for complex classes in alteruphno
+    # TODO: temporary holders for complex snd_classes in alteruphno
     if grapheme == "SVL":
         return SoundSegment(
             Sound(description="voiceless plosive consonant", partial=True)

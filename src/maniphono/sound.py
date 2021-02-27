@@ -7,7 +7,7 @@ from typing import Optional, Union
 
 # Import local modules
 from .phonomodel import PhonoModel, model_mipa
-from .utils import split_fvalues_str
+from .common import parse_fvalues
 
 
 class Sound:
@@ -42,7 +42,7 @@ class Sound:
             provided for initialization.
         @param partial: A boolean indicating whether the sound should be considered a
             partially defined one. Partially defined sounds (in most cases, the
-            equivalent of "sound classes") work differently in terms of comparison, and
+            equivalent of "sound snd_classes") work differently in terms of comparison, and
             might be used differently by the user. The argument defaults to `None`,
             indicating that the user should decide how to treat sounds when there is not
             explicit information on them being partially defined or not.
@@ -119,7 +119,7 @@ class Sound:
         # feature values, which can preprocess. Note that this allows to use a
         # string with a single descriptor without any special treatment.
         if isinstance(fvalues, str):
-            fvalues = split_fvalues_str(fvalues)
+            fvalues = parse_fvalues(fvalues)
 
         # Add all fvalues, collecting the replacements which are stripped of `None`s;
         # note that we don't run checks here, but only after all values have been added
@@ -206,7 +206,7 @@ class Sound:
         """
 
         fvalues = [
-            fvalue for fvalue in self.fvalues if fvalue not in split_fvalues_str(other)
+            fvalue for fvalue in self.fvalues if fvalue not in parse_fvalues(other)
         ]
 
         return Sound(
@@ -219,7 +219,7 @@ class Sound:
         Return a hash of the current sound.
         """
 
-        return hash(self.model.sort_fvalues(self.fvalues))
+        return hash(self.fvalues)
 
     # TODO: decide what to do with `.partial`, as this will interfere also with <= and >=
     def __eq__(self, other) -> bool:

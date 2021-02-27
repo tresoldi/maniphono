@@ -160,7 +160,7 @@ def test_minimal_matrix():
         "manner" not in mtx[frozenset(["voiced", "alveolar", "plosive", "consonant"])]
     )  # /d/
 
-    vct = maniphono.model_mipa.minimal_matrix(["t", "d"], vector=True)
+    vct = maniphono.model_mipa.minimal_vector(["t", "d"])
     assert len(vct) == 2
     assert tuple(vct[0].items()) == (("phonation", "voiceless"),)
 

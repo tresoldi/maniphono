@@ -6,7 +6,7 @@ import csv
 import re
 import unicodedata
 from pathlib import Path
-from typing import List, Optional, Tuple
+from typing import List, Optional, Sequence, Tuple
 
 # Pattern for unicode codepoint replacement
 RE_CODEPOINT = re.compile(r"[Uu]\+[0-9A-Fa-f]{4}")
@@ -61,7 +61,7 @@ def parse_constraints(constraints_str: str) -> list:
 
     # Obtain all constraints and check for disjunctions
     constraints = []
-    for constr_str in split_fvalues_str(constraints_str):
+    for constr_str in parse_fvalues(constraints_str):
         # Collect each constraint group
         constr_group = []
         for constr in constr_str.split("|"):
@@ -81,26 +81,30 @@ def parse_constraints(constraints_str: str) -> list:
 
 
 # TODO: write test with all delimiters
-# TODO: rename to show set return
-def split_fvalues_str(fvalues: str) -> frozenset:
+# TODO: should accept any iterable?
+def parse_fvalues(fvalues: Sequence) -> frozenset:
     """
-    Split a string with multiple feature values or constraints.
+    Parse a sequence of fvalues as a frozenset.
 
-    This function allows to use different delimiters and guarantees that all methods will
+    This function is mostly used for parsing string provided by the user,
+    splitting them accordingly, but accepts any sequence type. If a string is
+    passed, it will use different delimiters and guarantees that all methods will
     allow the same delimiters. Delimiters can be white spaces, commas, semicolons,
     forward slashes, and the " and " substring.
 
-    @param fvalues: The string with the list of feature values to be split.
-    @return: A list of strings with the feature values.
+    @param fvalues: The sequence with the fvalues to be parsed.
+    @return: A frozenset with the fvalues.
     """
 
     # We internally convert everything to spaces
-    for delimiter in [" and ", ",", ";", "/"]:
-        fvalues = fvalues.replace(delimiter, " ")
+    if isinstance(fvalues, str):
+        for delimiter in [" and ", ",", ";", "/"]:
+            fvalues = fvalues.replace(delimiter, " ")
 
-    fvalues = re.sub(r"\s+", " ", fvalues.strip())
+        fvalues = re.sub(r"\s+", " ", fvalues.strip())
+        fvalues = fvalues.split()
 
-    return frozenset(fvalues.split())
+    return frozenset(fvalues)
 
 
 def codepoint2glyph(codepoint: str) -> str:
