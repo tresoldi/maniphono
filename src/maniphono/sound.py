@@ -3,7 +3,7 @@ Module for Sound abstraction and operations.
 """
 
 # Import Python standard libraries
-from typing import Optional, Union
+from typing import Optional, Sequence, Union
 
 # Import local modules
 from .phonomodel import PhonoModel, model_mipa
@@ -24,6 +24,7 @@ class Sound:
     `description`.
     """
 
+    # TODO: condense `grapheme` and `description` into a single argument
     def __init__(
         self,
         grapheme: Optional[str] = None,
@@ -54,9 +55,8 @@ class Sound:
         # partial sounds. By default, `partial` will be `None`; if a sound initialized
         # with a `description` is supposed to be a partial one, this must explicitly
         # informed by the user
-        # TODO: Use the "feature bundle" to be implemented
-        self.fvalues = tuple()
-        self.partial = partial
+        self.fvalues: frozenset = frozenset()
+        self.partial: bool = partial
 
         # Store model (defaulting to MIPA)
         self.model = model or model_mipa
@@ -79,7 +79,7 @@ class Sound:
         """
         Set a single feature value to the sound.
 
-        The method will remove all other feature values for the same feature before
+        The method will remove any feature value for the same feature before
         setting the new one. This method works as a convenient wrapper to the equivalent
         method in `PhonoModel`.
 
@@ -96,9 +96,9 @@ class Sound:
 
         return prev_fvalue
 
-    def set_fvalues(self, fvalues: Union[str, list], check: bool = True) -> list:
+    def set_fvalues(self, fvalues: Sequence, check: bool = True) -> list:
         """
-        Add multiple feature values to the sound.
+        Set multiple feature values to the sound.
 
         The method will remove all conflicting feature values before setting the new
         ones. The method acts as a wrapper to `.set_fvalue()`
@@ -107,27 +107,25 @@ class Sound:
             sound, a string with values separated by the standard delimiters.
         @param check: Whether to run constraint checks after adding the new feature
             values (default: True).
-        @return: A list of strings with the feature values that were replaced, in no
-            particular order.
+        @return: An alphabetically sorted list of strings with the feature values
+            that were replaced.
         """
 
         # If `fvalues` is empty, just return
         if not fvalues:
             return []
 
-        # If `fvalues` is a string, we assume it is space-separated list of
-        # feature values, which can preprocess. Note that this allows to use a
-        # string with a single descriptor without any special treatment.
-        if isinstance(fvalues, str):
-            fvalues = parse_fvalues(fvalues)
+        # Parse `fvalues` as a frozen set
+        fvalues = parse_fvalues(fvalues)
 
         # Add all fvalues, collecting the replacements which are stripped of `None`s;
-        # note that we don't run checks here, but only after all values have been added
+        # note that we don't run checks at this point, but only after all values have been set
         replaced = []
         for fvalue in fvalues:
             rep = self.set_fvalue(fvalue, check=False)
             if rep:
                 replaced.append(rep)
+
             # Mark the sound as partial in all cases of removal
             # TODO: in some cases the sound might not be partial, like removing an aspiration, check this
             if fvalue[0] == "-":
@@ -139,7 +137,7 @@ class Sound:
             if offending:
                 raise ValueError(f"At least one constraint unsatisfied by {offending}")
 
-        return replaced
+        return sorted(replaced)
 
     def grapheme(self) -> str:
         """
@@ -171,7 +169,11 @@ class Sound:
         @return: A string with a representation of the current sound.
         """
 
-        return " ".join(self.model.sort_fvalues(self.fvalues))
+        ret = " ".join(self.model.sort_fvalues(self.fvalues))
+        if self.partial:
+            ret += " [partial]"
+
+        return ret
 
     def __str__(self) -> str:
         """
@@ -191,15 +193,15 @@ class Sound:
         Overload the `+` operator.
         """
 
-        # TODO: make sure we can pass a frozendict, instead of list casting
-        snd = Sound(
-            description=list(self.fvalues), partial=self.partial, model=self.model
-        )
+        snd = Sound(description=self.fvalues, partial=self.partial, model=self.model)
         snd.set_fvalues(other)
 
         return snd
 
-    # TODO: decide what to do with `.partial`
+    # TODO: decide what to do with `.partial`; right now we are keeping the information it in all cases,
+    #       as an aspirated /p/ with aspiration is not a partial sound -- should probably check
+    #       the list of sounds in the model. This is complex because setting a value might involve
+    #       removing a previous one.
     def __sub__(self, other):
         """
         Overload the `-` operator.
@@ -209,30 +211,46 @@ class Sound:
             fvalue for fvalue in self.fvalues if fvalue not in parse_fvalues(other)
         ]
 
-        return Sound(
-            description=" ".join(fvalues), partial=self.partial, model=self.model
-        )
+        return Sound(description=fvalues, partial=self.partial, model=self.model)
 
-    # TODO: decide what to do with `.partial`, as this will interfere also with <= and >=
     def __hash__(self):
         """
         Return a hash of the current sound.
         """
 
-        return hash(self.fvalues)
+        # We cannot combine the hash of `self.partial` with a ^ operator as normally done,
+        # as it is a boolean and, when false, will held zero. We must resort to the more
+        # expansive operation of creating a list that includes the information from
+        # `self.partial` and of `self.values`. We do combine the information from the
+        # model, however.
+
+        return hash(tuple([self.partial] + list(self.fvalues))) ^ hash(self.model)
 
     # TODO: decide what to do with `.partial`, as this will interfere also with <= and >=
     def __eq__(self, other) -> bool:
         """
-        Compare two sounds in terms of their fvalues.
+        Compare two sounds in terms of their values and internal information.
         """
 
-        return hash(self) == hash(other)
+        # If the models are different, the sounds are different
+        if hash(self.model) != hash(other.model):
+            return False
+
+        # We are not considering `self.partial` if it is None
+        # TODO: remove this check once self.partial is properly set from sounds
+        if self.partial is None or other.partial is None:
+            return self.fvalues == other.fvalues
+
+        return all([self.fvalues == other.fvalues, self.partial == other.partial])
 
     def __lt__(self, other) -> bool:
         """
         Checks if the fvalues of the current sound are a subset of the other.
         """
+
+        # If the models are different, the sounds are different
+        if hash(self.model) != hash(other.model):
+            return False
 
         other_dict = other.feature_dict()
         for feature, fvalue in self.feature_dict().items():
@@ -248,6 +266,10 @@ class Sound:
         Checks if the fvalues of the current sound are a superset of the other.
         """
 
+        # If the models are different, the sounds are different
+        if hash(self.model) != hash(other.model):
+            return False
+
         this_dict = self.feature_dict()
         for feature, fvalue in other.feature_dict().items():
             if feature not in this_dict:
@@ -257,6 +279,7 @@ class Sound:
 
         return True
 
+    # TODO: __le__ and __ge__ are using __eq__ which considers self.partial
     def __le__(self, other) -> bool:
         return any([self == other, self < other])
 
