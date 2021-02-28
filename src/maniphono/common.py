@@ -35,11 +35,12 @@ def normalize(grapheme: str) -> str:
 # TODO: comment on the syntax that is accepted
 # TODO: annotate the type of return, which might involve changing it
 # TODO: check for duplicates and inconsistencies after the parsing
-def parse_constraints(constraints_str: str) -> list:
+# TODO: the usage of parse_fvalues might lead to bugs in the future, better to generalize the splitting
+def parse_constraints(constraints: Sequence) -> list:
     """
     Parses a string of constraints into a constraint structure.
 
-    @param constraints_str: The textual representation of the list of constraints to be
+    @param constraints: The textual representation of the list of constraints to be
         parsed.
     @return: The parsed constraints.
     """
@@ -56,12 +57,12 @@ def parse_constraints(constraints_str: str) -> list:
             raise ValueError(f"Invalid value name `{value_name}` in constraint")
 
     # In case of an empty string, there is nothing to parse
-    if not constraints_str:
+    if not constraints:
         return []
 
     # Obtain all constraints and check for disjunctions
-    constraints = []
-    for constr_str in parse_fvalues(constraints_str):
+    ret = []
+    for constr_str in parse_fvalues(constraints):
         # Collect each constraint group
         constr_group = []
         for constr in constr_str.split("|"):
@@ -75,9 +76,9 @@ def parse_constraints(constraints_str: str) -> list:
                 _assert_valid_name(constr)
                 constr_group.append({"type": "presence", "fvalue": constr})
 
-        constraints.append(constr_group)
+        ret.append(constr_group)
 
-    return constraints
+    return ret
 
 
 # TODO: write test with all delimiters

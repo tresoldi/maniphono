@@ -4,7 +4,7 @@ Module for phonological model abstraction and operations.
 
 # Import Python standard libraries
 from collections import defaultdict, Counter
-from typing import Optional, Sequence, Tuple, Union
+from typing import List, Optional, Sequence, Tuple, Union
 import csv
 import itertools
 import pathlib
@@ -427,8 +427,11 @@ class PhonoModel:
 
         return offending
 
-    # TODO: accept more than strings -- should convert automatically to positive ones?
-    def fvalues2graphemes(self, fvalues_str: str, classes: bool = False) -> list:
+    # TODO: could have a supporting function, outside the class, to apply to a custom group
+    #       of sounds, which would be better for coarsing
+    def fvalues2graphemes(
+        self, fvalues: Sequence, include_classes: bool = False
+    ) -> list:
         """
         Collect the set of graphemes in the model that satisfy a group of fvalues.
 
@@ -437,14 +440,14 @@ class PhonoModel:
         to use the overload operators, creating new sounds and checking whether they
         are equal or a superset (i.e., `>=`).
 
-        @param fvalues_str: A string with a list of feature values provided as constraints,
-            such as `"+vowel +front -close"`.
-        @param classes: Whether to include class graphemes in the output (default: False)
+        @param fvalues: A group of fvalues/constraints with a list of feature values provided as constraints,
+            such as `"+vowel +front -close"` or `["vowel", "+front", "-close"]`.
+        @param include_classes: Whether to include class graphemes in the output (default: False)
         @return: A list of all graphemes that satisfy the provided constraints.
         """
 
         # In this case we parse the fvalues as if they were constraints
-        constraints = parse_constraints(fvalues_str)
+        constraints = parse_constraints(fvalues)
 
         # Note that we could make the code more general by relying on
         # `.fail_constraints()`, but this would make the logic more complex and a bit
@@ -468,11 +471,38 @@ class PhonoModel:
                 pass_test.append(sound)
 
         # Remove sounds that are snd_classes
-        # TODO: should this be optional?
-        if not classes:
+        if not include_classes:
             pass_test = [sound for sound in pass_test if sound not in self.snd_classes]
 
         return pass_test
+
+    def _parse_sound_group(self, sounds: Sequence) -> List[frozenset]:
+        """
+        Internal method allowing to accept groups of sounds specified in different ways.
+
+        The method allows us to accept sounds defined as graphemes, fvalues frozen sets, of fvalues
+        provided as strings, including mixing them.
+
+        @param sounds:
+        @return:
+        """
+
+        ret = []
+        for sound in sounds:
+            if isinstance(sound, str):
+                # If we obtain a single string, it can be either a grapheme or a textual representation
+                # of fvalues. To distinguish, we try to parse it as fvalues and check the consistency
+                # of the results.
+                # TODO: should delegate the checking of valid names to another method
+                parsed = parse_fvalues(sound)
+                if not all([fvalue in self.fvalues for fvalue in parsed]):
+                    parsed = self.parse_grapheme(sound)[0]  # drop `partial` info
+
+                ret.append(parsed)
+            else:
+                ret.append(frozenset(sound))
+
+        return ret
 
     def minimal_matrix(self, sounds) -> dict:
         """
@@ -483,14 +513,7 @@ class PhonoModel:
         @return: A minimal matrix with features as keys as feature values as values.
         """
 
-        # If source is a collection of strings, assume they are graphemes from
-        # the model; otherwise, just take them as lists of values. The [0] indexing
-        # is in place so we only extract the fvalues, discarding information on
-        # sound partial definition
-        sounds = [
-            item if not isinstance(item, str) else self.parse_grapheme(item)[0]
-            for item in sounds
-        ]
+        sounds = self._parse_sound_group(sounds)
 
         # Build list of values for the sounds
         features = defaultdict(list)
@@ -536,19 +559,12 @@ class PhonoModel:
         Compute the class features for a set of graphemes or sounds.
 
         @param sounds: The sounds to be considered when computing class features, provided either
-            as a list of graphemes or a list of values.
+            as a list of graphemes or a group of fvalues.
         @return: A dictionary with the common traits that make a class out of the
             provided sounds, with feature as keys and feature values as values.
         """
 
-        # If source is a collection of strings, assume they are graphemes from
-        # the model; otherwise, just take them as lists of fvalues. The [0] indexing
-        # is in place so we only extract the fvalues, discarding information on
-        # sound partial definition
-        sounds = [
-            item if not isinstance(item, str) else self.parse_grapheme(item)[0]
-            for item in sounds
-        ]
+        sounds = self._parse_sound_group(sounds)
 
         # Build list of values for the sounds
         features = defaultdict(list)
@@ -568,7 +584,7 @@ class PhonoModel:
         return features
 
     def fvalue_vector(
-        self, source: Union[str, list], categorical: bool = False
+        self, source: Sequence, categorical: bool = False
     ) -> Tuple[list, list]:
         """
         Build a vector representation of a sound from its fvalues.
@@ -576,7 +592,7 @@ class PhonoModel:
         Vectors compiled with this method are mostly intended for statistical analyses,
         and can be either binary or categorical.
 
-        @param source: Either a string with a grapheme or a feature value tuple for the
+        @param source: Either a string with a grapheme or a feature value group for the
             sound to serve as basis for the vector.
         @param categorical: Whether to build a categorical vector instead of a binary one
             (default: `False`).
@@ -589,12 +605,7 @@ class PhonoModel:
             absence of the corresponding feature value in the case of binary vectors.
         """
 
-        # Get the fvalues from the grapheme if `source` is a string
-        if isinstance(source, str):
-            # [0] to discard information on partial definition
-            source_fvalues = self.parse_grapheme(source)[0]
-        else:
-            source_fvalues = source
+        source_fvalues = self._parse_sound_group(source)[0]
 
         # Collect vector data in either categorical or binary form
         if categorical:
@@ -631,14 +642,16 @@ class PhonoModel:
         return features, vector
 
     # TODO: consider the tuple in the return, which is not the most elegant solution
-    def closest_grapheme(self, source, classes: bool = True) -> Tuple[str, frozenset]:
+    def closest_grapheme(
+        self, source: Sequence, classes: bool = True
+    ) -> Tuple[str, frozenset]:
         """
         Find the sound in the model that is the closest to a given group of fvalues.
 
         The method can be used to coarse sounds within a reference group.
 
-        @param source: A feature value tuple, usually coming from the `.values` attributed of
-            a sound,  or a string with a grapheme to be parsed.
+        @param source: A feature value group, usually coming from the `.values` attributed of
+            a sound, or a string with a grapheme to be parsed.
         @param classes:  Whether to allow a grapheme marked as a class to be returned; note that,
             if a grapheme class is passed but `snd_classes` is set to `False`, a different
             grapheme will be returned (default: True).
@@ -646,14 +659,7 @@ class PhonoModel:
             frozenset of fvalues for the closes match as the second.
         """
 
-        # Get the features if a grapheme was passed, or, in case of a feature tuple,
-        # check if the corresponding grapheme happens to be already in our
-        # internal list
-        if isinstance(source, str):
-            # [0] to discard information of partial definition
-            fvalues = self.parse_grapheme(source)[0]
-        else:
-            fvalues = source
+        fvalues = self._parse_sound_group([source])[0]
 
         # fvalues = self.sort_fvalues(fvalues)
         if fvalues in self.fvalues2grapheme:
