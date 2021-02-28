@@ -14,7 +14,7 @@ import maniphono
 
 TEST_DIR = Path(__file__).parent.absolute()
 
-# TODO: add test with disjunctions, fix other tests
+# TODO: add test with disjunctions
 def test_parse_constraints():
     """
     Test constraint parsing and exceptions.
@@ -27,8 +27,8 @@ def test_parse_constraints():
     assert ret[0][0] == {"type": "presence", "fvalue": "consonant"}
 
     # Test multiple values with positive and negative
-    # Note that we test the various positions, as there is no point in making `parse_contraints()` sort its
-    # output each time just to make the test easiert
+    # Note that we test the various positions, as there is no point in making `parse_constraints()` sort its
+    # output each time just to make the test easier
     ret = maniphono.phonomodel.parse_constraints("+cons;plos/-voiceless;!front")
     assert len(ret) == 4
     assert len(ret[0]) == 1
@@ -57,7 +57,6 @@ def test_mipa():
     assert len(_mipa.features) == 20
     assert "length" in _mipa.features
     assert "long" in _mipa.features["length"]
-
     assert _mipa.fvalues["vowel"]["rank"] == 1
 
 
@@ -75,7 +74,6 @@ def test_tresoldi():
     assert len(_tresoldi.features) == 30
     assert "anterior" in _tresoldi.features
     assert "non-anterior" in _tresoldi.features["anterior"]
-
     assert _tresoldi.fvalues["click"]["rank"] == 12
 
 
@@ -122,8 +120,8 @@ def test_custom_models():
 
 
 def test_values2graphemes():
-    s = maniphono.model_mipa.fvalues2graphemes("+vowel +front -close")
-    assert tuple(s) == (
+    s1 = maniphono.model_mipa.fvalues2graphemes("+vowel +front -close")
+    assert tuple(s1) == (
         "a",
         "ã",
         "e",
@@ -142,6 +140,26 @@ def test_values2graphemes():
         "ɶ̃",
         "ʏ",
         "ʏ̃",
+    )
+
+    s2 = maniphono.model_tresoldi.fvalues2graphemes(
+        "+syllabic +non-high +nasal +anterior"
+    )
+    assert tuple(s2) == (
+        "ã",
+        "ãː",
+        "ẽ",
+        "ẽː",
+        "æ̃",
+        "æ̃ː",
+        "ø̃",
+        "ø̃ː",
+        "œ̃",
+        "œ̃ː",
+        "ɛ̃",
+        "ɛ̃ː",
+        "ɶ̃",
+        "ɶ̃ː",
     )
 
 
@@ -213,6 +231,17 @@ def test_parse_grapheme():
         ret, partial = maniphono.model_mipa.parse_grapheme(grapheme)
         assert ref == ret
         assert partial is False
+
+
+def test_sort_fvalues():
+    assert tuple(
+        maniphono.model_mipa.sort_fvalues(["unrounded", "open", "vowel", "front"])
+    ) == ("unrounded", "open", "front", "vowel")
+    assert tuple(
+        maniphono.model_mipa.sort_fvalues(
+            ["unrounded", "open", "vowel", "front"], use_rank=False
+        )
+    ) == ("front", "open", "unrounded", "vowel")
 
 
 def test_str():

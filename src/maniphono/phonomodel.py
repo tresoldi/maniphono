@@ -661,7 +661,6 @@ class PhonoModel:
 
         fvalues = self._parse_sound_group([source])[0]
 
-        # fvalues = self.sort_fvalues(fvalues)
         if fvalues in self.fvalues2grapheme:
             grapheme = self.fvalues2grapheme[fvalues]
             if not all([classes, grapheme in self.snd_classes]):
