@@ -10,7 +10,7 @@ __email__ = "tiago.tresoldi@lingfil.uu.se"
 # Import from the various modules
 from maniphono.phonomodel import PhonoModel, model_mipa, model_tresoldi
 from maniphono.sound import Sound
-from maniphono.segment import SoundSegment
+from maniphono.segment import BoundarySegment, SoundSegment, parse_segment
 from maniphono.segsequence import SegSequence, parse_sequence
 from maniphono.common import (
     codepoint2glyph,

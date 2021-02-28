@@ -22,6 +22,9 @@ from .common import (
 )
 
 
+# TODO: how to deal with resonant=-stop?
+
+
 class PhonoModel:
     """
     Class for representing a phonological model.
@@ -175,6 +178,9 @@ class PhonoModel:
             self.grapheme2fvalues[grapheme] = fvalues
             self.fvalues2grapheme[fvalues] = grapheme
 
+    # TODO: For partial sounds, we should allow (if desired) to build proper
+    #       IPA representation instead of a shortcut for partial sounds
+    #       (e.g., 'S̥' instead of 'SVL')
     def build_grapheme(self, fvalues: Sequence) -> str:
         """
         Return a grapheme representation for a collection of feature values.

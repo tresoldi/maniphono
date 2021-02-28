@@ -15,7 +15,7 @@ According to this proposal, however, the class tries as much as possible
 to behave as a Sound class when it is composed of a single sound.
 """
 
-# TODO: add sound class export (depend on clts?)
+# TODO: add sound class export (depend on clts?) -- or decision tree?
 # TODO: allow to initialize sounds with strings (graphemes/descs)
 # TODO: allow to parse segments/sounds
 # TODO: allow add/sub operations, and most from Sound
@@ -26,6 +26,7 @@ from typing import Union, List
 
 # Import local modules
 from .sound import Sound
+from .phonomodel import PhonoModel, model_mipa
 
 
 class Segment:
@@ -38,7 +39,6 @@ class Segment:
 
 
 # TODO: different boundaries: start/end/any
-# TODO: rename type to "boundarysegment"
 class BoundarySegment(Segment):
     def __init__(self) -> None:
         super().__init__()
@@ -106,11 +106,9 @@ class SoundSegment(Segment):
         return hash(self) == hash(other)
 
     def __ne__(self, other: Union[Sound, Segment]) -> bool:
-        if len(self.sounds) == 1 and isinstance(other, Sound):
-            return self.sounds[0] != other
+        return not self.__eq__(other)
 
-        return hash(self) != hash(other)
-
+    # TODO: should work with sounds and not modifiers
     def __add__(self, modifier) -> Segment:
         # TODO: work on multisonic segments
         if len(self.sounds) != 1:
@@ -119,40 +117,26 @@ class SoundSegment(Segment):
         return SoundSegment(self.sounds[0] + modifier)
 
 
-# TODO: holder that only accepts monosonic segments
-def parse_segment(grapheme: str) -> Segment:
+# TODO: this holder only accepts monosonic segments
+def parse_segment(segment: str, model: PhonoModel = model_mipa) -> Segment:
     """
-    @param grapheme:
+    @param segment:
     @return:
     """
+
     # TODO: make sure to implement context-specific boundaries (^and $)
-    if grapheme in ["#", "^", "$"]:
+    if segment in ["#", "^", "$"]:
         return BoundarySegment()
 
     # look for negation, if there is one
     # TODO: use `negate`
-    if grapheme[0] == "!":
+    if segment[0] == "!":
         negate = True
-        grapheme = grapheme[1:]
+        segment = segment[1:]
     else:
         negate = False
 
-    # TODO: temporary holders for complex snd_classes in alteruphno
-    if grapheme == "SVL":
-        return SoundSegment(
-            Sound(description="voiceless plosive consonant", partial=True)
-        )
-    elif grapheme == "R":  # TODO: how to deal with resonant=-stop?
-        return SoundSegment(Sound(description="fricative consonant", partial=True))
-    elif grapheme == "SV":
-        return SoundSegment(Sound(description="voiced plosive consonant", partial=True))
-    elif grapheme == "VN":
-        return SoundSegment(Sound(description="nasalized vowel", partial=True))
-    elif grapheme == "VL":
-        return SoundSegment(Sound(description="long vowel", partial=True))
-    elif grapheme == "CV":
-        return SoundSegment(Sound(description="voiced consonant", partial=True))
+    # TODO: make sure this is not necessary anymore (mostly for alteruphono)
+    segment = segment.replace("g", "ɡ")
 
-    grapheme = grapheme.replace("g", "ɡ")
-
-    return SoundSegment(Sound(grapheme))
+    return SoundSegment(Sound(segment))

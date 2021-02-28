@@ -11,6 +11,11 @@ N,nasal plosive consonant,True
 P,bilabial consonant,True
 Q,uvular consonant,True
 S,plosive consonant,True
+SVL,voiceless plosive consonant,True
+SV,voiced plosive consonant,True
+VN,nasalized vowel,True
+VL,long vowel,True
+CV,voiced consonant,True
 a,open front unrounded vowel,False
 ã,open front unrounded vowel nasalized,False
 b,voiced bilabial plosive consonant,False
