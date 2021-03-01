@@ -75,7 +75,7 @@ class DistanceRegressor:
                     pass
 
     # TODO: write documentation once regressors have been extended
-    def _build_regressor(self):
+    def build_regressor(self):
         """
         Build or replace the quantitative distance regressor.
 
@@ -158,7 +158,7 @@ class DistanceRegressor:
         # Build and cache a regressor with default parameters; `regtype` as None indicated
         # not to train a regressor
         if not self.regressor and self.regtype:
-            self._build_regressor()
+            self.build_regressor()
 
         # If we have no `self.regressor`, we try to match the `raw_matrix` only
         if not self.regressor:

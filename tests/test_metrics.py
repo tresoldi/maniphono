@@ -44,25 +44,21 @@ def test_distance_no_regressor():
         R.distance("a", "cː")  # not in the model
 
 
-# def test_build_write_load_regressor():
-#     # We load a different copy of MIPA, so as not to interfere with the
-#     # other tests.
-#     model_a = maniphono.PhonoModel("mipa")
-#     model_b = maniphono.PhonoModel("mipa")
-#     model_c = maniphono.PhonoModel("mipa")
-#
-#     # We load a temporary file name. Note that the reusage of the name is
-#     # not guaranteed in all platforms, but should always work on Linux
-#     handler = tempfile.NamedTemporaryFile()
-#     tempname = handler.name
-#     handler.close()
-#
-#     # Build regressor, save, and load
-#     model_a.build_regressor()
-#     model_a.write_regressor(tempname)
-#     model_b.build_regressor(filename=tempname)
-#
-#     assert model_a.distance("a", "e") == pytest.approx(model_b.distance("a", "e"))
-#
-#     with pytest.raises(RuntimeError):
-#         model_c.build_regressor(filename="dummyfilename")
+def test_build_write_load_regressor():
+    # We load a temporary file name. Note that the reusage of the name is
+    # not guaranteed in all platforms, but should always work on Linux
+    handler = tempfile.NamedTemporaryFile()
+    tempname = handler.name
+    handler.close()
+
+    # Build regressor, save, and load
+    reg1 = maniphono.DistanceRegressor()
+    reg1.build_regressor()
+    reg1.write_regressor(tempname)
+
+    reg2 = maniphono.DistanceRegressor(regressor_file=tempname)
+
+    assert reg1.distance("a", "e") == pytest.approx(reg2.distance("a", "e"))
+
+    with pytest.raises(RuntimeError):
+        maniphono.DistanceRegressor(regressor_file="dummyfilename")
