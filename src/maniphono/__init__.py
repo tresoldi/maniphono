@@ -3,7 +3,7 @@ maniphono __init__.py
 """
 
 # Package information
-__version__ = "0.3.1"  # remember to sync with setup.py
+__version__ = "0.3.2"  # remember to sync with setup.py
 __author__ = "Tiago Tresoldi"
 __email__ = "tiago.tresoldi@lingfil.uu.se"
 
