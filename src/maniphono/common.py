@@ -97,8 +97,8 @@ def parse_fvalues(fvalues: Sequence) -> frozenset:
     @return: A frozenset with the fvalues.
     """
 
-    # We internally convert everything to spaces
     if isinstance(fvalues, str):
+        # We internally convert everything to spaces
         for delimiter in [" and ", ",", ";", "/"]:
             fvalues = fvalues.replace(delimiter, " ")
 

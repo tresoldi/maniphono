@@ -611,7 +611,10 @@ class PhonoModel:
             absence of the corresponding feature value in the case of binary vectors.
         """
 
-        source_fvalues = self._parse_sound_group(source)[0]
+        if isinstance(source, str):
+            source_fvalues = self._parse_sound_group(source)[0]
+        else:
+            source_fvalues = self._parse_sound_group([source])[0]
 
         # Collect vector data in either categorical or binary form
         if categorical:

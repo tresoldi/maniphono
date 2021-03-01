@@ -24,6 +24,25 @@ def test_distance():
     assert dist2 > dist1
     assert dist3 > dist2
 
+    dist4 = R.distance("a", "cː")  # not in the model
+    assert dist4 > dist1
+    assert dist4 > dist2
+    assert dist4 < dist3
+
+
+def test_distance_no_regressor():
+    R = maniphono.DistanceRegressor(regtype=None)
+    dist1 = R.distance("a", "a")
+    dist2 = R.distance("a", "e")
+    dist3 = R.distance("a", "ʒ")
+
+    assert dist1 == 0.0
+    assert dist2 > dist1
+    assert dist3 > dist2
+
+    with pytest.raises(KeyError):
+        R.distance("a", "cː")  # not in the model
+
 
 # def test_build_write_load_regressor():
 #     # We load a different copy of MIPA, so as not to interfere with the
