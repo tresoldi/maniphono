@@ -303,10 +303,3 @@ and `sklearn` regressor, which can take a while.
 >>> maniphono.model_mipa.distance("a", "ʒ")
 30.419280377524366
 ```
-
-## End words
-
-Lorem ipsum
-
-```{.html .cb.code include_file=python.html include_regex="<header.*?/header>" example=true}
-```
