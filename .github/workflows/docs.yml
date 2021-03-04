@@ -23,8 +23,11 @@ jobs:
 
     # Steps represent a sequence of tasks that will be executed as part of the job
     steps:
+      # For some reason, the pandoc in this Ubuntu is a *very* old version
       - name: Install pandoc
-        run: sudo apt-get install pandoc
+        run: |
+          wget https://github.com/jgm/pandoc/releases/download/2.11.4/pandoc-2.11.4-1-amd64.deb
+          sudo dpkg -i pandoc-2.11.4-1-amd64.deb
     
       # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
       - uses: actions/checkout@v2
