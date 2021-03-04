@@ -15,32 +15,40 @@ import maniphono
 TEST_DIR = Path(__file__).parent.absolute()
 
 # TODO: add test with disjunctions
-def test_parse_constraints():
+@pytest.mark.parametrize(
+    "constraint,parsed_len,test_type,test_fvalue",
+    [
+        ["consonant", 1, "presence", "consonant"],
+        ["+cons;plos/-voiceless;!front", 4, "absence", "front"],
+    ],
+)
+def test_parse_constraints(constraint, parsed_len, test_type, test_fvalue):
     """
     Test constraint parsing and exceptions.
     """
 
-    # Test single value
-    ret = maniphono.phonomodel.parse_constraints("consonant")
-    assert len(ret) == 1
-    assert len(ret[0]) == 1
-    assert ret[0][0] == {"type": "presence", "fvalue": "consonant"}
+    parsed = maniphono.phonomodel.parse_constraints(constraint)
+    assert len(parsed) == parsed_len
+    assert len(parsed[0]) == 1
+    assert {"type": test_type, "fvalue": test_fvalue} in [entry[0] for entry in parsed]
 
-    # Test multiple values with positive and negative
-    # Note that we test the various positions, as there is no point in making `parse_constraints()` sort its
-    # output each time just to make the test easier
-    ret = maniphono.phonomodel.parse_constraints("+cons;plos/-voiceless;!front")
-    assert len(ret) == 4
-    assert len(ret[0]) == 1
-    assert {"type": "absence", "fvalue": "front"} in [entry[0] for entry in ret]
+
+@pytest.mark.parametrize(
+    "constraint",
+    [
+        ["a123"],
+        ["+a123"],
+        ["-a123"],
+    ],
+)
+def test_parse_contraints_errors(constraint):
+    """
+    Test if bad constraint strings are correctly handled.
+    """
 
     # Test invalid value names
     with pytest.raises(ValueError):
-        maniphono.phonomodel.parse_constraints("a123")
-    with pytest.raises(ValueError):
-        maniphono.phonomodel.parse_constraints("+a123")
-    with pytest.raises(ValueError):
-        maniphono.phonomodel.parse_constraints("-a123")
+        maniphono.phonomodel.parse_constraints(constraint)
 
 
 # TODO add more MIPA assertions, including sounds
@@ -119,51 +127,31 @@ def test_custom_models():
         maniphono.PhonoModel("I", TEST_DIR / "test_models" / "i")
 
 
-def test_values2graphemes():
-    s1 = maniphono.model_mipa.fvalues2graphemes("+vowel +front -close")
-    assert tuple(s1) == (
-        "a",
-        "ã",
-        "e",
-        "ẽ",
-        "æ",
-        "æ̃",
-        "ø",
-        "ø̃",
-        "œ",
-        "œ̃",
-        "ɛ",
-        "ɛ̃",
-        "ɪ",
-        "ɪ̃",
-        "ɶ",
-        "ɶ̃",
-        "ʏ",
-        "ʏ̃",
-    )
-
-    s2 = maniphono.model_tresoldi.fvalues2graphemes(
-        "+syllabic +non-high +nasal +anterior"
-    )
-    assert tuple(s2) == (
-        "ã",
-        "ãː",
-        "ẽ",
-        "ẽː",
-        "æ̃",
-        "æ̃ː",
-        "ø̃",
-        "ø̃ː",
-        "œ̃",
-        "œ̃ː",
-        "ɛ̃",
-        "ɛ̃ː",
-        "ɶ̃",
-        "ɶ̃ː",
-    )
+# TODO: add example with the `tresoldi` model
+# fmt: off
+@pytest.mark.parametrize(
+    "model,fvalues,expected",
+    [
+        [
+            maniphono.model_mipa,
+            "+vowel +front -close +nasalized",
+            ("ã", "ẽ", "æ̃", "ø̃", "œ̃", "ɛ̃", "ɪ̃", "ɶ̃", "ʏ̃"),
+        ],
+        [
+            maniphono.model_tresoldi,
+            "+syllabic +non-high +anterior +long",
+            ("aː", "ãː", "eː", "ẽː", "æː", "æ̃ː", "øː", "ø̃ː", "œː", "œ̃ː", "ɛː", "ɛ̃ː", "ɶː", "ɶ̃ː"),
+        ],
+    ],
+)
+# fmt: on
+def test_values2graphemes(model, fvalues, expected):
+    graphemes = model.fvalues2graphemes(fvalues)
+    assert tuple(graphemes) == expected
 
 
 # TODO: add test with other models
+# TODO: parametrize
 def test_minimal_matrix():
     mtx = maniphono.model_mipa.minimal_matrix(["t", "d"])
     assert len(mtx) == 2
@@ -178,6 +166,10 @@ def test_minimal_matrix():
         "manner" not in mtx[frozenset(["voiced", "alveolar", "plosive", "consonant"])]
     )  # /d/
 
+
+# TODO: add test with other models
+# TODO: parametrize
+def test_minimal_vector():
     vct = maniphono.model_mipa.minimal_vector(["t", "d"])
     assert len(vct) == 2
     assert tuple(vct[0].items()) == (("phonation", "voiceless"),)
@@ -197,59 +189,68 @@ def test_minimal_matrix():
 
 
 # TODO: add test with other models
-def test_class_features():
-    cf = maniphono.model_mipa.class_features(["t", "d"])
-    assert len(cf) == 3
-    assert cf["place"] == "alveolar"
-
-    cf = maniphono.model_mipa.class_features(["t", "d", "s"])
-    assert len(cf) == 2
-    assert cf["type"] == "consonant"
+@pytest.mark.parametrize(
+    "sounds,length,expected_feature,expected_fvalue",
+    [
+        [["t", "d"], 3, "place", "alveolar"],
+        [["t", "d", "s"], 2, "type", "consonant"],
+    ],
+)
+def test_class_features(sounds, length, expected_feature, expected_fvalue):
+    cf = maniphono.model_mipa.class_features(sounds)
+    assert len(cf) == length
+    assert cf[expected_feature] == expected_fvalue
 
 
 # TODO: add test with other models
-def test_value_vector():
-    fnames, vec = maniphono.model_mipa.fvalue_vector("a")
-    assert len(fnames) == 64
-    assert fnames[0] == "aspiration_aspirated"
-    assert vec[0] is False
-
-    fnames, vec = maniphono.model_mipa.fvalue_vector("a", categorical=True)
-    assert len(fnames) == 20
-    assert fnames[0] == "aspiration"
-    assert vec[0] is None
-
-
-def test_parse_grapheme():
-    TESTS = {
-        "a": frozenset(["unrounded", "open", "front", "vowel"]),
-        "b": frozenset(["voiced", "bilabial", "plosive", "consonant"]),
-        "p[voiced]": frozenset(["voiced", "bilabial", "plosive", "consonant"]),
-        "b[voiceless]": frozenset(["voiceless", "bilabial", "plosive", "consonant"]),
-    }
-    for grapheme, ref in TESTS.items():
-        ret, partial = maniphono.model_mipa.parse_grapheme(grapheme)
-        assert ref == ret
-        assert partial is False
+@pytest.mark.parametrize(
+    "sound,categorical,length,fname,value",
+    [
+        ["a", False, 64, "aspiration_aspirated", False],
+        ["a", True, 20, "aspiration", None],
+    ],
+)
+def test_value_vector(sound, categorical, length, fname, value):
+    fnames, vec = maniphono.model_mipa.fvalue_vector(sound, categorical=categorical)
+    assert len(fnames) == length
+    assert fnames[0] == fname
+    assert vec[0] is value
 
 
-def test_sort_fvalues():
-    assert tuple(
-        maniphono.model_mipa.sort_fvalues(["unrounded", "open", "vowel", "front"])
-    ) == ("unrounded", "open", "front", "vowel")
-    assert tuple(
-        maniphono.model_mipa.sort_fvalues(
-            ["unrounded", "open", "vowel", "front"], use_rank=False
-        )
-    ) == ("front", "open", "unrounded", "vowel")
+# TODO: add test with other models
+# TODO: add tests with partials
+@pytest.mark.parametrize(
+    "grapheme,fvalues,ref_partial",
+    [
+        ["a", ["unrounded", "open", "front", "vowel"], False],
+        ["b", ["voiced", "bilabial", "plosive", "consonant"], False],
+        ["p[voiced]", ["voiced", "bilabial", "plosive", "consonant"], False],
+        ["b[voiceless]", ["voiceless", "bilabial", "plosive", "consonant"], False],
+    ],
+)
+def test_parse_grapheme(grapheme, fvalues, ref_partial):
+    ret, partial = maniphono.model_mipa.parse_grapheme(grapheme)
+    assert ret == frozenset(fvalues)
+    assert partial is ref_partial
 
 
+# fmt: off
+@pytest.mark.parametrize(
+    "fvalues,use_rank,expected",
+    [
+        [["unrounded", "open", "vowel", "front"], True, ("unrounded", "open", "front", "vowel")],
+        [["unrounded", "open", "vowel", "front"], False, ("front", "open", "unrounded", "vowel")],
+    ],
+)
+# fmt: on
+def test_sort_fvalues(fvalues, use_rank, expected):
+    assert (
+        tuple(maniphono.model_mipa.sort_fvalues(fvalues, use_rank=use_rank)) == expected
+    )
+
+
+# fmt: off
 def test_str():
-    assert (
-        str(maniphono.model_mipa)
-        == "[`mipa` model (20 features, 64 fvalues, 231 graphemes)]"
-    )
-    assert (
-        str(maniphono.model_tresoldi)
-        == "[`tresoldi` model (30 features, 60 fvalues, 570 graphemes)]"
-    )
+    assert str(maniphono.model_mipa) == "[`mipa` model (20 features, 64 fvalues, 231 graphemes)]"
+    assert str(maniphono.model_tresoldi) == "[`tresoldi` model (30 features, 60 fvalues, 570 graphemes)]"
+# fmt: on
