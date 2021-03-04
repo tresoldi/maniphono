@@ -1,4 +1,10 @@
-# Maniphono
+---
+title: "Maniphono"
+---
+
+
+```{.html .cb.code include_file=python.html include_regex="<header.*?/header>" example=true}
+```
 
 `maniphono` is a library for the manipulation of phonological units, designed as a solution
 historical phonology. While offering two standard models for operation, one modified from the
