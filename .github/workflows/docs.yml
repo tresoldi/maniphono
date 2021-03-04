@@ -48,6 +48,7 @@ jobs:
       - name: Compile manual
         run: |
           codebraid pandoc --from markdown --to markdown --overwrite -o extra/manual_release.md extra/manual.md
+          codebraid pandoc --from markdown --to html --overwrite -o extra/manual_release.html extra/manual.md
 
       - name: Commit changes
         uses: stefanzweifel/git-auto-commit-action@v4
