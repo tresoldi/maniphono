@@ -1,16 +1,6 @@
-::: {.example}
-::: {.exampleMarkup}
-    ```{.html .cb.code include_file=python.html include_regex="<header.*?/header>"}
-    ```
-:::
-
-::: {.exampleOutput}
-``` {.sourceError}
-SOURCE ERROR in "extra/manual.md" near line 1:
-Cannot include nonexistent file "python.html"
-```
-:::
-:::
+---
+title: Maniphono
+---
 
 `maniphono` is a library for the manipulation of phonological units,
 designed as a solution historical phonology. While offering two standard
@@ -353,3 +343,21 @@ regressor, which can take a while.
 >>> maniphono.model_mipa.distance("a", "ʒ")
 30.419280377524366
 ```
+
+## End words
+
+Lorem ipsum
+
+::: {.example}
+::: {.exampleMarkup}
+    ```{.html .cb.code include_file=python.html include_regex="<header.*?/header>"}
+    ```
+:::
+
+::: {.exampleOutput}
+``` {.sourceError}
+SOURCE ERROR in "extra/manual.md" near line 309:
+Cannot include nonexistent file "python.html"
+```
+:::
+:::
