@@ -1,3 +1,63 @@
+# Maniphono
+
+`maniphono` is a library for the manipulation of phonological units, designed as a solution
+historical phonology. While offering two standard models for operation, one modified from the
+IPA but following as much as possible its descriptors and one using distinctive
+features which is designed for machine learning, it is designed to support custom
+phonological models, trying as much as possible to be agnostic about the theoretical
+background. It also gives particular attention since design stage to the role of
+suprasegmentals.
+
+`maniphono` operates on a hierarchy of phonological abstractions, all which are
+related in some way to a "phonological model" that serves as the basis of all
+operations. This hierarchy is:
+
+  * a "phonological model" comprises a set of features operating in a many-valued
+    logic system: each `feature` may be either undefined or defined by defined by
+    one and only one "feature value" (or `favalue`) and a map of sounds (given by
+    their graphemes) and the feature values that define them
+  * a "sound" is a bundle of zero or more feature values and is intended to
+    mostly map individual abstract acoustic performances
+  * a "segment" is a unit of analysis, as decided by the user; the most common
+    segment is, by far, a "sound segment", which is a segment composed of one
+    (monosonic segment) or more (polysonic segment) sounds
+  * a "sequence" is an ordered collection of segments and a set of information
+    on suprasegmental properties, such as syllable breaks, tones, etc.
+    
+Each unit is described in more detail in the subsequent sections. As as set
+of examples, however:
+
+  * `model_mipa` is the standard phonological model in `maniphono`, comprised (at
+    the time of writing) of 20 features (such as `manner` and `length`),
+    64 fvalues (such as `affricate` and `approximant`, values of the `manner`
+    feature, and `half-long` and `long`, values of the `length` feature), and 231
+    graphemes (such as `a`, defined as an `open front unrounded vowel`)
+  * sounds are to a large extend phonological abstractions represented by a
+    single IPA glyph (potentially with diacritics), such as
+    `open front unrounded vowel` (that is, /a/) or
+    `voiced alveolar non-sibilant lateral affricate consonant` (that is, /dɮ/).
+    Sounds can also be "partial", in the sense that they are not fully
+    defined and thus represent what is normally called a "class" of sounds,
+    such as `glottal consonant` (represented by `H`)
+  * a sound segment is intended as a unit of analysis, contingent
+    to the user decisions. For example, a bisonic segment can be
+    used to represent a diphthong in case they are supposed to be treated
+    as a single unit of analysis (such as `/a+j/`, in `maniphono`'s
+    notation), which is different from a sequence of two monosonic
+    segments (that is, `/a j/`)
+  * a sequence is a list of segments, such as `[p a p a+j]`, which is a
+    sequence of four segments (the last of which is composed of two sounds). It can
+    carry additional information, such as word boundaries as in
+    `[# p a p a+j #]`, syllable breaks as in `[# p a . p a+j #]`,
+    and tonal information as in `[# p a ˧˩ . p a+j ˨˦ #]`
+
+
+## PhonoModel
+
+
+By design, a "PhonoModel" works in a way independent 
+
+
 
 ## Description
 
