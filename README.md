@@ -2,7 +2,7 @@
 
 
 [![PyPI](https://img.shields.io/pypi/v/maniphono.svg)](https://pypi.org/project/maniphono)
-![build](https://github.com/tresoldi/maniphono/workflows/Python%20package/badge.svg)
+[![CI](https://github.com/tresoldi/maniphono/actions/workflows/ci.yml/badge.svg)](https://github.com/tresoldi/maniphono/actions/workflows/ci.yml)
 
 A Python library for the symbolic manipulation of phonological entities
 
