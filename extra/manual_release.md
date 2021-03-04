@@ -162,12 +162,8 @@ and one of full binary distinctive features that is intended mostly for
 machine learning approaches. In all cases, the `mipa` model is used as
 default.
 
-``` {.stderr}
-Traceback (most recent call last):
-  File "source.py", line 1, in <module>
-    import maniphono
-ModuleNotFoundError: No module named 'maniphono'
-```
+\[`mipa` model (20 features, 64 fvalues, 231 graphemes)\] \[`tresoldi`
+model (30 features, 60 fvalues, 570 graphemes)\]
 
 ### Sounds
 
