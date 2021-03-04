@@ -13,6 +13,26 @@ import pytest
 # Import the library itself
 import maniphono
 
+# Create and cache a regressor that is used by all tests not
+# verifying directly regressor creation
+REGRESSOR = maniphono.DistanceRegressor()
+
+
+@pytest.mark.parametrize(
+    "sound_x,sound_y,expected,tol",
+    [
+        ["a", "a", 0.0, 0.0],
+        ["a", "e", 4.15, 1e-1],
+        ["a", "ʒ", 28.16, 1e-1],
+        ["a", "cː", 18.99, 1e-1],  # not in the model
+    ],
+)
+def test_distance_hardcoded(sound_x, sound_y, expected, tol):
+    """
+    Test hard-coded distances.
+    """
+    assert REGRESSOR.distance(sound_x, sound_y) == pytest.approx(expected, abs=tol)
+
 
 def test_distance():
     R = maniphono.DistanceRegressor()
