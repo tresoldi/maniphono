@@ -162,8 +162,16 @@ and one of full binary distinctive features that is intended mostly for
 machine learning approaches. In all cases, the `mipa` model is used as
 default.
 
-\[`mipa` model (20 features, 64 fvalues, 231 graphemes)\] \[`tresoldi`
-model (30 features, 60 fvalues, 570 graphemes)\]
+``` {.python .numberLines startFrom="1"}
+import maniphono
+print(maniphono.model_mipa)
+print(maniphono.model_tresoldi)
+```
+
+``` {.stdout}
+[`mipa` model (20 features, 64 fvalues, 231 graphemes)]
+[`tresoldi` model (30 features, 60 fvalues, 570 graphemes)]
+```
 
 ### Sounds
 
