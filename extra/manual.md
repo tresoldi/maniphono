@@ -2,10 +2,6 @@
 title: "Maniphono"
 ---
 
-
-```{.html .cb.code include_file=python.html include_regex="<header.*?/header>" example=true}
-```
-
 `maniphono` is a library for the manipulation of phonological units, designed as a solution
 historical phonology. While offering two standard models for operation, one modified from the
 IPA but following as much as possible its descriptors and one using distinctive
@@ -306,4 +302,11 @@ and `sklearn` regressor, which can take a while.
 3.7590891821444608
 >>> maniphono.model_mipa.distance("a", "ʒ")
 30.419280377524366
+```
+
+## End words
+
+Lorem ipsum
+
+```{.html .cb.code include_file=python.html include_regex="<header.*?/header>" example=true}
 ```
