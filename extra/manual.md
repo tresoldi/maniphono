@@ -133,7 +133,7 @@ The library is imported as expected. It is currently distributed with two models
 distinctive features that is intended mostly for machine learning approaches. In all
 cases, the `mipa` model is used as default.
 
-```{.python .cb.run}
+```{.python .cb.nb session=random}
 import maniphono
 print(maniphono.model_mipa)
 print(maniphono.model_tresoldi)
