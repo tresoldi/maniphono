@@ -186,7 +186,7 @@ provided, defaulting to `mipa` as mentioned above. Segments can be "visualized"
 with `str()`, returning a graphemic representation, or with `repr()`, returned a
 descriptive representation.
 
-````{.python .cb.nb session=random}
+```{.python .cb.nb session=random}
 snd1 = maniphono.Sound("p")
 str(snd1), repr(snd1)
 snd2 = maniphono.Sound(description="voiceless bilabial plosive consonant")
@@ -199,7 +199,7 @@ The easiest way to manipulate sounds is using the add (`+`) and sub (`-`) operat
 accept both single and multiple values. If a value from a feature that
 is already set is added, it will be replaced.
 
-````{.python .cb.nb session=random}
+```{.python .cb.nb session=random}
 snd1 += 'voiced'
 str(snd1), repr(snd1)
 snd2 += 'velar,aspirated,labialized'
@@ -210,7 +210,7 @@ str(snd2), repr(snd2)
 
 A dictionary of features and values can be easily obtained:
 
-````{.python .cb.nb session=random}
+```{.python .cb.nb session=random}
 snd2.feature_dict()
 ```
 
@@ -218,7 +218,7 @@ If a grapheme is not available, either because the sound is not complete or beca
 diacritic is offered in the model, the library will try to be explicit about its
 representation.
 
-````{.python .cb.nb session=random}
+```{.python .cb.nb session=random}
 snd4 = maniphono.Sound(description="voiceless consonant")
 str(snd4), repr(snd4)
 ```
@@ -226,7 +226,7 @@ str(snd4), repr(snd4)
 While the results are technically correct, the library still needs work for
 always returning good representations when it computes the grapheme.
 
-````{.python .cb.nb session=random}
+```{.python .cb.nb session=random}
 snd5 = maniphono.Sound("kʰʷ[voiced]")
 str(snd5), repr(snd5)
 ```
@@ -240,7 +240,7 @@ in case of monosonic segments, or with an ordered list of sounds.
 Segments can be represented with `__str__` and can include a delimiter, by default
 a `+` sign.
 
-````{.python .cb.nb session=random}
+```{.python .cb.nb session=random}
 snd1 = maniphono.Sound("w")
 snd2 = maniphono.Sound("a")
 snd3 = maniphono.Sound("j", model=maniphono.model_tresoldi)
@@ -257,7 +257,7 @@ Sequences combine segments in order.
 Sequences can be represented with `__str__` and always use a white space as a delimiter
 (following CLDF convention) as well as leading and trailing square brackets (`[` and `]`).
 
-````{.python .cb.nb session=random}
+```{.python .cb.nb session=random}
 snd1, snd2, snd3 = maniphono.Sound("p"), maniphono.Sound("a"), maniphono.Sound("w")
 seg1, seg2, seg3 = maniphono.Segment(snd1), maniphono.Segment(snd2), maniphono.Segment([snd3])
 seg4 = maniphono.Segment([snd2, snd3])
@@ -277,14 +277,14 @@ The `.values2sounds()` method will take a list of value constraints, both in ter
 presence and absence, and returned an order list of all graphemes defined in the model
 that satisfy the constraint.
 
-````{.python .cb.nb session=random}
+```{.python .cb.nb session=random}
 >>> maniphono.model_mipa.values2graphemes("+vowel +front -close")
 ```
 
 The `.minimal_matrix()` method will take a list of graphemes and return a dictionary
 with the minimum set of features in which they differ.
 
-````{.python .cb.nb session=random}
+```{.python .cb.nb session=random}
 maniphono.model_mipa.minimal_matrix(["t", "d"])
 dict(maniphono.model_mipa.minimal_matrix(["t", "d", "s"]))
 ```
@@ -293,7 +293,7 @@ Similarly, the `.class_features()` method will take a list of graphemes and retu
 dictionary of features and values the graphemes have in common. It can be used to
 discover what features make up a class with these sounds.
 
-```python
+```{.python .cb.nb session=random}
 maniphono.model_mipa.class_features(["t", "d"])
 maniphono.model_mipa.class_features(["t", "d", "s"])
 ```
@@ -303,7 +303,7 @@ and a boolean vector of presence/absence. It is mostly intended for machine lear
 projects; for human explorations or categorical machine learning, there is an option
 to return non-binary vectors.
 
-```python
+```{.python .cb.nb session=random}
 maniphono.model_mipa.value_vector("a")
 maniphono.model_mipa.value_vector("a", binary=False)
 ```
@@ -312,7 +312,7 @@ All models allow to compute a distance between two sounds, with the distance bet
 itself set, by design, to zero. In some cases this experimental method will compute and cache
 and `sklearn` regressor, which can take a while.
 
-```python
+```{.python .cb.nb session=random}
 maniphono.model_mipa.distance("a", "a")
 maniphono.model_mipa.distance("a", "e")
 maniphono.model_mipa.distance("a", "ʒ")
