@@ -1,232 +1,232 @@
-GRAPHEME,DESCRIPTION,PARTIAL
-V,vowel,True
-C,consonant,True
-B,back vowel,True
-E,front vowel,True
-F,fricative consonant,True
-H,glottal consonant,True
-K,velar consonant,True
-L,lateral consonant,True
-N,nasal plosive consonant,True
-P,bilabial consonant,True
-Q,uvular consonant,True
-S,plosive consonant,True
-SVL,voiceless plosive consonant,True
-SV,voiced plosive consonant,True
-VN,nasalized vowel,True
-VL,long vowel,True
-CV,voiced consonant,True
-a,open front unrounded vowel,False
-ã,open front unrounded vowel nasalized,False
-b,voiced bilabial plosive consonant,False
-b̪v,voiced labio-dental affricate consonant,False
-bβ,voiced bilabial affricate consonant,False
-c,voiceless palatal plosive consonant,False
-cç,voiceless palatal non-sibilant affricate consonant,False
-cʼ,voiceless palatal ejective plosive consonant,False
-d,voiced alveolar plosive consonant,False
-db,voiced labio-alveolar plosive consonant,False
-dz,voiced alveolar sibilant affricate consonant,False
-dð,voiced dental non-sibilant affricate consonant,False
-dɮ,voiced alveolar non-sibilant lateral affricate consonant,False
-dʑ,voiced palatal sibilant affricate consonant,False
-dʒ,voiced post-alveolar sibilant affricate consonant,False
-d̪,voiced dental plosive consonant,False
-e,close-mid front unrounded vowel,False
-ẽ,close-mid front unrounded vowel nasalized,False
-f,voiceless labio-dental fricative consonant,False
-fʼ,voiceless labio-dental ejective fricative consonant,False
-gb,voiced labio-velar plosive consonant,False
-h,voiceless glottal fricative consonant,False
-i,close front unrounded vowel,False
-ĩ,close front unrounded vowel nasalized,False
-j,voiced palatal approximant consonant,False
-k,voiceless velar plosive consonant,False
-kp,voiceless labio-velar plosive consonant,False
-kx,voiceless velar affricate consonant,False
-kxʼ,voiceless velar ejective affricate consonant,False
-kǀ,voiceless dental click consonant,False
-kǁ,voiceless alveolar lateral click consonant,False
-kǂ,voiceless palatal click consonant,False
-kǃ,voiceless alveolar click consonant,False
-kʘ,voiceless bilabial click consonant,False
-kʼ,voiceless velar ejective plosive consonant,False
-l,voiced alveolar lateral approximant consonant,False
-m,voiced bilabial nasal plosive consonant,False
-n,voiced alveolar nasal plosive consonant,False
-nm,voiced labio-coronal nasal plosive consonant,False
-n̪,voiced dental nasal plosive consonant,False
-o,close-mid back rounded vowel,False
-õ,close-mid back rounded vowel nasalized,False
-p,voiceless bilabial plosive consonant,False
-pɸ,voiceless bilabial affricate consonant,False
-pʼ,voiceless bilabial ejective plosive consonant,False
-p̪f,voiceless labio-dental affricate consonant,False
-q,voiceless uvular plosive consonant,False
-qʡ,voiceless uvulo-epiglottal plosive consonant,False
-qʼ,voiceless uvular ejective plosive consonant,False
-qχ,voiceless uvular affricate consonant,False
-qχʼ,voiceless uvular ejective affricate consonant,False
-r,voiced alveolar trill consonant,False
-s,voiceless alveolar sibilant fricative consonant,False
-sʼ,voiceless alveolar ejective fricative consonant,False
-s̪,voiceless dental sibilant fricative consonant,False
-t,voiceless alveolar plosive consonant,False
-tp,voiceless labio-alveolar plosive consonant,False
-ts,voiceless alveolar sibilant affricate consonant,False
-tsʼ,voiceless alveolar sibilant ejective affricate consonant,False
-tɕ,voiceless palatal sibilant affricate consonant,False
-tɬ,voiceless alveolar non-sibilant lateral affricate consonant,False
-tɬʼ,voiceless alveolar non-sibilant ejective affricate consonant,False
-tʃ,voiceless post-alveolar sibilant affricate consonant,False
-tʃʼ,voiceless post-alveolar sibilant ejective affricate consonant,False
-tʼ,voiceless alveolar ejective plosive consonant,False
-t̪,voiceless dental plosive consonant,False
-tθ,voiceless dental non-sibilant affricate consonant,False
-u,close back rounded vowel,False
-ũ,close back rounded vowel nasalized,False
-v,voiced labio-dental fricative consonant,False
-w,voiced labio-velar approximant consonant,False
-x,voiceless velar fricative consonant,False
-xʼ,voiceless velar ejective fricative consonant,False
-y,close front rounded vowel,False
-ỹ,close front rounded vowel nasalized,False
-z,voiced alveolar sibilant fricative consonant,False
-z̪,voiced dental sibilant fricative consonant,False
-ä,open central unrounded vowel,False
-ä̃,open central unrounded vowel nasalized,False
-æ,near-open front unrounded vowel,False
-æ̃,near-open front unrounded vowel nasalized,False
-ç,voiceless palatal non-sibilant fricative consonant,False
-ð,voiced dental non-sibilant fricative consonant,False
-ð̠,voiced alveolar non-sibilant fricative consonant,False
-ð̼,voiced linguo-labial fricative consonant,False
-ø,close-mid front rounded vowel,False
-ø̃,close-mid front rounded vowel nasalized,False
-ħ,voiceless pharyngeal fricative consonant,False
-ŋ,voiced velar nasal plosive consonant,False
-ŋǀ,voiced dental nasal click consonant,False
-ŋǁ,voiced alveolar lateral nasal click consonant,False
-ŋǂ,voiced palatal nasal click consonant,False
-ŋǃ,voiced alveolar nasal click consonant,False
-ŋʘ,voiced bilabial nasal click consonant,False
-œ,open-mid front rounded vowel,False
-œ̃,open-mid front rounded vowel nasalized,False
-ɐ,near-open central vowel,False
-ɐ̃,near-open central vowel nasalized,False
-ɑ,open back unrounded vowel,False
-ɑ̃,open back unrounded vowel nasalized,False
-ɒ,open back rounded vowel,False
-ɒ̃,open back rounded vowel nasalized,False
-ɓ,voiced bilabial implosive plosive consonant,False
-ɔ,open-mid back rounded vowel,False
-ɔ̃,open-mid back rounded vowel nasalized,False
-ɕ,voiceless palatal sibilant fricative consonant,False
-ɕʼ,voiceless palatal ejective fricative consonant,False
-ɖ,voiced retroflex plosive consonant,False
-ɖʐ,voiced retroflex sibilant affricate consonant,False
-ɗ,voiced alveolar implosive plosive consonant,False
-ɘ,close-mid central unrounded vowel,False
-ɘ̃,close-mid central unrounded vowel nasalized,False
-ə,mid central vowel,False
-ə̃,mid central vowel nasalized,False
-ɛ,open-mid front unrounded vowel,False
-ɛ̃,open-mid front unrounded vowel nasalized,False
-ɜ,open-mid central unrounded vowel,False
-ɜ̃,open-mid central unrounded vowel nasalized,False
-ɞ,open-mid central rounded vowel,False
-ɞ̃,open-mid central rounded vowel nasalized,False
-ɟ,voiced palatal plosive consonant,False
-ɟʝ,voiced palatal non-sibilant affricate consonant,False
-ɠ,voiced velar implosive plosive consonant,False
-ɡ,voiced velar plosive consonant,False
-ɡǀ,voiced dental click consonant,False
-ɡǁ,voiced alveolar lateral click consonant,False
-ɡǂ,voiced palatal click consonant,False
-ɡǃ,voiced alveolar click consonant,False
-ɡɣ,voiced velar affricate consonant,False
-ɡʘ,voiced bilabial click consonant,False
-ɢ,voiced uvular plosive consonant,False
-ɣ,voiced velar fricative consonant,False
-ɤ,close-mid back unrounded vowel,False
-ɤ̃,close-mid back unrounded vowel nasalized,False
-ɥ,voiced labio-palatal approximant consonant,False
-ɦ,voiced glottal fricative consonant,False
-ɨ,close central unrounded vowel,False
-ɨ̃,close central unrounded vowel nasalized,False
-ɪ,near-close front unrounded vowel,False
-ɪ̃,near-close front unrounded vowel nasalized,False
-ɫ,voiced velarized alveolar lateral approximant consonant,False
-ɬ,voiceless alveolar lateral fricative consonant,False
-ɬʼ,voiceless alveolar ejective lateral fricative consonant,False
-ɭ,voiced retroflex lateral approximant consonant,False
-ɮ,voiced alveolar lateral fricative consonant,False
-ɯ,close back unrounded vowel,False
-ɯ̃,close back unrounded vowel nasalized,False
-ɰ,voiced velar approximant consonant,False
-ɱ,voiced labio-dental nasal plosive consonant,False
-ɲ,voiced palatal nasal plosive consonant,False
-ɲm,voiced labio-velar nasal plosive consonant,False
-ɳ,voiced retroflex nasal plosive consonant,False
-ɴ,voiced uvular nasal plosive consonant,False
-ɴ̥,voiceless uvular nasal plosive consonant,False
-ɵ,close-mid central rounded vowel,False
-ɵ̃,close-mid central rounded vowel nasalized,False
-ɶ,open front rounded vowel,False
-ɶ̃,open front rounded vowel nasalized,False
-ɸ,voiceless bilabial fricative consonant,False
-ɸʼ,voiceless bilabial ejective fricative consonant,False
-ɹ,voiced alveolar approximant consonant,False
-ɺ,voiced alveolar lateral flap consonant,False
-ɻ,voiced retroflex approximant consonant,False
-ɽ,voiced retroflex flap consonant,False
-ɽr,voiced retroflex trill consonant,False
-ɾ,voiced alveolar flap consonant,False
-ʀ,voiced uvular trill consonant,False
-ʁ,voiced uvular fricative consonant,False
-ʂ,voiceless retroflex sibilant fricative consonant,False
-ʂʼ,voiceless retroflex ejective fricative consonant,False
-ʃ,voiceless post-alveolar sibilant fricative consonant,False
-ʃʼ,voiceless post-alveolar ejective fricative consonant,False
-ʄ,voiced palatal implosive plosive consonant,False
-ʈ,voiceless retroflex plosive consonant,False
-ʈʂ,voiceless retroflex sibilant affricate consonant,False
-ʈʂʼ,voiceless retroflex sibilant ejective affricate consonant,False
-ʈʼ,voiceless retroflex ejective plosive consonant,False
-ʉ,close central rounded vowel,False
-ʉ̃,close central rounded vowel nasalized,False
-ʊ,near-close back rounded vowel,False
-ʊ̃,near-close back rounded vowel nasalized,False
-ʋ,voiced labio-dental approximant consonant,False
-ʌ,open-mid back unrounded vowel,False
-ʌ̃,open-mid back unrounded vowel nasalized,False
-ʍ,voiceless labio-velar approximant consonant,False
-ʎ,voiced palatal lateral approximant consonant,False
-ʏ,near-close front rounded vowel,False
-ʏ̃,near-close front rounded vowel nasalized,False
-ʐ,voiced retroflex sibilant fricative consonant,False
-ʑ,voiced palatal sibilant fricative consonant,False
-ʒ,voiced post-alveolar sibilant fricative consonant,False
-ʔ,voiceless glottal plosive consonant,False
-ʔh,voiceless glottal affricate consonant,False
-ʕ,voiced pharyngeal fricative consonant,False
-ʙ,voiced bilabial trill consonant,False
-ʛ,voiced uvular implosive plosive consonant,False
-ʜ,voiceless pharyngeal trill consonant,False
-ʝ,voiced palatal non-sibilant fricative consonant,False
-ʟ,voiced velar lateral approximant consonant,False
-ʡ,voiceless pharyngeal plosive consonant,False
-ʡʢ,voiced epiglottal affricate consonant,False
-ʡʼ,voiceless pharyngeal ejective plosive consonant,False
-ʢ,voiced pharyngeal trill consonant,False
-β,voiced bilabial fricative consonant,False
-θ,voiceless dental non-sibilant fricative consonant,False
-θʼ,voiceless dental ejective fricative consonant,False
-θ̠,voiceless alveolar non-sibilant fricative consonant,False
-θ̼,voiceless linguo-labial fricative consonant,False
-χ,voiceless uvular fricative consonant,False
-χʼ,voiceless uvular ejective fricative consonant,False
-ᶑ,voiced retroflex implosive plosive consonant,False
-ⱱ,voiced labio-dental flap consonant,False
-p̪,voiceless labio-dental plosive consonant,False
-b̪,voiced labio-dental plosive consonant,False
+GRAPHEME,DESCRIPTION,PARTIAL,DOLGO,PROSODY
+V,vowel,True,,
+C,consonant,True,,
+B,back vowel,True,,
+E,front vowel,True,,
+F,fricative consonant,True,,
+H,glottal consonant,True,,
+K,velar consonant,True,,
+L,lateral consonant,True,,
+N,nasal plosive consonant,True,,
+P,bilabial consonant,True,,
+Q,uvular consonant,True,,
+S,plosive consonant,True,,
+SVL,voiceless plosive consonant,True,,
+SV,voiced plosive consonant,True,,
+VN,nasalized vowel,True,,
+VL,long vowel,True,,
+CV,voiced consonant,True,,
+a,open front unrounded vowel,False,V,
+ã,open front unrounded vowel nasalized,False,V,
+b,voiced bilabial plosive consonant,False,P,
+b̪v,voiced labio-dental affricate consonant,False,P,
+bβ,voiced bilabial affricate consonant,False,P,
+c,voiceless palatal plosive consonant,False,K,
+cç,voiceless palatal non-sibilant affricate consonant,False,,
+cʼ,voiceless palatal ejective plosive consonant,False,K,
+d,voiced alveolar plosive consonant,False,T,
+db,voiced labio-alveolar plosive consonant,False,,
+dz,voiced alveolar sibilant affricate consonant,False,K,
+dð,voiced dental non-sibilant affricate consonant,False,T,
+dɮ,voiced alveolar non-sibilant lateral affricate consonant,False,T,
+dʑ,voiced palatal sibilant affricate consonant,False,K,
+dʒ,voiced post-alveolar sibilant affricate consonant,False,T,
+d̪,voiced dental plosive consonant,False,T,
+e,close-mid front unrounded vowel,False,V,
+ẽ,close-mid front unrounded vowel nasalized,False,V,
+f,voiceless labio-dental fricative consonant,False,P,
+fʼ,voiceless labio-dental ejective fricative consonant,False,P,
+gb,voiced labio-velar plosive consonant,False,K,
+h,voiceless glottal fricative consonant,False,H,
+i,close front unrounded vowel,False,V,
+ĩ,close front unrounded vowel nasalized,False,V,
+j,voiced palatal approximant consonant,False,J,
+k,voiceless velar plosive consonant,False,K,
+kp,voiceless labio-velar plosive consonant,False,K,
+kx,voiceless velar affricate consonant,False,K,
+kxʼ,voiceless velar ejective affricate consonant,False,K,
+kǀ,voiceless dental click consonant,False,,
+kǁ,voiceless alveolar lateral click consonant,False,,
+kǂ,voiceless palatal click consonant,False,,
+kǃ,voiceless alveolar click consonant,False,,
+kʘ,voiceless bilabial click consonant,False,,
+kʼ,voiceless velar ejective plosive consonant,False,K,
+l,voiced alveolar lateral approximant consonant,False,R,
+m,voiced bilabial nasal plosive consonant,False,M,
+n,voiced alveolar nasal plosive consonant,False,N,
+nm,voiced labio-coronal nasal plosive consonant,False,,
+n̪,voiced dental nasal plosive consonant,False,N,
+o,close-mid back rounded vowel,False,V,
+õ,close-mid back rounded vowel nasalized,False,V,
+p,voiceless bilabial plosive consonant,False,P,
+pɸ,voiceless bilabial affricate consonant,False,P,
+pʼ,voiceless bilabial ejective plosive consonant,False,P,
+p̪f,voiceless labio-dental affricate consonant,False,P,
+q,voiceless uvular plosive consonant,False,K,
+qʡ,voiceless uvulo-epiglottal plosive consonant,False,,
+qʼ,voiceless uvular ejective plosive consonant,False,K,
+qχ,voiceless uvular affricate consonant,False,K,
+qχʼ,voiceless uvular ejective affricate consonant,False,K,
+r,voiced alveolar trill consonant,False,R,
+s,voiceless alveolar sibilant fricative consonant,False,S,
+sʼ,voiceless alveolar ejective fricative consonant,False,S,
+s̪,voiceless dental sibilant fricative consonant,False,S,
+t,voiceless alveolar plosive consonant,False,T,
+tp,voiceless labio-alveolar plosive consonant,False,T,
+ts,voiceless alveolar sibilant affricate consonant,False,K,
+tsʼ,voiceless alveolar sibilant ejective affricate consonant,False,T,
+tɕ,voiceless palatal sibilant affricate consonant,False,K,
+tɬ,voiceless alveolar non-sibilant lateral affricate consonant,False,T,
+tɬʼ,voiceless alveolar non-sibilant ejective affricate consonant,False,T,
+tʃ,voiceless post-alveolar sibilant affricate consonant,False,T,
+tʃʼ,voiceless post-alveolar sibilant ejective affricate consonant,False,T,
+tʼ,voiceless alveolar ejective plosive consonant,False,T,
+t̪,voiceless dental plosive consonant,False,T,
+tθ,voiceless dental non-sibilant affricate consonant,False,T,
+u,close back rounded vowel,False,V,
+ũ,close back rounded vowel nasalized,False,V,
+v,voiced labio-dental fricative consonant,False,W,
+w,voiced labio-velar approximant consonant,False,W,
+x,voiceless velar fricative consonant,False,K,
+xʼ,voiceless velar ejective fricative consonant,False,K,
+y,close front rounded vowel,False,V,
+ỹ,close front rounded vowel nasalized,False,V,
+z,voiced alveolar sibilant fricative consonant,False,S,
+z̪,voiced dental sibilant fricative consonant,False,S,
+ä,open central unrounded vowel,False,V,
+ä̃,open central unrounded vowel nasalized,False,V,
+æ,near-open front unrounded vowel,False,V,
+æ̃,near-open front unrounded vowel nasalized,False,V,
+ç,voiceless palatal non-sibilant fricative consonant,False,,
+ð,voiced dental non-sibilant fricative consonant,False,T,
+ð̠,voiced alveolar non-sibilant fricative consonant,False,T,
+ð̼,voiced linguo-labial fricative consonant,False,T,
+ø,close-mid front rounded vowel,False,V,
+ø̃,close-mid front rounded vowel nasalized,False,V,
+ħ,voiceless pharyngeal fricative consonant,False,H,
+ŋ,voiced velar nasal plosive consonant,False,N,
+ŋǀ,voiced dental nasal click consonant,False,N,
+ŋǁ,voiced alveolar lateral nasal click consonant,False,N,
+ŋǂ,voiced palatal nasal click consonant,False,N,
+ŋǃ,voiced alveolar nasal click consonant,False,N,
+ŋʘ,voiced bilabial nasal click consonant,False,N,
+œ,open-mid front rounded vowel,False,V,
+œ̃,open-mid front rounded vowel nasalized,False,V,
+ɐ,near-open central vowel,False,V,
+ɐ̃,near-open central vowel nasalized,False,V,
+ɑ,open back unrounded vowel,False,V,
+ɑ̃,open back unrounded vowel nasalized,False,V,
+ɒ,open back rounded vowel,False,V,
+ɒ̃,open back rounded vowel nasalized,False,V,
+ɓ,voiced bilabial implosive plosive consonant,False,P,
+ɔ,open-mid back rounded vowel,False,V,
+ɔ̃,open-mid back rounded vowel nasalized,False,V,
+ɕ,voiceless palatal sibilant fricative consonant,False,S,
+ɕʼ,voiceless palatal ejective fricative consonant,False,S,
+ɖ,voiced retroflex plosive consonant,False,T,
+ɖʐ,voiced retroflex sibilant affricate consonant,False,K,
+ɗ,voiced alveolar implosive plosive consonant,False,T,
+ɘ,close-mid central unrounded vowel,False,V,
+ɘ̃,close-mid central unrounded vowel nasalized,False,V,
+ə,mid central vowel,False,V,
+ə̃,mid central vowel nasalized,False,V,
+ɛ,open-mid front unrounded vowel,False,V,
+ɛ̃,open-mid front unrounded vowel nasalized,False,V,
+ɜ,open-mid central unrounded vowel,False,V,
+ɜ̃,open-mid central unrounded vowel nasalized,False,V,
+ɞ,open-mid central rounded vowel,False,V,
+ɞ̃,open-mid central rounded vowel nasalized,False,V,
+ɟ,voiced palatal plosive consonant,False,K,
+ɟʝ,voiced palatal non-sibilant affricate consonant,False,K,
+ɠ,voiced velar implosive plosive consonant,False,K,
+ɡ,voiced velar plosive consonant,False,,
+ɡǀ,voiced dental click consonant,False,,
+ɡǁ,voiced alveolar lateral click consonant,False,,
+ɡǂ,voiced palatal click consonant,False,,
+ɡǃ,voiced alveolar click consonant,False,,
+ɡɣ,voiced velar affricate consonant,False,,
+ɡʘ,voiced bilabial click consonant,False,,
+ɢ,voiced uvular plosive consonant,False,K,
+ɣ,voiced velar fricative consonant,False,K,
+ɤ,close-mid back unrounded vowel,False,V,
+ɤ̃,close-mid back unrounded vowel nasalized,False,V,
+ɥ,voiced labio-palatal approximant consonant,False,J,
+ɦ,voiced glottal fricative consonant,False,H,
+ɨ,close central unrounded vowel,False,V,
+ɨ̃,close central unrounded vowel nasalized,False,V,
+ɪ,near-close front unrounded vowel,False,V,
+ɪ̃,near-close front unrounded vowel nasalized,False,V,
+ɫ,voiced velarized alveolar lateral approximant consonant,False,,
+ɬ,voiceless alveolar lateral fricative consonant,False,,
+ɬʼ,voiceless alveolar ejective lateral fricative consonant,False,,
+ɭ,voiced retroflex lateral approximant consonant,False,R,
+ɮ,voiced alveolar lateral fricative consonant,False,R,
+ɯ,close back unrounded vowel,False,V,
+ɯ̃,close back unrounded vowel nasalized,False,V,
+ɰ,voiced velar approximant consonant,False,V,
+ɱ,voiced labio-dental nasal plosive consonant,False,M,
+ɲ,voiced palatal nasal plosive consonant,False,N,
+ɲm,voiced labio-velar nasal plosive consonant,False,,
+ɳ,voiced retroflex nasal plosive consonant,False,N,
+ɴ,voiced uvular nasal plosive consonant,False,N,
+ɴ̥,voiceless uvular nasal plosive consonant,False,N,
+ɵ,close-mid central rounded vowel,False,V,
+ɵ̃,close-mid central rounded vowel nasalized,False,V,
+ɶ,open front rounded vowel,False,V,
+ɶ̃,open front rounded vowel nasalized,False,V,
+ɸ,voiceless bilabial fricative consonant,False,P,
+ɸʼ,voiceless bilabial ejective fricative consonant,False,P,
+ɹ,voiced alveolar approximant consonant,False,R,
+ɺ,voiced alveolar lateral flap consonant,False,R,
+ɻ,voiced retroflex approximant consonant,False,R,
+ɽ,voiced retroflex flap consonant,False,R,
+ɽr,voiced retroflex trill consonant,False,,
+ɾ,voiced alveolar flap consonant,False,R,
+ʀ,voiced uvular trill consonant,False,R,
+ʁ,voiced uvular fricative consonant,False,R,
+ʂ,voiceless retroflex sibilant fricative consonant,False,S,
+ʂʼ,voiceless retroflex ejective fricative consonant,False,,
+ʃ,voiceless post-alveolar sibilant fricative consonant,False,S,
+ʃʼ,voiceless post-alveolar ejective fricative consonant,False,S,
+ʄ,voiced palatal implosive plosive consonant,False,K,
+ʈ,voiceless retroflex plosive consonant,False,T,
+ʈʂ,voiceless retroflex sibilant affricate consonant,False,K,
+ʈʂʼ,voiceless retroflex sibilant ejective affricate consonant,False,,
+ʈʼ,voiceless retroflex ejective plosive consonant,False,,
+ʉ,close central rounded vowel,False,V,
+ʉ̃,close central rounded vowel nasalized,False,V,
+ʊ,near-close back rounded vowel,False,V,
+ʊ̃,near-close back rounded vowel nasalized,False,V,
+ʋ,voiced labio-dental approximant consonant,False,W,
+ʌ,open-mid back unrounded vowel,False,V,
+ʌ̃,open-mid back unrounded vowel nasalized,False,V,
+ʍ,voiceless labio-velar approximant consonant,False.M,
+ʎ,voiced palatal lateral approximant consonant,False,R,
+ʏ,near-close front rounded vowel,False,V,
+ʏ̃,near-close front rounded vowel nasalized,False,V,
+ʐ,voiced retroflex sibilant fricative consonant,False,S,
+ʑ,voiced palatal sibilant fricative consonant,False,S,
+ʒ,voiced post-alveolar sibilant fricative consonant,False,S,
+ʔ,voiceless glottal plosive consonant,False,H,
+ʔh,voiceless glottal affricate consonant,False,H,
+ʕ,voiced pharyngeal fricative consonant,False,H,
+ʙ,voiced bilabial trill consonant,False,W,
+ʛ,voiced uvular implosive plosive consonant,False,K,
+ʜ,voiceless pharyngeal trill consonant,False,0,
+ʝ,voiced palatal non-sibilant fricative consonant,False,S,
+ʟ,voiced velar lateral approximant consonant,False,R,
+ʡ,voiceless pharyngeal plosive consonant,False,H,
+ʡʢ,voiced epiglottal affricate consonant,False,,
+ʡʼ,voiceless pharyngeal ejective plosive consonant,False,,
+ʢ,voiced pharyngeal trill consonant,False,0,
+β,voiced bilabial fricative consonant,False,P,
+θ,voiceless dental non-sibilant fricative consonant,False,T,
+θʼ,voiceless dental ejective fricative consonant,False,,
+θ̠,voiceless alveolar non-sibilant fricative consonant,False,,
+θ̼,voiceless linguo-labial fricative consonant,False,,
+χ,voiceless uvular fricative consonant,False,K,
+χʼ,voiceless uvular ejective fricative consonant,False,K,
+ᶑ,voiced retroflex implosive plosive consonant,False,,
+ⱱ,voiced labio-dental flap consonant,False,W,
+p̪,voiceless labio-dental plosive consonant,False,P,
+b̪,voiced labio-dental plosive consonant,False,P,
