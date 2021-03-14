@@ -257,7 +257,7 @@ class PhonoModel:
         @return: The first element of the tuple is a Sequence with the feature values
             from the parsed grapheme. The second element is a boolean indicating whether
             the grapheme should be consider the representation of a partially defined
-            sound (i.e., a sound class as understood in maniphono).
+            sound (i.e., a "sound class" as understood in maniphono).
         """
 
         # Used model/cache graphemes if available; it is already a sorted tuple
@@ -297,7 +297,6 @@ class PhonoModel:
             raise ValueError(f"Parsed graphemes fails contrainsts ({offending})")
 
         # Return the grapheme and whether it is a partial sound
-        # TODO: recheck the partial information -- if the base_grapheme has modifications is it partial?
         return fvalues, base_grapheme in self.snd_classes
 
     def set_fvalue(
@@ -502,7 +501,7 @@ class PhonoModel:
                 # TODO: should delegate the checking of valid names to another method
                 parsed = parse_fvalues(sound)
                 if not all([fvalue in self.fvalues for fvalue in parsed]):
-                    parsed = self.parse_grapheme(sound)[0]  # drop `partial` info
+                    parsed = self.parse_grapheme(sound)[0]  # drops `partial` info
 
                 ret.append(parsed)
             else:
