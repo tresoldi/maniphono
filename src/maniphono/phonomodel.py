@@ -140,7 +140,7 @@ class PhonoModel:
             for row in csv.DictReader(csvfile):
                 grapheme = normalize(row["GRAPHEME"])
                 _graphemes[grapheme] = parse_fvalues(row["DESCRIPTION"])
-                if row["CLASS"] == "True":
+                if row["PARTIAL"] == "True":
                     self.snd_classes.append(grapheme)
 
         # Check for duplicate descriptions.

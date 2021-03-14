@@ -1,4 +1,4 @@
-GRAPHEME,DESCRIPTION,CLASS
+GRAPHEME,DESCRIPTION,PARTIAL
 V,vowel,True
 C,consonant,True
 B,back vowel,True

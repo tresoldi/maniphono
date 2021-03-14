@@ -145,6 +145,17 @@ specified with two equivalent flists) and of fvalue lists (two equivalent
 flists mapping to different graphemes). The library will check for these
 restrictions when loading a model.
 
+Models can carry additional information related to each sound, both categorical
+(such as sound classes) and numerical (such as prosody values), which are not
+mandatory but might be needed by different methods and functionalities.
+In case this information is needed for a sound not in the list of sounds (such as
+one extended with a diacritic), the system will internally find the closest
+sound and repeat that information (this is what happens, for example, with
+sound classes). This also happens in case of empty cells (common, for
+example, for partial sounds).
+The MIPA model carries information on sound classes (derived
+from SCA [cite list]) and prosody (derived from [cite list]).
+
 ### fvalue list syntax
 
 lorem ipsum
