@@ -48,6 +48,7 @@ class PhonoModel:
         self.fvalues2grapheme = {}
         self.diacritics = {}
         self.snd_classes = []
+        self.info = {}  # additional, non-mandatory informatiom on sounds
 
         # Build a path for reading the model (if it was not provided, we assume it
         # lives in the `model/` directory), and then load the features/values first
@@ -138,10 +139,17 @@ class PhonoModel:
         _graphemes = {}
         with open(model_path / "sounds.csv", encoding="utf-8") as csvfile:
             for row in csv.DictReader(csvfile):
-                grapheme = normalize(row["GRAPHEME"])
-                _graphemes[grapheme] = parse_fvalues(row["DESCRIPTION"])
-                if row["CLASS"] == "True":
+                # Collect the main information first: graphemes, descriptors,
+                # and partial. If the "PARTIAL" column is not provided, `.snd_classes`
+                # is left untouched, implying that no sound is partial
+                grapheme = normalize(row.pop("GRAPHEME"))
+                _graphemes[grapheme] = parse_fvalues(row.pop("DESCRIPTION"))
+                partial = row.pop("PARTIAL", None)
+                if partial == "True":
                     self.snd_classes.append(grapheme)
+
+                # Collect additional information
+                self.info[grapheme] = row
 
         # Check for duplicate descriptions.
         dupl_desc = [
@@ -257,7 +265,7 @@ class PhonoModel:
         @return: The first element of the tuple is a Sequence with the feature values
             from the parsed grapheme. The second element is a boolean indicating whether
             the grapheme should be consider the representation of a partially defined
-            sound (i.e., a sound class as understood in maniphono).
+            sound (i.e., a "sound class" as understood in maniphono).
         """
 
         # Used model/cache graphemes if available; it is already a sorted tuple
@@ -297,7 +305,6 @@ class PhonoModel:
             raise ValueError(f"Parsed graphemes fails contrainsts ({offending})")
 
         # Return the grapheme and whether it is a partial sound
-        # TODO: recheck the partial information -- if the base_grapheme has modifications is it partial?
         return fvalues, base_grapheme in self.snd_classes
 
     def set_fvalue(
@@ -502,7 +509,7 @@ class PhonoModel:
                 # TODO: should delegate the checking of valid names to another method
                 parsed = parse_fvalues(sound)
                 if not all([fvalue in self.fvalues for fvalue in parsed]):
-                    parsed = self.parse_grapheme(sound)[0]  # drop `partial` info
+                    parsed = self.parse_grapheme(sound)[0]  # drops `partial` info
 
                 ret.append(parsed)
             else:
@@ -704,6 +711,27 @@ class PhonoModel:
                 grapheme = candidate_g
 
         return grapheme, best_fvalues
+
+    # TODO: use a method different from `.closest_grapheme` -- perhaps a weight Jaccard on the fvalues?
+    def get_info(self, source, field):
+        """
+        Return additional information on a sound.
+
+        The method is used to obtain non-mandatory information in a model, such as prosody value and
+        sound class. If the `field` is not available, a `None` is returned. If the sound is not found
+        in the model but is a valid one, the `field` for the closest sound will be returned.
+
+        Note that field names are case-insensitive.
+
+        @param source:
+        @param field:
+        @return:
+        """
+
+        fvalues = self._parse_sound_group([source])[0]
+        grapheme = self.build_grapheme(fvalues)
+
+        return self.info[grapheme].get(field.upper(), None)
 
     def __str__(self) -> str:
         """

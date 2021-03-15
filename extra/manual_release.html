@@ -215,7 +215,7 @@
 <header id="title-block-header">
 <h1 class="title">Maniphono</h1>
 </header>
-<p><code>maniphono</code> is a library for the manipulation of phonological units, designed as a solution historical phonology. While offering two standard models for operation, one modified from the IPA but following as much as possible its descriptors and one using distinctive features which is designed for machine learning, it is designed to support custom phonological models, trying as much as possible to be agnostic about the theoretical background. It also gives particular attention since design stage to the role of suprasegmentals.</p>
+<p><code>maniphono</code> is a library for the symbolic manipulation of phonological units, designed as a solution historical phonology. While offering two standard models for operation, one modified from the IPA but following as much as possible its descriptors and one using distinctive features which is designed for machine learning, it is designed to support custom phonological models, trying as much as possible to be agnostic about the theoretical background. For example, contrary to most computational systems, it does not force consonants and vowels to be separated, and in fact allows pure systems of distinctive features where all possible sounds are expressed using the same matrix. It also gives particular attention since design stage to the role of suprasegmentals.</p>
 <p><code>maniphono</code> operates on a hierarchy of phonological abstractions, all which are related in some way to a “phonological model” that serves as the basis of all operations. This hierarchy is:</p>
 <ul>
 <li>a “phonological model” comprises a set of features operating in a many-valued logic system: each <code>feature</code> may be either undefined or defined by defined by one and only one “feature value” (or <code>favalue</code>) and a map of sounds (given by their graphemes) and the feature values that define them</li>
@@ -231,131 +231,207 @@
 <li>a sequence is a list of segments, such as <code>[p a p a+j]</code>, which is a sequence of four segments (the last of which is composed of two sounds). It can carry additional information, such as word boundaries as in <code>[# p a p a+j #]</code>, syllable breaks as in <code>[# p a . p a+j #]</code>, and tonal information as in <code>[# p a ˧˩ . p a+j ˨˦ #]</code></li>
 </ul>
 <h2 id="phonomodel">PhonoModel</h2>
-<p>By design, a “PhonoModel” works in a way independent</p>
-<h2 id="description">Description</h2>
-<p>Mostly text based models, so it can be used in other systems and programming languages.</p>
-<p>bundle</p>
-<p>segment</p>
-<p>grapheme</p>
-<p>model</p>
-<p>The central concepts of a model are “features” and “values”. A feature is a set of one or more values that can be used to describe a sound or a group of sounds (a “sound class”). For example, the “centrality” feature, used to describe the horizontal position of the tongue in vowel production in the IPA, can take five different values: front, near-front, central, near-back, back. All values within the same feature are exclusive, meaning that no bundle can be carry two or more values from the same feature; in most operations, applying a value from a feature that is already set overrides the said value. For models derived from binary distinctive features, (discuss three-value), each feature feature will usually have two values, corresponding to the presence or absence, such as feature “dorsal” with the potential values “-dorsal” (or “non-dorsal”) and “+dorsal” (or just “dorsal”).</p>
-<p>Value names are globally unique within a model, including those of different features. Valid names are…. Each value is associated with additional properties that are used to manipulate and render sounds or bounds. Note that all these properties are related to values and not features, meaning that different values of the same feature might have different weights, implications, etc. (even though in most cases all values of the same feature will share weights and implications).</p>
+<p>As mentioned above, a “phonological model” is composed of two main sources:</p>
 <ul>
-<li><p>The weight specifies the “importance” of the value in relation to other values. The definition is importance is loose and depends on the context, but in most cases it references to what takes precedence when generating some output: for example, the most important feature in the IPA model is the type of the sound, meaning either a consonant or a vowel, as correspondigly the generated English names will have the noun “vowel” or “consonant” at the end. Note that the weight is inversely related to the importance: the lower the weight, the more important the value.</p></li>
-<li><p>The implies lists the conditions for a value to be set, that is, which values must be present or are implied by another. For example, all value of feature “manner”, the manner of articulation for consonants, such as plosive or trill, imply the feature “consonant” and cannot in the IPA model be applied to vowels. implies are not mandatory, and more than one might be listed, separating them with vertical bars (but nested ones are not allowed)</p></li>
-<li><p>Prefix and suffix list the substring preceding and following a grapheme string so it can be modified; for example, in the IPA model, the feature aspiration has no prefix but a <code>ʰ</code> suffix, so that an “aspirated voiceless plosive consonant” ([p]) is rendered as the base sound listed [p] “voiceless plosive consonant” plus the suffix. Prefixes and suffixes are added to a grapheme string in order of their weight, defaulting to alphabetical value name in case of two or more values with the same weight (guaranteeing reproducibility). If a value lists no prefix or suffix, the information is added to the grapheme with a full list of the values between brackets; if we did not list one for aspiration, the “aspirated voiceless plosive consonant” would be rendered as “p[aspirated]” (this can of grapheme can be parsed by the system)</p></li>
+<li>a feature definition</li>
+<li>a sound definition</li>
 </ul>
-<h1 id="maniphono">maniphono</h1>
-<p><code>maniphono</code> is a library for the symbolic manipulation of phonological units.</p>
-<p>The main components of the library are <code>PhonoModels</code>, which define different models and sounds, and actual abstractions.</p>
-<p>Models have two main components: the description of features and values and the description of sounds.</p>
-<p>The actual abstractions are organized in levels of nested complexity, as follows:</p>
-<pre><code>- `Sounds` are the basic units, defined as lists of features
-- `Segments` are collections of one or more sounds
-- `Sequences` are collections of one or more segments</code></pre>
+<h3 id="feature-definition">Feature definition</h3>
+<p>Features are defined in a tabular file named <code>model.csv</code> with contents similar to the snippet below:</p>
+<table>
+<thead>
+<tr class="header">
+<th style="text-align: left;">FEATURE</th>
+<th style="text-align: left;">FVALUE</th>
+<th style="text-align: left;">RANK</th>
+<th style="text-align: left;">PREFIX</th>
+<th style="text-align: left;">SUFFIX</th>
+<th style="text-align: left;">CONSTRAINTS</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;">aspiration</td>
+<td style="text-align: left;">aspirated</td>
+<td style="text-align: left;">6</td>
+<td style="text-align: left;"></td>
+<td style="text-align: left;">ʰ</td>
+<td style="text-align: left;">consonant</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">centrality</td>
+<td style="text-align: left;">back</td>
+<td style="text-align: left;">2</td>
+<td style="text-align: left;"></td>
+<td style="text-align: left;">U+0320</td>
+<td style="text-align: left;">vowel</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">centrality</td>
+<td style="text-align: left;">central</td>
+<td style="text-align: left;">2</td>
+<td style="text-align: left;"></td>
+<td style="text-align: left;">U+0308</td>
+<td style="text-align: left;">vowel</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">centrality</td>
+<td style="text-align: left;">front</td>
+<td style="text-align: left;">2</td>
+<td style="text-align: left;"></td>
+<td style="text-align: left;">U+031F</td>
+<td style="text-align: left;">vowel</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">centrality</td>
+<td style="text-align: left;">near-back</td>
+<td style="text-align: left;">2</td>
+<td style="text-align: left;"></td>
+<td style="text-align: left;"></td>
+<td style="text-align: left;">vowel</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">centrality</td>
+<td style="text-align: left;">near-front</td>
+<td style="text-align: left;">2</td>
+<td style="text-align: left;"></td>
+<td style="text-align: left;"></td>
+<td style="text-align: left;">vowel</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">ejection</td>
+<td style="text-align: left;">ejective</td>
+<td style="text-align: left;">5</td>
+<td style="text-align: left;"></td>
+<td style="text-align: left;"></td>
+<td style="text-align: left;">plosive|fricative|affricate</td>
+</tr>
+</tbody>
+</table>
+<p>The most important field for each row, and the only one that needs to be unique in the row, is the “FVALUE” one, as each row reports one “fvalue”. The “fvalue” labels have names in all lower-case letters, with optional dashes, and must be unique across the entire model. There cannot be repeated fvalue names, even if they cannot apply to the same sound: as a consequence, for example, the MIPA model has a feature “nasal” which applies to consonants only, and a feature “nasalized” which applies to vowels only.</p>
+<p>The “FEATURE” column reports the feature in the model to which the fvalue refers to. Each sound in <code>maniphono</code> can have at most one fvalue per feature set, so that it is possible to ask questions such as “which is fvalue for ‘centrality’ in sound X” or “is ‘front’ the fvalue for ‘centrality’ in sound Y”.</p>
+<p>“RANK”, “PREFIX”, and “SUFFIX” are properties mostly used for converting from and to graphemic representations, such as making sure that ‘voiceless bilabial plosive consonant’ is converted to “p”. The first is an integer number that informs, in descending order, how “important” a value is, so that, when presenting information to the user, our results are reproducible and we always obtain ‘voiceless bilabial plosive consonant’ and not ‘voiceless bilabial consonant plosive’ (which is, however, accepted as an input). Note that ranks are determined per fvalue and not per feature basis, as giving more fine-grained options about how to build the names. “PREFIX” and “SUFFIX” are, as expected, substrings that will attached to base graphemes in order to modify them; the order of addition follows the “RANK” property, so here as well the results are reproducible. Both “PREFIX” and “SUFFIX” can be given as Unicode charpoints. If an affix is needed when building a graphemic representation and it is not available, the library will fall back to adding the corresponding fvalue as a modifier.</p>
+<p>“CONSTRAINTS” is a non-mandatory field which allows a detailed specification of which fvalues must or must not be set for a given fvalue to be present in a sound. They can be used internally for a variety of purposes, such as making sure that sounds or groups of sounds considered impossible are not accepted (such “sibilant laryngeals”, in the <code>mipa</code> model) and that some fvalues are automatically added when necessary (such as automatically marking all “sibilants” as “fricatives” in the same <code>mipa</code> model). The restriction that each can have at most one fvalue per feature can be interpreted as a list of constraints automatically added, where each fvalue implies the’ absence of the fvalues of the same feature. The syntax for the “CONSTRAINTS” field can express many nuances and interdependencies, and is explained in subsection X.</p>
+<h4 id="sound-definition">Sound definition</h4>
+<p>Sounds are defined in a tabular file named <code>sounds.csv</code> with contents similar to the snippet below:</p>
+<table>
+<thead>
+<tr class="header">
+<th style="text-align: left;">GRAPHEME</th>
+<th style="text-align: left;">DESCRIPTION</th>
+<th style="text-align: left;">CLASS</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;">V</td>
+<td style="text-align: left;">vowel</td>
+<td style="text-align: left;">True</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">F</td>
+<td style="text-align: left;">fricative consonant</td>
+<td style="text-align: left;">True</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">a</td>
+<td style="text-align: left;">open front unrounded vowel</td>
+<td style="text-align: left;">False</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">ã</td>
+<td style="text-align: left;">open front unrounded vowel nasalized</td>
+<td style="text-align: left;">False</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">b</td>
+<td style="text-align: left;">voiced bilabial plosive consonant</td>
+<td style="text-align: left;">False</td>
+</tr>
+</tbody>
+</table>
+<p>“GRAPHEME” is a base grapheme representation, and it is recommended that it follows the IPA as close as possible. As the “PREFIX” and “AFFIX” fields in model, this field accepts Unicode charpoints. Note, that internally the graphemes will always be normalized and returned following the NFD, that is, the Normalization Form Canonical Decomposition, when characters are decomposed by canonical equivalence, and multiple combining characters are arranged in a specific order. For more information, see subsection X.</p>
+<p>The “DESCRIPTION” is a list of one or more fvalues that define the corresponding grapheme. It is not necessary for them to follow the ranks of the fvalues. While it is recommended to separate the fvalues by a single white space, there is some flexibility in terms of the syntax defining an “fvalue list” (see subsection X).</p>
+<p>The “CLASS” column reports a boolean information on whether the sound is partial (<code>True</code>) or not (<code>False</code>). Sound partiality is an attribute mostly used internally for forward and backward operation when applying a sound change, and for most common purposes the sounds that can be represented in IPA can be considered non-partial. It is recommended, following the practice in the literature, that partial sounds are defined with capital letters.</p>
+<p>As expected, there can be no duplicates in terms of graphemes (the same grapheme specified with two equivalent flists) and of fvalue lists (two equivalent flists mapping to different graphemes). The library will check for these restrictions when loading a model.</p>
+<p>Models can carry additional information related to each sound, both categorical (such as sound classes) and numerical (such as prosody values), which are not mandatory but might be needed by different methods and functionalities. In case this information is needed for a sound not in the list of sounds (such as one extended with a diacritic), the system will internally find the closest sound and repeat that information (this is what happens, for example, with sound classes). This also happens in case of empty cells (common, for example, for partial sounds). The MIPA model carries information on sound classes (derived from SCA [cite list]) and prosody (derived from [cite list]).</p>
+<h3 id="fvalue-list-syntax">fvalue list syntax</h3>
+<p>lorem ipsum</p>
+<h3 id="constraint-syntax">Constraint syntax</h3>
+<p>lorem ipsum</p>
+<h3 id="unicode-normalization">Unicode normalization</h3>
+<p>lorem ipsum</p>
 <h2 id="usage">Usage</h2>
 <p>The library is intended to be used as normal Python package, trying to follow the conventions and expectations of its programming language. A few decisions on implementation might fall short in this principle, but they are justified by the future plans of offering an equivalent interface in different programming languages that can easily used on client browser connections and/or compiled to machine code for easier parallel processing.</p>
 <p>The library is imported as expected. It is currently distributed with two models, <code>mipa</code> and <code>tresoldi</code>, which offer a modified version of IPA and one of full binary distinctive features that is intended mostly for machine learning approaches. In all cases, the <code>mipa</code> model is used as default.</p>
-<div class="sourceCode" id="cb2" data-startFrom="1"><pre class="sourceCode numberSource python numberLines"><code class="sourceCode python"><span id="cb2-1"><a href="#cb2-1"></a><span class="im">import</span> maniphono</span>
-<span id="cb2-2"><a href="#cb2-2"></a><span class="bu">print</span>(maniphono.model_mipa)</span>
-<span id="cb2-3"><a href="#cb2-3"></a><span class="bu">print</span>(maniphono.model_tresoldi)</span></code></pre></div>
-<pre class="stdout"><code>[`mipa` model (20 features, 64 fvalues, 231 graphemes)]
-[`tresoldi` model (30 features, 60 fvalues, 570 graphemes)]</code></pre>
+<div class="sourceCode" id="cb1" data-startFrom="1"><pre class="sourceCode numberSource python numberLines"><code class="sourceCode python"><span id="cb1-1"><a href="#cb1-1"></a><span class="im">import</span> maniphono</span>
+<span id="cb1-2"><a href="#cb1-2"></a><span class="bu">print</span>(maniphono.model_mipa)</span>
+<span id="cb1-3"><a href="#cb1-3"></a><span class="bu">print</span>(maniphono.model_tresoldi)</span></code></pre></div>
 <h3 id="sounds">Sounds</h3>
 <p>A <code>Sound</code> can be initialized either with a grapheme, by default, or a description. Descriptions can be either a list of values or a string listing different values and separated by a standard delimiter such as spaces or commas. A model must also be provided, defaulting to <code>mipa</code> as mentioned above. Segments can be “visualized” with <code>str()</code>, returning a graphemic representation, or with <code>repr()</code>, returned a descriptive representation.</p>
-<div class="sourceCode" id="cb4"><pre class="sourceCode python"><code class="sourceCode python"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="op">&gt;&gt;&gt;</span> snd1 <span class="op">=</span> maniphono.Sound(<span class="st">&quot;p&quot;</span>)</span>
-<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a><span class="op">&gt;&gt;&gt;</span> <span class="bu">str</span>(snd1), <span class="bu">repr</span>(snd1)</span>
-<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a>(<span class="st">&#39;p&#39;</span>, <span class="st">&#39;voiceless bilabial plosive consonant&#39;</span>)</span>
-<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a><span class="op">&gt;&gt;&gt;</span> snd2 <span class="op">=</span> maniphono.Sound(description<span class="op">=</span><span class="st">&quot;voiceless bilabial plosive consonant&quot;</span>)</span>
-<span id="cb4-5"><a href="#cb4-5" aria-hidden="true" tabindex="-1"></a><span class="op">&gt;&gt;&gt;</span> <span class="bu">str</span>(snd2), <span class="bu">repr</span>(snd2)</span>
-<span id="cb4-6"><a href="#cb4-6" aria-hidden="true" tabindex="-1"></a>(<span class="st">&#39;p&#39;</span>, <span class="st">&#39;voiceless bilabial plosive consonant&#39;</span>)</span>
-<span id="cb4-7"><a href="#cb4-7" aria-hidden="true" tabindex="-1"></a><span class="op">&gt;&gt;&gt;</span> snd3 <span class="op">=</span> maniphono.Sound(<span class="st">&quot;a&quot;</span>, model<span class="op">=</span>maniphono.model_tresoldi)</span>
-<span id="cb4-8"><a href="#cb4-8" aria-hidden="true" tabindex="-1"></a><span class="op">&gt;&gt;&gt;</span> <span class="bu">str</span>(snd3), <span class="bu">repr</span>(snd3)</span>
-<span id="cb4-9"><a href="#cb4-9" aria-hidden="true" tabindex="-1"></a>(<span class="st">&#39;a&#39;</span>, <span class="st">&#39;low non-back non-high non-sibilant non-strident distributed anterior non-constricted non-spread voice dorsal non-labial non-click coronal place non-lateral laryngeal syllabic tense non-consonantal non-nasal approximant continuant sonorant&#39;</span>)</span></code></pre></div>
+<div class="sourceCode" id="cb2" data-startFrom="4"><pre class="sourceCode numberSource python numberLines"><code class="sourceCode python" style="counter-reset: source-line 3;"><span id="cb2-4"><a href="#cb2-4"></a>snd1 <span class="op">=</span> maniphono.Sound(<span class="st">&quot;p&quot;</span>)</span>
+<span id="cb2-5"><a href="#cb2-5"></a><span class="bu">str</span>(snd1), <span class="bu">repr</span>(snd1)</span>
+<span id="cb2-6"><a href="#cb2-6"></a>snd2 <span class="op">=</span> maniphono.Sound(description<span class="op">=</span><span class="st">&quot;voiceless bilabial plosive consonant&quot;</span>)</span>
+<span id="cb2-7"><a href="#cb2-7"></a><span class="bu">str</span>(snd2), <span class="bu">repr</span>(snd2)</span>
+<span id="cb2-8"><a href="#cb2-8"></a>snd3 <span class="op">=</span> maniphono.Sound(<span class="st">&quot;a&quot;</span>, model<span class="op">=</span>maniphono.model_tresoldi)</span>
+<span id="cb2-9"><a href="#cb2-9"></a><span class="bu">str</span>(snd3), <span class="bu">repr</span>(snd3)</span></code></pre></div>
 <p>The easiest way to manipulate sounds is using the add (<code>+</code>) and sub (<code>-</code>) operators, which accept both single and multiple values. If a value from a feature that is already set is added, it will be replaced.</p>
-<div class="sourceCode" id="cb5"><pre class="sourceCode python"><code class="sourceCode python"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="op">&gt;&gt;&gt;</span> snd1 <span class="op">+=</span> <span class="st">&#39;voiced&#39;</span></span>
-<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a><span class="op">&gt;&gt;&gt;</span> <span class="bu">str</span>(snd1), <span class="bu">repr</span>(snd1)</span>
-<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a>(<span class="st">&#39;b&#39;</span>, <span class="st">&#39;voiced bilabial plosive consonant&#39;</span>)</span>
-<span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a><span class="op">&gt;&gt;&gt;</span> snd2 <span class="op">+=</span> <span class="st">&#39;velar,aspirated,labialized&#39;</span></span>
-<span id="cb5-5"><a href="#cb5-5" aria-hidden="true" tabindex="-1"></a><span class="op">&gt;&gt;&gt;</span> <span class="bu">str</span>(snd2), <span class="bu">repr</span>(snd2)</span>
-<span id="cb5-6"><a href="#cb5-6" aria-hidden="true" tabindex="-1"></a>(<span class="st">&#39;kʰʷ&#39;</span>, <span class="st">&#39;labialized aspirated voiceless velar plosive consonant&#39;</span>)</span>
-<span id="cb5-7"><a href="#cb5-7" aria-hidden="true" tabindex="-1"></a><span class="op">&gt;&gt;&gt;</span> snd2 <span class="op">-=</span> <span class="st">&#39;aspirated&#39;</span></span>
-<span id="cb5-8"><a href="#cb5-8" aria-hidden="true" tabindex="-1"></a><span class="op">&gt;&gt;&gt;</span> <span class="bu">str</span>(snd2), <span class="bu">repr</span>(snd2)</span>
-<span id="cb5-9"><a href="#cb5-9" aria-hidden="true" tabindex="-1"></a>(<span class="st">&#39;kʷ&#39;</span>, <span class="st">&#39;labialized voiceless velar plosive consonant&#39;</span>)</span></code></pre></div>
+<div class="sourceCode" id="cb3" data-startFrom="10"><pre class="sourceCode numberSource python numberLines"><code class="sourceCode python" style="counter-reset: source-line 9;"><span id="cb3-10"><a href="#cb3-10"></a>snd1 <span class="op">+=</span> <span class="st">&#39;voiced&#39;</span></span>
+<span id="cb3-11"><a href="#cb3-11"></a><span class="bu">str</span>(snd1), <span class="bu">repr</span>(snd1)</span>
+<span id="cb3-12"><a href="#cb3-12"></a>snd2 <span class="op">+=</span> <span class="st">&#39;velar,aspirated,labialized&#39;</span></span>
+<span id="cb3-13"><a href="#cb3-13"></a><span class="bu">str</span>(snd2), <span class="bu">repr</span>(snd2)</span>
+<span id="cb3-14"><a href="#cb3-14"></a>snd2 <span class="op">-=</span> <span class="st">&#39;aspirated&#39;</span></span>
+<span id="cb3-15"><a href="#cb3-15"></a><span class="bu">str</span>(snd2), <span class="bu">repr</span>(snd2)</span></code></pre></div>
 <p>A dictionary of features and values can be easily obtained:</p>
-<div class="sourceCode" id="cb6"><pre class="sourceCode python"><code class="sourceCode python"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="op">&gt;&gt;&gt;</span> snd2.feature_dict()</span>
-<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a>{<span class="st">&#39;phonation&#39;</span>: <span class="st">&#39;voiceless&#39;</span>, <span class="st">&#39;manner&#39;</span>: <span class="st">&#39;plosive&#39;</span>, <span class="st">&#39;type&#39;</span>: <span class="st">&#39;consonant&#39;</span>, <span class="st">&#39;place&#39;</span>: <span class="st">&#39;velar&#39;</span>, <span class="st">&#39;labialization&#39;</span>: <span class="st">&#39;labialized&#39;</span>}</span></code></pre></div>
+<div class="sourceCode" id="cb4" data-startFrom="16"><pre class="sourceCode numberSource python numberLines"><code class="sourceCode python" style="counter-reset: source-line 15;"><span id="cb4-16"><a href="#cb4-16"></a>snd2.feature_dict()</span></code></pre></div>
 <p>If a grapheme is not available, either because the sound is not complete or because no diacritic is offered in the model, the library will try to be explicit about its representation.</p>
-<div class="sourceCode" id="cb7"><pre class="sourceCode python"><code class="sourceCode python"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="op">&gt;&gt;&gt;</span> snd4 <span class="op">=</span> maniphono.Sound(description<span class="op">=</span><span class="st">&quot;voiceless consonant&quot;</span>)</span>
-<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a><span class="op">&gt;&gt;&gt;</span> <span class="bu">str</span>(snd4), <span class="bu">repr</span>(snd4)</span>
-<span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a>(<span class="st">&#39;C̥&#39;</span>, <span class="st">&#39;voiceless consonant&#39;</span>)</span></code></pre></div>
+<div class="sourceCode" id="cb5" data-startFrom="17"><pre class="sourceCode numberSource python numberLines"><code class="sourceCode python" style="counter-reset: source-line 16;"><span id="cb5-17"><a href="#cb5-17"></a>snd4 <span class="op">=</span> maniphono.Sound(description<span class="op">=</span><span class="st">&quot;voiceless consonant&quot;</span>)</span>
+<span id="cb5-18"><a href="#cb5-18"></a><span class="bu">str</span>(snd4), <span class="bu">repr</span>(snd4)</span></code></pre></div>
 <p>While the results are technically correct, the library still needs work for always returning good representations when it computes the grapheme.</p>
-<div class="sourceCode" id="cb8"><pre class="sourceCode python"><code class="sourceCode python"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="op">&gt;&gt;&gt;</span> snd5 <span class="op">=</span> maniphono.Sound(<span class="st">&quot;kʰʷ[voiced]&quot;</span>)</span>
-<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a><span class="op">&gt;&gt;&gt;</span> <span class="bu">str</span>(snd5), <span class="bu">repr</span>(snd5)</span>
-<span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a>(<span class="st">&#39;ɡʰʷ&#39;</span>, <span class="st">&#39;labialized aspirated voiced velar plosive consonant&#39;</span>)</span></code></pre></div>
+<div class="sourceCode" id="cb6" data-startFrom="19"><pre class="sourceCode numberSource python numberLines"><code class="sourceCode python" style="counter-reset: source-line 18;"><span id="cb6-19"><a href="#cb6-19"></a>snd5 <span class="op">=</span> maniphono.Sound(<span class="st">&quot;kʰʷ[voiced]&quot;</span>)</span>
+<span id="cb6-20"><a href="#cb6-20"></a><span class="bu">str</span>(snd5), <span class="bu">repr</span>(snd5)</span></code></pre></div>
 <h3 id="segments">Segments</h3>
 <p>Segments can combine sounds of different models. The decision of what makes up a segment is entirely up to the user; the class can be initialized with a <code>Sound</code>, in case of monosonic segments, or with an ordered list of sounds.</p>
 <p>Segments can be represented with <code>__str__</code> and can include a delimiter, by default a <code>+</code> sign.</p>
-<div class="sourceCode" id="cb9"><pre class="sourceCode python"><code class="sourceCode python"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a><span class="op">&gt;&gt;&gt;</span> snd1 <span class="op">=</span> maniphono.Sound(<span class="st">&quot;w&quot;</span>)</span>
-<span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a><span class="op">&gt;&gt;&gt;</span> snd2 <span class="op">=</span> maniphono.Sound(<span class="st">&quot;a&quot;</span>)</span>
-<span id="cb9-3"><a href="#cb9-3" aria-hidden="true" tabindex="-1"></a><span class="op">&gt;&gt;&gt;</span> snd3 <span class="op">=</span> maniphono.Sound(<span class="st">&quot;j&quot;</span>, model<span class="op">=</span>maniphono.model_tresoldi)</span>
-<span id="cb9-4"><a href="#cb9-4" aria-hidden="true" tabindex="-1"></a><span class="op">&gt;&gt;&gt;</span> seg1 <span class="op">=</span> maniphono.Segment(snd1)</span>
-<span id="cb9-5"><a href="#cb9-5" aria-hidden="true" tabindex="-1"></a><span class="op">&gt;&gt;&gt;</span> seg2 <span class="op">=</span> maniphono.Segment([snd2, snd3])</span>
-<span id="cb9-6"><a href="#cb9-6" aria-hidden="true" tabindex="-1"></a><span class="op">&gt;&gt;&gt;</span> seg3 <span class="op">=</span> maniphono.Segment([snd1, snd2, snd3])</span>
-<span id="cb9-7"><a href="#cb9-7" aria-hidden="true" tabindex="-1"></a><span class="op">&gt;&gt;&gt;</span> <span class="bu">str</span>(seg1), <span class="bu">str</span>(seg2), <span class="bu">str</span>(seg3)</span>
-<span id="cb9-8"><a href="#cb9-8" aria-hidden="true" tabindex="-1"></a>(<span class="st">&#39;w&#39;</span>, <span class="st">&#39;a+j&#39;</span>, <span class="st">&#39;w+a+j&#39;</span>)</span></code></pre></div>
+<div class="sourceCode" id="cb7" data-startFrom="21"><pre class="sourceCode numberSource python numberLines"><code class="sourceCode python" style="counter-reset: source-line 20;"><span id="cb7-21"><a href="#cb7-21"></a>snd1 <span class="op">=</span> maniphono.Sound(<span class="st">&quot;w&quot;</span>)</span>
+<span id="cb7-22"><a href="#cb7-22"></a>snd2 <span class="op">=</span> maniphono.Sound(<span class="st">&quot;a&quot;</span>)</span>
+<span id="cb7-23"><a href="#cb7-23"></a>snd3 <span class="op">=</span> maniphono.Sound(<span class="st">&quot;j&quot;</span>, model<span class="op">=</span>maniphono.model_tresoldi)</span>
+<span id="cb7-24"><a href="#cb7-24"></a>seg1 <span class="op">=</span> maniphono.Segment(snd1)</span>
+<span id="cb7-25"><a href="#cb7-25"></a>seg2 <span class="op">=</span> maniphono.Segment([snd2, snd3])</span>
+<span id="cb7-26"><a href="#cb7-26"></a>seg3 <span class="op">=</span> maniphono.Segment([snd1, snd2, snd3])</span>
+<span id="cb7-27"><a href="#cb7-27"></a><span class="bu">str</span>(seg1), <span class="bu">str</span>(seg2), <span class="bu">str</span>(seg3)</span></code></pre></div>
 <h3 id="sequences">Sequences</h3>
 <p>Sequences combine segments in order.</p>
 <p>Sequences can be represented with <code>__str__</code> and always use a white space as a delimiter (following CLDF convention) as well as leading and trailing square brackets (<code>[</code> and <code>]</code>).</p>
-<div class="sourceCode" id="cb10"><pre class="sourceCode python"><code class="sourceCode python"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a><span class="op">&gt;&gt;</span> <span class="op">&gt;</span> snd1, snd2, snd3 <span class="op">=</span> maniphono.Sound(<span class="st">&quot;p&quot;</span>), maniphono.Sound(<span class="st">&quot;a&quot;</span>), maniphono.Sound(<span class="st">&quot;w&quot;</span>)</span>
-<span id="cb10-2"><a href="#cb10-2" aria-hidden="true" tabindex="-1"></a><span class="op">&gt;&gt;</span> <span class="op">&gt;</span> seg1, seg2, seg3 <span class="op">=</span> maniphono.Segment(snd1), maniphono.Segment(snd2), maniphono.Segment([snd3])</span>
-<span id="cb10-3"><a href="#cb10-3" aria-hidden="true" tabindex="-1"></a><span class="op">&gt;&gt;</span> <span class="op">&gt;</span> seg4 <span class="op">=</span> maniphono.Segment([snd2, snd3])</span>
-<span id="cb10-4"><a href="#cb10-4" aria-hidden="true" tabindex="-1"></a><span class="op">&gt;&gt;</span> <span class="op">&gt;</span> <span class="bu">str</span>(seg1), <span class="bu">str</span>(seg2), <span class="bu">str</span>(seg3), <span class="bu">str</span>(seg4)</span>
-<span id="cb10-5"><a href="#cb10-5" aria-hidden="true" tabindex="-1"></a>(<span class="st">&#39;p&#39;</span>, <span class="st">&#39;a&#39;</span>, <span class="st">&#39;w&#39;</span>, <span class="st">&#39;a+w&#39;</span>)</span>
-<span id="cb10-6"><a href="#cb10-6" aria-hidden="true" tabindex="-1"></a><span class="op">&gt;&gt;</span> <span class="op">&gt;</span> seq1 <span class="op">=</span> maniphono.SegSequence([seg1, seg2])</span>
-<span id="cb10-7"><a href="#cb10-7" aria-hidden="true" tabindex="-1"></a><span class="op">&gt;&gt;</span> <span class="op">&gt;</span> seq2 <span class="op">=</span> maniphono.SegSequence([seg1, seg2, seg3])</span>
-<span id="cb10-8"><a href="#cb10-8" aria-hidden="true" tabindex="-1"></a><span class="op">&gt;&gt;</span> <span class="op">&gt;</span> seq3 <span class="op">=</span> maniphono.SegSequence([seg1, seg4])</span>
-<span id="cb10-9"><a href="#cb10-9" aria-hidden="true" tabindex="-1"></a><span class="op">&gt;&gt;</span> <span class="op">&gt;</span> seq4 <span class="op">=</span> maniphono.SegSequence([seg1, seg2, seg3, seg1, seg4])</span>
-<span id="cb10-10"><a href="#cb10-10" aria-hidden="true" tabindex="-1"></a><span class="op">&gt;&gt;</span> <span class="op">&gt;</span> <span class="bu">str</span>(seq1), <span class="bu">str</span>(seq2), <span class="bu">str</span>(seq3), <span class="bu">str</span>(seq4)</span>
-<span id="cb10-11"><a href="#cb10-11" aria-hidden="true" tabindex="-1"></a>(<span class="st">&#39;[p a]&#39;</span>, <span class="st">&#39;[p a w]&#39;</span>, <span class="st">&#39;[p a+w]&#39;</span>, <span class="st">&#39;[p a w p a+w]&#39;</span>)</span></code></pre></div>
+<div class="sourceCode" id="cb8" data-startFrom="28"><pre class="sourceCode numberSource python numberLines"><code class="sourceCode python" style="counter-reset: source-line 27;"><span id="cb8-28"><a href="#cb8-28"></a>snd1, snd2, snd3 <span class="op">=</span> maniphono.Sound(<span class="st">&quot;p&quot;</span>), maniphono.Sound(<span class="st">&quot;a&quot;</span>), maniphono.Sound(<span class="st">&quot;w&quot;</span>)</span>
+<span id="cb8-29"><a href="#cb8-29"></a>seg1, seg2, seg3 <span class="op">=</span> maniphono.Segment(snd1), maniphono.Segment(snd2), maniphono.Segment([snd3])</span>
+<span id="cb8-30"><a href="#cb8-30"></a>seg4 <span class="op">=</span> maniphono.Segment([snd2, snd3])</span>
+<span id="cb8-31"><a href="#cb8-31"></a><span class="bu">str</span>(seg1), <span class="bu">str</span>(seg2), <span class="bu">str</span>(seg3), <span class="bu">str</span>(seg4)</span>
+<span id="cb8-32"><a href="#cb8-32"></a>seq1 <span class="op">=</span> maniphono.SegSequence([seg1, seg2])</span>
+<span id="cb8-33"><a href="#cb8-33"></a>seq2 <span class="op">=</span> maniphono.SegSequence([seg1, seg2, seg3])</span>
+<span id="cb8-34"><a href="#cb8-34"></a>seq3 <span class="op">=</span> maniphono.SegSequence([seg1, seg4])</span>
+<span id="cb8-35"><a href="#cb8-35"></a>seq4 <span class="op">=</span> maniphono.SegSequence([seg1, seg2, seg3, seg1, seg4])</span>
+<span id="cb8-36"><a href="#cb8-36"></a><span class="bu">str</span>(seq1), <span class="bu">str</span>(seq2), <span class="bu">str</span>(seq3), <span class="bu">str</span>(seq4)</span></code></pre></div>
 <h3 id="operations">Operations</h3>
 <p><code>PhonoModel</code> offers a number of auxiliary methods.</p>
 <p>The <code>.values2sounds()</code> method will take a list of value constraints, both in terms of presence and absence, and returned an order list of all graphemes defined in the model that satisfy the constraint.</p>
-<div class="sourceCode" id="cb11"><pre class="sourceCode python"><code class="sourceCode python"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a><span class="op">&gt;&gt;&gt;</span> maniphono.model_mipa.values2graphemes(<span class="st">&quot;+vowel +front -close&quot;</span>)</span>
-<span id="cb11-2"><a href="#cb11-2" aria-hidden="true" tabindex="-1"></a>[<span class="st">&#39;a&#39;</span>, <span class="st">&#39;ã&#39;</span>, <span class="st">&#39;e&#39;</span>, <span class="st">&#39;ẽ&#39;</span>, <span class="st">&#39;æ&#39;</span>, <span class="st">&#39;æ̃&#39;</span>, <span class="st">&#39;ø&#39;</span>, <span class="st">&#39;ø̃&#39;</span>, <span class="st">&#39;œ&#39;</span>, <span class="st">&#39;œ̃&#39;</span>, <span class="st">&#39;ɛ&#39;</span>, <span class="st">&#39;ɛ̃&#39;</span>, <span class="st">&#39;ɪ&#39;</span>, <span class="st">&#39;ɪ̃&#39;</span>, <span class="st">&#39;ɶ&#39;</span>, <span class="st">&#39;ɶ̃&#39;</span>, <span class="st">&#39;ʏ&#39;</span>, <span class="st">&#39;ʏ̃&#39;</span>]</span></code></pre></div>
+<div class="sourceCode" id="cb9" data-startFrom="37"><pre class="sourceCode numberSource python numberLines"><code class="sourceCode python" style="counter-reset: source-line 36;"><span id="cb9-37"><a href="#cb9-37"></a><span class="op">&gt;&gt;&gt;</span> maniphono.model_mipa.values2graphemes(<span class="st">&quot;+vowel +front -close&quot;</span>)</span></code></pre></div>
+<pre class="stderr"><code>  File &quot;source.py&quot;, line 37
+    &gt;&gt;&gt; maniphono.model_mipa.values2graphemes(&quot;+vowel +front -close&quot;)
+    ^
+SyntaxError: invalid syntax</code></pre>
 <p>The <code>.minimal_matrix()</code> method will take a list of graphemes and return a dictionary with the minimum set of features in which they differ.</p>
-<div class="sourceCode" id="cb12"><pre class="sourceCode python"><code class="sourceCode python"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a><span class="op">&gt;&gt;&gt;</span> maniphono.model_mipa.minimal_matrix([<span class="st">&quot;t&quot;</span>, <span class="st">&quot;d&quot;</span>])</span>
-<span id="cb12-2"><a href="#cb12-2" aria-hidden="true" tabindex="-1"></a>{<span class="st">&#39;t&#39;</span>: {<span class="st">&#39;phonation&#39;</span>: <span class="st">&#39;voiceless&#39;</span>}, <span class="st">&#39;d&#39;</span>: {<span class="st">&#39;phonation&#39;</span>: <span class="st">&#39;voiced&#39;</span>}}</span>
-<span id="cb12-3"><a href="#cb12-3" aria-hidden="true" tabindex="-1"></a><span class="op">&gt;&gt;&gt;</span> <span class="bu">dict</span>(maniphono.model_mipa.minimal_matrix([<span class="st">&quot;t&quot;</span>, <span class="st">&quot;d&quot;</span>, <span class="st">&quot;s&quot;</span>]))</span>
-<span id="cb12-4"><a href="#cb12-4" aria-hidden="true" tabindex="-1"></a>{<span class="st">&#39;t&#39;</span>: {<span class="st">&#39;manner&#39;</span>: <span class="st">&#39;plosive&#39;</span>, <span class="st">&#39;phonation&#39;</span>: <span class="st">&#39;voiceless&#39;</span>}, <span class="st">&#39;d&#39;</span>: {<span class="st">&#39;manner&#39;</span>: <span class="st">&#39;plosive&#39;</span>, <span class="st">&#39;phonation&#39;</span>: <span class="st">&#39;voiced&#39;</span>}, <span class="st">&#39;s&#39;</span>: {<span class="st">&#39;manner&#39;</span>: <span class="st">&#39;fricative&#39;</span>, <span class="st">&#39;phonation&#39;</span>: <span class="st">&#39;voiceless&#39;</span>}}</span></code></pre></div>
+<div class="sourceCode" id="cb11" data-startFrom="38"><pre class="sourceCode numberSource python numberLines"><code class="sourceCode python" style="counter-reset: source-line 37;"><span id="cb11-38"><a href="#cb11-38"></a>maniphono.model_mipa.minimal_matrix([<span class="st">&quot;t&quot;</span>, <span class="st">&quot;d&quot;</span>])</span>
+<span id="cb11-39"><a href="#cb11-39"></a><span class="bu">dict</span>(maniphono.model_mipa.minimal_matrix([<span class="st">&quot;t&quot;</span>, <span class="st">&quot;d&quot;</span>, <span class="st">&quot;s&quot;</span>]))</span></code></pre></div>
 <p>Similarly, the <code>.class_features()</code> method will take a list of graphemes and return a dictionary of features and values the graphemes have in common. It can be used to discover what features make up a class with these sounds.</p>
-<div class="sourceCode" id="cb13"><pre class="sourceCode python"><code class="sourceCode python"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a><span class="op">&gt;&gt;&gt;</span> maniphono.model_mipa.class_features([<span class="st">&quot;t&quot;</span>, <span class="st">&quot;d&quot;</span>])</span>
-<span id="cb13-2"><a href="#cb13-2" aria-hidden="true" tabindex="-1"></a>{<span class="st">&#39;place&#39;</span>: <span class="st">&#39;alveolar&#39;</span>, <span class="st">&#39;type&#39;</span>: <span class="st">&#39;consonant&#39;</span>, <span class="st">&#39;manner&#39;</span>: <span class="st">&#39;plosive&#39;</span>}</span>
-<span id="cb13-3"><a href="#cb13-3" aria-hidden="true" tabindex="-1"></a><span class="op">&gt;&gt;&gt;</span> maniphono.model_mipa.class_features([<span class="st">&quot;t&quot;</span>, <span class="st">&quot;d&quot;</span>, <span class="st">&quot;s&quot;</span>])</span>
-<span id="cb13-4"><a href="#cb13-4" aria-hidden="true" tabindex="-1"></a>{<span class="st">&#39;place&#39;</span>: <span class="st">&#39;alveolar&#39;</span>, <span class="st">&#39;type&#39;</span>: <span class="st">&#39;consonant&#39;</span>}</span></code></pre></div>
+<div class="sourceCode" id="cb12" data-startFrom="40"><pre class="sourceCode numberSource python numberLines"><code class="sourceCode python" style="counter-reset: source-line 39;"><span id="cb12-40"><a href="#cb12-40"></a>maniphono.model_mipa.class_features([<span class="st">&quot;t&quot;</span>, <span class="st">&quot;d&quot;</span>])</span>
+<span id="cb12-41"><a href="#cb12-41"></a>maniphono.model_mipa.class_features([<span class="st">&quot;t&quot;</span>, <span class="st">&quot;d&quot;</span>, <span class="st">&quot;s&quot;</span>])</span></code></pre></div>
 <p>The <code>.value_vector()</code> method will take a grapheme and return a list of feature names and a boolean vector of presence/absence. It is mostly intended for machine learning projects; for human explorations or categorical machine learning, there is an option to return non-binary vectors.</p>
-<div class="sourceCode" id="cb14"><pre class="sourceCode python"><code class="sourceCode python"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a><span class="op">&gt;&gt;&gt;</span> maniphono.model_mipa.value_vector(<span class="st">&quot;a&quot;</span>)</span>
-<span id="cb14-2"><a href="#cb14-2" aria-hidden="true" tabindex="-1"></a>([<span class="st">&#39;aspiration_aspirated&#39;</span>, <span class="st">&#39;centrality_back&#39;</span>, <span class="st">&#39;centrality_central&#39;</span>, <span class="st">&#39;centrality_front&#39;</span>, <span class="st">&#39;centrality_near-back&#39;</span>, <span class="st">&#39;centrality_near-front&#39;</span>, <span class="st">&#39;ejection_ejective&#39;</span>, <span class="st">&#39;height_close&#39;</span>, <span class="st">&#39;height_close-mid&#39;</span>, <span class="st">&#39;height_mid&#39;</span>, <span class="st">&#39;height_near-close&#39;</span>, <span class="st">&#39;height_near-open&#39;</span>, <span class="st">&#39;height_open&#39;</span>, <span class="st">&#39;height_open-mid&#39;</span>, <span class="st">&#39;labialization_labialized&#39;</span>, <span class="st">&#39;laterality_lateral&#39;</span>, <span class="st">&#39;length_half-long&#39;</span>, <span class="st">&#39;length_long&#39;</span>, <span class="st">&#39;manner_affricate&#39;</span>, <span class="st">&#39;manner_approximant&#39;</span>, <span class="st">&#39;manner_click&#39;</span>, <span class="st">&#39;manner_flap&#39;</span>, <span class="st">&#39;manner_fricative&#39;</span>, <span class="st">&#39;manner_implosive&#39;</span>, <span class="st">&#39;manner_plosive&#39;</span>, <span class="st">&#39;manner_trill&#39;</span>, <span class="st">&#39;nasality_nasal&#39;</span>, <span class="st">&#39;nasalization_nasalized&#39;</span>, <span class="st">&#39;palatalization_palatalized&#39;</span>, <span class="st">&#39;pharyngealization_pharyngealized&#39;</span>, <span class="st">&#39;phonation_voiced&#39;</span>, <span class="st">&#39;phonation_voiceless&#39;</span>, <span class="st">&#39;place_alveolar&#39;</span>, <span class="st">&#39;place_alveolo-palatal&#39;</span>, <span class="st">&#39;place_bilabial&#39;</span>, <span class="st">&#39;place_dental&#39;</span>, <span class="st">&#39;place_epiglottal&#39;</span>, <span class="st">&#39;place_glottal&#39;</span>, <span class="st">&#39;place_labial&#39;</span>, <span class="st">&#39;place_labio-alveolar&#39;</span>, <span class="st">&#39;place_labio-coronal&#39;</span>, <span class="st">&#39;place_labio-dental&#39;</span>, <span class="st">&#39;place_labio-palatal&#39;</span>, <span class="st">&#39;place_labio-velar&#39;</span>, <span class="st">&#39;place_linguo-labial&#39;</span>, <span class="st">&#39;place_palatal&#39;</span>, <span class="st">&#39;place_palato-velar&#39;</span>, <span class="st">&#39;place_pharyngeal&#39;</span>, <span class="st">&#39;place_post-alveolar&#39;</span>, <span class="st">&#39;place_retroflex&#39;</span>, <span class="st">&#39;place_uvular&#39;</span>, <span class="st">&#39;place_uvulo-epiglottal&#39;</span>, <span class="st">&#39;place_velar&#39;</span>, <span class="st">&#39;roundness_rounded&#39;</span>, <span class="st">&#39;roundness_unrounded&#39;</span>, <span class="st">&#39;sibilancy_non-sibilant&#39;</span>, <span class="st">&#39;sibilancy_sibilant&#39;</span>, <span class="st">&#39;syllabicity_non-syllabic&#39;</span>, <span class="st">&#39;syllabicity_syllabic&#39;</span>, <span class="st">&#39;type_consonant&#39;</span>, <span class="st">&#39;type_vowel&#39;</span>, <span class="st">&#39;uvularization_uvularized&#39;</span>, <span class="st">&#39;velarization_velarized&#39;</span>], [<span class="va">False</span>, <span class="va">False</span>, <span class="va">False</span>, <span class="va">True</span>, <span class="va">False</span>, <span class="va">False</span>, <span class="va">False</span>, <span class="va">False</span>, <span class="va">False</span>, <span class="va">False</span>, <span class="va">False</span>, <span class="va">False</span>, <span class="va">True</span>, <span class="va">False</span>, <span class="va">False</span>, <span class="va">False</span>, <span class="va">False</span>, <span class="va">False</span>, <span class="va">False</span>, <span class="va">False</span>, <span class="va">False</span>, <span class="va">False</span>, <span class="va">False</span>, <span class="va">False</span>, <span class="va">False</span>, <span class="va">False</span>, <span class="va">False</span>, <span class="va">False</span>, <span class="va">False</span>, <span class="va">False</span>, <span class="va">False</span>, <span class="va">False</span>, <span class="va">False</span>, <span class="va">False</span>, <span class="va">False</span>, <span class="va">False</span>, <span class="va">False</span>, <span class="va">False</span>, <span class="va">False</span>, <span class="va">False</span>, <span class="va">False</span>, <span class="va">False</span>, <span class="va">False</span>, <span class="va">False</span>, <span class="va">False</span>, <span class="va">False</span>, <span class="va">False</span>, <span class="va">False</span>, <span class="va">False</span>, <span class="va">False</span>, <span class="va">False</span>, <span class="va">False</span>, <span class="va">False</span>, <span class="va">False</span>, <span class="va">True</span>, <span class="va">False</span>, <span class="va">False</span>, <span class="va">False</span>, <span class="va">False</span>, <span class="va">False</span>, <span class="va">True</span>, <span class="va">False</span>, <span class="va">False</span>])</span>
-<span id="cb14-3"><a href="#cb14-3" aria-hidden="true" tabindex="-1"></a><span class="op">&gt;&gt;&gt;</span> maniphono.model_mipa.value_vector(<span class="st">&quot;a&quot;</span>, binary<span class="op">=</span><span class="va">False</span>)</span>
-<span id="cb14-4"><a href="#cb14-4" aria-hidden="true" tabindex="-1"></a>([<span class="st">&#39;aspiration&#39;</span>, <span class="st">&#39;centrality&#39;</span>, <span class="st">&#39;ejection&#39;</span>, <span class="st">&#39;height&#39;</span>, <span class="st">&#39;labialization&#39;</span>, <span class="st">&#39;laterality&#39;</span>, <span class="st">&#39;length&#39;</span>, <span class="st">&#39;manner&#39;</span>, <span class="st">&#39;nasality&#39;</span>, <span class="st">&#39;nasalization&#39;</span>, <span class="st">&#39;palatalization&#39;</span>, <span class="st">&#39;pharyngealization&#39;</span>, <span class="st">&#39;phonation&#39;</span>, <span class="st">&#39;place&#39;</span>, <span class="st">&#39;roundness&#39;</span>, <span class="st">&#39;sibilancy&#39;</span>, <span class="st">&#39;syllabicity&#39;</span>, <span class="st">&#39;type&#39;</span>, <span class="st">&#39;uvularization&#39;</span>, <span class="st">&#39;velarization&#39;</span>], [<span class="va">None</span>, <span class="st">&#39;front&#39;</span>, <span class="va">None</span>, <span class="st">&#39;open&#39;</span>, <span class="va">None</span>, <span class="va">None</span>, <span class="va">None</span>, <span class="va">None</span>, <span class="va">None</span>, <span class="va">None</span>, <span class="va">None</span>, <span class="va">None</span>, <span class="va">None</span>, <span class="va">None</span>, <span class="st">&#39;unrounded&#39;</span>, <span class="va">None</span>, <span class="va">None</span>, <span class="st">&#39;vowel&#39;</span>, <span class="va">None</span>, <span class="va">None</span>])</span></code></pre></div>
+<div class="sourceCode" id="cb13" data-startFrom="42"><pre class="sourceCode numberSource python numberLines"><code class="sourceCode python" style="counter-reset: source-line 41;"><span id="cb13-42"><a href="#cb13-42"></a>maniphono.model_mipa.value_vector(<span class="st">&quot;a&quot;</span>)</span>
+<span id="cb13-43"><a href="#cb13-43"></a>maniphono.model_mipa.value_vector(<span class="st">&quot;a&quot;</span>, binary<span class="op">=</span><span class="va">False</span>)</span></code></pre></div>
 <p>All models allow to compute a distance between two sounds, with the distance between a sound and itself set, by design, to zero. In some cases this experimental method will compute and cache and <code>sklearn</code> regressor, which can take a while.</p>
-<div class="sourceCode" id="cb15"><pre class="sourceCode python"><code class="sourceCode python"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a><span class="op">&gt;&gt;&gt;</span> maniphono.model_mipa.distance(<span class="st">&quot;a&quot;</span>, <span class="st">&quot;a&quot;</span>)</span>
-<span id="cb15-2"><a href="#cb15-2" aria-hidden="true" tabindex="-1"></a><span class="fl">0.0</span></span>
-<span id="cb15-3"><a href="#cb15-3" aria-hidden="true" tabindex="-1"></a><span class="op">&gt;&gt;&gt;</span> maniphono.model_mipa.distance(<span class="st">&quot;a&quot;</span>, <span class="st">&quot;e&quot;</span>)</span>
-<span id="cb15-4"><a href="#cb15-4" aria-hidden="true" tabindex="-1"></a><span class="fl">3.7590891821444608</span></span>
-<span id="cb15-5"><a href="#cb15-5" aria-hidden="true" tabindex="-1"></a><span class="op">&gt;&gt;&gt;</span> maniphono.model_mipa.distance(<span class="st">&quot;a&quot;</span>, <span class="st">&quot;ʒ&quot;</span>)</span>
-<span id="cb15-6"><a href="#cb15-6" aria-hidden="true" tabindex="-1"></a><span class="fl">30.419280377524366</span></span></code></pre></div>
-<h2 id="end-words">End words</h2>
-<p>Lorem ipsum</p>
-<div class="example">
-<div class="exampleMarkup">
-<pre><code>```{.html .cb.code include_file=python.html include_regex=&quot;&lt;header.*?/header&gt;&quot;}
-```</code></pre>
-</div>
-<div class="exampleOutput">
-<pre class="sourceError"><code>SOURCE ERROR in &quot;extra/manual.md&quot; near line 309:
-Cannot include nonexistent file &quot;python.html&quot;</code></pre>
-</div>
-</div>
+<div class="sourceCode" id="cb14" data-startFrom="44"><pre class="sourceCode numberSource python numberLines"><code class="sourceCode python" style="counter-reset: source-line 43;"><span id="cb14-44"><a href="#cb14-44"></a>maniphono.model_mipa.distance(<span class="st">&quot;a&quot;</span>, <span class="st">&quot;a&quot;</span>)</span>
+<span id="cb14-45"><a href="#cb14-45"></a>maniphono.model_mipa.distance(<span class="st">&quot;a&quot;</span>, <span class="st">&quot;e&quot;</span>)</span>
+<span id="cb14-46"><a href="#cb14-46"></a>maniphono.model_mipa.distance(<span class="st">&quot;a&quot;</span>, <span class="st">&quot;ʒ&quot;</span>)</span></code></pre></div>
 </body>
 </html>

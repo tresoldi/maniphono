@@ -151,41 +151,37 @@ def test_values2graphemes(model, fvalues, expected):
 
 
 # TODO: add test with other models
-# TODO: parametrize
-def test_minimal_matrix():
-    mtx = maniphono.model_mipa.minimal_matrix(["t", "d"])
-    assert len(mtx) == 2
-    assert (
-        len(mtx[frozenset(["voiceless", "alveolar", "plosive", "consonant"])]) == 1
-    )  # /t/
-    assert (
-        mtx[frozenset(["voiceless", "alveolar", "plosive", "consonant"])]["phonation"]
-        == "voiceless"
-    )  # /t/
-    assert (
-        "manner" not in mtx[frozenset(["voiced", "alveolar", "plosive", "consonant"])]
-    )  # /d/
+@pytest.mark.parametrize(
+    "graphemes,length,key,feature,fvalue,missing_feature",
+    [
+        [
+            ["t", "d"],
+            2,
+            ["voiceless", "alveolar", "plosive", "consonant"],
+            "phonation",
+            "voiceless",
+            "manner",
+        ],
+    ],
+)
+def test_minimal_matrix(graphemes, length, key, feature, fvalue, missing_feature):
+    mtx = maniphono.model_mipa.minimal_matrix(graphemes)
+    assert len(mtx) == length
+    assert mtx[frozenset(key)][feature] == fvalue
+    assert missing_feature not in mtx[frozenset(key)]
 
 
 # TODO: add test with other models
-# TODO: parametrize
-def test_minimal_vector():
-    vct = maniphono.model_mipa.minimal_vector(["t", "d"])
-    assert len(vct) == 2
-    assert tuple(vct[0].items()) == (("phonation", "voiceless"),)
-
-    mtx = maniphono.model_mipa.minimal_matrix(["t", "d", "s"])
-    assert len(mtx) == 3
-    assert (
-        len(mtx[frozenset(["voiceless", "alveolar", "plosive", "consonant"])]) == 2
-    )  # /t/
-    assert (
-        mtx[frozenset(["voiceless", "alveolar", "plosive", "consonant"])]["phonation"]
-        == "voiceless"
-    )  # /t/
-    assert (
-        "manner" in mtx[frozenset(["voiced", "alveolar", "plosive", "consonant"])]
-    )  # /d/
+@pytest.mark.parametrize(
+    "graphemes,length,fvalues",
+    [
+        [["t", "d"], 2, ("phonation", "voiceless")],
+    ],
+)
+def test_minimal_vector(graphemes, length, fvalues):
+    vct = maniphono.model_mipa.minimal_vector(graphemes)
+    assert len(vct) == length
+    assert tuple(vct[0].items()) == (fvalues,)
 
 
 # TODO: add test with other models
@@ -247,6 +243,21 @@ def test_sort_fvalues(fvalues, use_rank, expected):
     assert (
         tuple(maniphono.model_mipa.sort_fvalues(fvalues, use_rank=use_rank)) == expected
     )
+
+
+@pytest.mark.parametrize(
+    "model,source,field,expected",
+    [
+        [maniphono.model_mipa, "a", "prosody", "7"],
+        [maniphono.model_mipa, "open front unrounded vowel", "prosody", "7"],
+        [maniphono.model_mipa, ("vowel", "unrounded", "front", "open"), "prosody", "7"],
+        [maniphono.model_mipa, "b", "sca", "P"],
+        [maniphono.model_mipa, "c", "dummy_feature", None],
+        [maniphono.model_tresoldi, "t", "dolgopolsky", "T"],
+    ],
+)
+def test_get_info(model, source, field, expected):
+    assert model.get_info(source, field) == expected
 
 
 # fmt: off
