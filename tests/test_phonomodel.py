@@ -245,6 +245,21 @@ def test_sort_fvalues(fvalues, use_rank, expected):
     )
 
 
+@pytest.mark.parametrize(
+    "model,source,field,expected",
+    [
+        [maniphono.model_mipa, "a", "prosody", "7"],
+        [maniphono.model_mipa, "open front unrounded vowel", "prosody", "7"],
+        [maniphono.model_mipa, ("vowel", "unrounded", "front", "open"), "prosody", "7"],
+        [maniphono.model_mipa, "b", "sca", "P"],
+        [maniphono.model_mipa, "c", "dummy_feature", None],
+        [maniphono.model_tresoldi, "t", "dolgopolsky", "T"],
+    ],
+)
+def test_get_info(model, source, field, expected):
+    assert model.get_info(source, field) == expected
+
+
 # fmt: off
 def test_str():
     assert str(maniphono.model_mipa) == "[`mipa` model (20 features, 64 fvalues, 231 graphemes)]"

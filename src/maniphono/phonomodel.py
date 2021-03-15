@@ -48,6 +48,7 @@ class PhonoModel:
         self.fvalues2grapheme = {}
         self.diacritics = {}
         self.snd_classes = []
+        self.info = {}  # additional, non-mandatory informatiom on sounds
 
         # Build a path for reading the model (if it was not provided, we assume it
         # lives in the `model/` directory), and then load the features/values first
@@ -138,10 +139,17 @@ class PhonoModel:
         _graphemes = {}
         with open(model_path / "sounds.csv", encoding="utf-8") as csvfile:
             for row in csv.DictReader(csvfile):
-                grapheme = normalize(row["GRAPHEME"])
-                _graphemes[grapheme] = parse_fvalues(row["DESCRIPTION"])
-                if row["PARTIAL"] == "True":
+                # Collect the main information first: graphemes, descriptors,
+                # and partial. If the "PARTIAL" column is not provided, `.snd_classes`
+                # is left untouched, implying that no sound is partial
+                grapheme = normalize(row.pop("GRAPHEME"))
+                _graphemes[grapheme] = parse_fvalues(row.pop("DESCRIPTION"))
+                partial = row.pop("PARTIAL", None)
+                if partial == "True":
                     self.snd_classes.append(grapheme)
+
+                # Collect additional information
+                self.info[grapheme] = row
 
         # Check for duplicate descriptions.
         dupl_desc = [
@@ -703,6 +711,27 @@ class PhonoModel:
                 grapheme = candidate_g
 
         return grapheme, best_fvalues
+
+    # TODO: use a method different from `.closest_grapheme` -- perhaps a weight Jaccard on the fvalues?
+    def get_info(self, source, field):
+        """
+        Return additional information on a sound.
+
+        The method is used to obtain non-mandatory information in a model, such as prosody value and
+        sound class. If the `field` is not available, a `None` is returned. If the sound is not found
+        in the model but is a valid one, the `field` for the closest sound will be returned.
+
+        Note that field names are case-insensitive.
+
+        @param source:
+        @param field:
+        @return:
+        """
+
+        fvalues = self._parse_sound_group([source])[0]
+        grapheme = self.build_grapheme(fvalues)
+
+        return self.info[grapheme].get(field.upper(), None)
 
     def __str__(self) -> str:
         """
