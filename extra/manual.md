@@ -160,7 +160,7 @@ Sound can be created from graphemes or from descriptions, which are lists
 of fvalues (provided either as a single string or as an actual Python
 iterable). All sounds have an implied model, which default to MIPA.
 
-```{.python .cb.nb session=random}
+```{.python .cb.run session=random}
 import maniphono
 snd1 = maniphono.Sound("a")
 snd2 = maniphono.Sound(description="voiceless bilabial plosive consonant")
