@@ -189,15 +189,6 @@ lists of fvalues (provided either as a single string or as an actual
 Python iterable). All sounds have an implied model, which default to
 MIPA.
 
-``` {.python .numberLines startFrom="1"}
-import maniphono
-snd1 = maniphono.Sound("a")
-snd2 = maniphono.Sound(description="voiceless bilabial plosive consonant")
-
-print(snd1, repr(snd1))
-print(snd2, repr(snd2))
-```
-
 ### fvalue list syntax
 
 lorem ipsum
