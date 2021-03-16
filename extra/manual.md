@@ -156,6 +156,19 @@ example, for partial sounds).
 The MIPA model carries information on sound classes (derived
 from SCA [cite list]) and prosody (derived from [cite list]).
 
+Sound can be created from graphemes or from descriptions, which are lists
+of fvalues (provided either as a single string or as an actual Python
+iterable). All sounds have an implied model, which default to MIPA.
+
+```{.python .cb.nb session=random}
+import maniphono
+snd1 = maniphono.Sound("a")
+snd2 = maniphono.Sound(description="voiceless bilabial plosive consonant")
+
+print(snd1, repr(snd1))
+print(snd2, repr(snd2))
+```
+
 ### fvalue list syntax
 
 lorem ipsum
