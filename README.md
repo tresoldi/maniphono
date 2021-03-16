@@ -19,8 +19,8 @@ $ pip install maniphono
 `maniphono` is a library for the symbolic manipulation of phonological units.
 
 A detailed description is provided
-[here](https://htmlpreview.github.io/?https://github.com/tresoldi/maniphono/blob/main/extra/manual_release.html)
-([devel](https://htmlpreview.github.io/?https://github.com/tresoldi/maniphono/blob/devel/extra/manual_release.html)
+[here](https://github.com/tresoldi/maniphono/blob/main/extra/manual.ipynb)
+([devel](https://github.com/tresoldi/maniphono/blob/devel/extra/manual.ipynb)
 ).
 
 ## Author and citation
