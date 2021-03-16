@@ -67,15 +67,15 @@ As mentioned above, a "phonological model" is composed of two main sources:
 
 Features are defined in a tabular file named `model.csv` with contents similar to the snippet below:
 
-| FEATURE    | FVALUE     | RANK | PREFIX | SUFFIX | CONSTRAINTS                    |
-|------------|------------|------|--------|--------|--------------------------------|
-| aspiration | aspirated  | 6    |        | ʰ      | consonant                      |
-| centrality | back       | 2    |        | U+0320 | vowel                          |
-| centrality | central    | 2    |        | U+0308 | vowel                          |
-| centrality | front      | 2    |        | U+031F | vowel                          |
-| centrality | near-back  | 2    |        |        | vowel                          |
-| centrality | near-front | 2    |        |        | vowel                          |
-| ejection   | ejective   | 5    |        |        | plosive\|fricative\|affricate  |
+  | FEATURE    | FVALUE     | RANK | PREFIX | SUFFIX | CONSTRAINTS                    |
+  |------------|------------|------|--------|--------|--------------------------------|
+  | aspiration | aspirated  | 6    |        | ʰ      | consonant                      |
+  | centrality | back       | 2    |        | U+0320 | vowel                          |
+  | centrality | central    | 2    |        | U+0308 | vowel                          |
+  | centrality | front      | 2    |        | U+031F | vowel                          |
+  | centrality | near-back  | 2    |        |        | vowel                          |
+  | centrality | near-front | 2    |        |        | vowel                          |
+  | ejection   | ejective   | 5    |        |        | plosive\|fricative\|affricate  |
 
 The most important field for each row, and the only one that needs to be unique in the row, is the "FVALUE" one,
 as each row reports one "fvalue". The "fvalue" labels have names in all lower-case letters, with optional dashes,
@@ -112,13 +112,13 @@ and interdependencies, and is explained in subsection X.
 Sounds are defined in a tabular file named `sounds.csv` with contents similar to the
 snippet below:
 
-| GRAPHEME   | DESCRIPTION                          | CLASS |
-|------------|--------------------------------------|-------|
-| V          | vowel                                | True  |
-| F          | fricative consonant                  | True  |
-| a          | open front unrounded vowel           | False |
-| ã          | open front unrounded vowel nasalized | False |
-| b          | voiced bilabial plosive consonant    | False |
+  | GRAPHEME   | DESCRIPTION                          | CLASS |
+  |------------|--------------------------------------|-------|
+  | V          | vowel                                | True  |
+  | F          | fricative consonant                  | True  |
+  | a          | open front unrounded vowel           | False |
+  | ã          | open front unrounded vowel nasalized | False |
+  | b          | voiced bilabial plosive consonant    | False |
 
 "GRAPHEME" is a base grapheme representation, and it is recommended that it follows
 the IPA as close as possible. As the "PREFIX" and "AFFIX" fields in model,
