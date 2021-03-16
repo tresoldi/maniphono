@@ -272,11 +272,13 @@ class PhonoModel:
         if grapheme in self.grapheme2fvalues:
             return self.grapheme2fvalues[grapheme], grapheme in self.snd_classes
 
-        # Capture list of modifiers, if any; no need to go full regex
+        # Capture list of modifiers, if any; no need to go full regex; note
+        # that, while `parse_fvalues` returns a frozenset, we cast it to
+        # a list here so that we can keep track of modifier order
         modifiers = []
         if "[" in grapheme and grapheme[-1] == "]":
             grapheme, _, modifier = grapheme.partition("[")
-            modifiers = parse_fvalues(modifier[:-1])  # drop final "]"
+            modifiers += list(parse_fvalues(modifier[:-1]))  # drop final "]"
 
         # If the base is among the list of graphemes, we can just return the
         # grapheme values and apply the modifier. Otherwise, we take all characters
