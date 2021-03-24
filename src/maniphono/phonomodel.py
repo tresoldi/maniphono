@@ -4,7 +4,7 @@ Module for phonological model abstraction and operations.
 
 # Import Python standard libraries
 from collections import defaultdict, Counter
-from typing import List, Optional, Sequence, Tuple, Union
+from typing import List, Optional, Sequence, Tuple
 import csv
 import itertools
 import pathlib
