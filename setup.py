@@ -22,10 +22,6 @@ with open("requirements.txt", encoding="utf-8") as fp:
 resource_files = {}
 resource_files["distances"] = glob.glob("distances/*")
 resource_files["models"] = glob.glob("models/*/*")
-#for directory in glob.glob("models/*/"):
-#    files = glob.glob(directory + "*")
-#    resource_files.append((directory, files))
-#resource_files += glob.glob("distances/*")
 
 # This call to setup() does all the work
 setup(
