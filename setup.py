@@ -21,7 +21,9 @@ with open("requirements.txt", encoding="utf-8") as fp:
 # Build (recursive) list of resource files
 resource_files = []
 resource_files.append( ("distances", glob.glob("distances/*")))
-resource_files.append( ("models", glob.glob("models/*/*")))
+resource_files.append( ("models/mipa", glob.glob("models/mipa/*")))
+resource_files.append( ("models/tresoldi", glob.glob("models/tresoldi/*")))
+
 
 # This call to setup() does all the work
 setup(
