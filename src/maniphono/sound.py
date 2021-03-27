@@ -43,7 +43,7 @@ class Sound:
             provided for initialization.
         @param partial: A boolean indicating whether the sound should be considered a
             partially defined one. Partially defined sounds (in most cases, the
-            equivalent of "sound snd_classes") work differently in terms of comparison, and
+            equivalent of "sound _snd_classes") work differently in terms of comparison, and
             might be used differently by the user. The argument defaults to `None`,
             indicating that the user should decide how to treat sounds when there is not
             explicit information on them being partially defined or not.

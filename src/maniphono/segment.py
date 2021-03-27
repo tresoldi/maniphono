@@ -63,7 +63,7 @@ class SoundSegment(Segment):
             self.sounds = [sounds]
         elif isinstance(sounds, str):
             # TODO: write a proper parser, as this assumes that, when a string, `sounds`
-            #       carries a single grapheme (dealing with diacritics might get tricky)
+            #       carries a single grapheme (dealing with _diacritics might get tricky)
             self.sounds = [Sound(sounds)]
         else:
             # Must be a list of Sounds

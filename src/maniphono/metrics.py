@@ -85,7 +85,7 @@ class DistanceRegressor:
         # Read raw distance data and cache vectors, also allowing to
         # skip over unmapped graphemes. We sort `graphemes` to make inspection
         # easier
-        # TODO: some graphemes are failing because of unknown diacritics
+        # TODO: some graphemes are failing because of unknown _diacritics
         vector = {}
         graphemes = set(itertools.chain.from_iterable(self._raw_matrix.keys()))
         for grapheme in sorted(graphemes):
