@@ -19,9 +19,9 @@ with open("requirements.txt", encoding="utf-8") as fp:
     install_requires = [dep.strip() for dep in fp.readlines()] + ["pytest"]
 
 # Build (recursive) list of resource files
-resource_files = {}
-resource_files["distances"] = glob.glob("distances/*")
-resource_files["models"] = glob.glob("models/*/*")
+resource_files = []
+resource_files.append( ("distances", glob.glob("distances/*")))
+resource_files.append( ("models", glob.glob("models/*/*")))
 
 # This call to setup() does all the work
 setup(
@@ -33,6 +33,7 @@ setup(
         "Programming Language :: Python :: 3",
         "Topic :: Software Development :: Libraries",
     ],
+    data_files=resource_files,
     description="Python library for the symbolic manipulation of phoneme representations",
     include_package_data=True,
     install_requires=install_requires,
@@ -42,7 +43,6 @@ setup(
     long_description=README_FILE,
     name="maniphono",
     packages=find_packages(where="src"),
-    package_data=resource_files,
     package_dir={"": "src"},
     python_requires=">=3.6",
     test_suite="tests",
