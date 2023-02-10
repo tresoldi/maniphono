@@ -30,12 +30,16 @@ from .phonomodel import PhonoModel, model_mipa
 
 
 class Segment:
+    """
+    Super class for all segments.
+    """
+
     def __init__(self):
         pass
 
     # Each subclass with implement it, if necessary
     def add_fvalues(self, fvalues):
-        pass
+        raise NotImplementedError
 
 
 # TODO: different boundaries: start/end/any
