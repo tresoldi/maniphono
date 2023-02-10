@@ -3,7 +3,7 @@ maniphono __init__.py
 """
 
 # Package information
-__version__ = "0.3.3"  # remember to sync with setup.py
+__version__ = "0.4"  # remember to sync with setup.py
 __author__ = "Tiago Tresoldi"
 __email__ = "tiago.tresoldi@lingfil.uu.se"
 
@@ -18,7 +18,6 @@ from maniphono.common import (
     parse_constraints,
     parse_fvalues,
 )
-from maniphono.metrics import DistanceRegressor
 
 # Build the exported namespace; note that functions from
 # the common/utils module are not included (but they are available
@@ -31,5 +30,4 @@ __all__ = [
     "SoundSegment",
     "SegSequence",
     "parse_sequence",
-    "DistanceRegressor",
 ]

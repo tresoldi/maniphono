@@ -1,8 +1,8 @@
 """
-test_utils
-==========
+test_common
+===========
 
-Tests for the `utils` module of the `maniphono` package.
+Tests for the `common` module of the `maniphono` package.
 """
 
 # Import Python libraries

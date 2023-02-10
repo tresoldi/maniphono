@@ -18,13 +18,6 @@ README_FILE = (LOCAL_PATH / "README.md").read_text(encoding="utf-8")
 with open("requirements.txt", encoding="utf-8") as fp:
     install_requires = [dep.strip() for dep in fp.readlines()] + ["pytest"]
 
-# Build (recursive) list of resource files
-#resource_files = []
-#resource_files.append( ("distances", glob.glob("distances/*")))
-#resource_files.append( ("models/mipa", glob.glob("models/mipa/*")))
-#resource_files.append( ("models/tresoldi", glob.glob("models/tresoldi/*")))
-
-
 # This call to setup() does all the work
 setup(
     author_email="tiago.tresoldi@lingfil.uu.se",
@@ -46,10 +39,10 @@ setup(
     name="maniphono",
     packages=find_packages(where="src"),
     package_dir={"": "src"},
-    python_requires=">=3.6",
+    python_requires=">=3.7",
     test_suite="tests",
     tests_require=[],
     url="https://github.com/tresoldi/maniphono",
-    version="0.3.3",  # remember to sync with __init__.py
+    version="0.4",  # remember to sync with __init__.py
     zip_safe=False,
 )
