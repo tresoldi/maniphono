@@ -44,10 +44,10 @@ class PhonoModel:
         self._info = {}  # additional, non-mandatory information on sounds
 
         # Build a Path object for loading the model (if it was not provided, we assume it
-        # lives in the `model/` directory), and then load the features/values first
+        # lives in the `models/` directory), and then load the features/values first
         # and the sounds later
         if not model_path:
-            model_path = Path(__file__).parent.parent.parent / "models" / name
+            model_path = Path(__file__).parent / "models" / name
         else:
             model_path = Path(model_path).absolute()
 
