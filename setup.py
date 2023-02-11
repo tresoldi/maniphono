@@ -15,7 +15,7 @@ README_FILE = (LOCAL_PATH / "README.md").read_text(encoding="utf-8")
 
 # Load requirements, so they are listed in a single place
 with open("requirements.txt", encoding="utf-8") as fp:
-    install_requires = [dep.strip() for dep in fp.readlines()] + ["pytest"]
+    install_requires = [dep.strip() for dep in fp.readlines()]
 
 # This call to setup() does all the work
 setup(
