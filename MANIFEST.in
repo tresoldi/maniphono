@@ -4,4 +4,4 @@ include CONTRIBUTING.md
 include AUTHORS.md
 include LICENSE
 include requirements.txt
-recursive-include src/models *.csv *.tsv
+recursive-include src/maniphono/models *.csv *.tsv
