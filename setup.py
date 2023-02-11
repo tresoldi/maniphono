@@ -2,7 +2,6 @@
 
 # TODO: properly list pytest
 
-import glob
 import pathlib
 
 # Import Python standard libraries
@@ -16,14 +15,7 @@ README_FILE = (LOCAL_PATH / "README.md").read_text(encoding="utf-8")
 
 # Load requirements, so they are listed in a single place
 with open("requirements.txt", encoding="utf-8") as fp:
-    install_requires = [dep.strip() for dep in fp.readlines()] + ["pytest"]
-
-# Build (recursive) list of resource files
-#resource_files = []
-#resource_files.append( ("distances", glob.glob("distances/*")))
-#resource_files.append( ("models/mipa", glob.glob("models/mipa/*")))
-#resource_files.append( ("models/tresoldi", glob.glob("models/tresoldi/*")))
-
+    install_requires = [dep.strip() for dep in fp.readlines()]
 
 # This call to setup() does all the work
 setup(
@@ -39,17 +31,17 @@ setup(
     description="Python library for the symbolic manipulation of phoneme representations",
     include_package_data=True,
     install_requires=install_requires,
-    keywords=["phoneme", "phonology", "phonetics", "distinctive features"],
+    keywords=["phoneme", "phonology", "phonetics", "distinctive features", "machine learning"],
     license="MIT",
     long_description_content_type="text/markdown",
     long_description=README_FILE,
     name="maniphono",
     packages=find_packages(where="src"),
     package_dir={"": "src"},
-    python_requires=">=3.6",
+    python_requires=">=3.7",
     test_suite="tests",
     tests_require=[],
     url="https://github.com/tresoldi/maniphono",
-    version="0.3.3",  # remember to sync with __init__.py
+    version="0.4.1",  # remember to sync with __init__.py
     zip_safe=False,
 )

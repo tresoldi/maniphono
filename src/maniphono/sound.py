@@ -83,10 +83,18 @@ class Sound:
         setting the new one. This method works as a convenient wrapper to the equivalent
         method in `PhonoModel`.
 
-        @param fvalue: The feature value to be added to the sound.
-        @param check: Whether to run constraints check after adding the new feature
-            value (default: True).
-        @return: The previous feature value for the feature, in case it was replaced, or
+        Parameters
+        ----------
+        fvalue : str
+            The feature value to be added to the sound.
+        check : bool, optional
+            Whether to run constraints check after adding the new feature value
+            (default: True).
+
+        Returns
+        -------
+        Optional[str]
+            The previous feature value for the feature, in case it was replaced, or
             None, in case no replacement happened. If the method is called to add a
             feature value which is already set, it will be returned as well
             (indicating that there was already a value for the corresponding feature).
@@ -103,12 +111,23 @@ class Sound:
         The method will remove all conflicting feature values before setting the new
         ones. The method acts as a wrapper to `.set_fvalue()`
 
-        @param fvalues: A list of strings with the feature values to be added to the
-            sound, a string with values separated by the standard delimiters.
-        @param check: Whether to run constraint checks after adding the new feature
-            values (default: True).
-        @return: An alphabetically sorted list of strings with the feature values
-            that were replaced.
+        Parameters
+        ----------
+        fvalues : Sequence
+            A list of strings with the feature values to be added to the sound, a
+            string with values separated by the standard delimiters.
+        check : bool, optional
+
+        Returns
+        -------
+        list
+            An alphabetically sorted list of strings with the feature values that
+            were replaced.
+
+        Raises
+        ------
+        ValueError
+            If at least one constraint is unsatisfied by the new feature values.
         """
 
         # If `fvalues` is empty, just return
@@ -143,7 +162,10 @@ class Sound:
         """
         Return a graphemic representation of the current sound.
 
-        @return: A string withthe graphemic representation of the sound.
+        Returns
+        -------
+        str
+            A string with the graphemic representation of the sound.
         """
 
         return self.model.build_grapheme(self.fvalues)
@@ -152,7 +174,10 @@ class Sound:
         """
         Return a dictionary of features and feature values that are defined.
 
-        @return: A dictionary of all feature values that are defined for the current
+        Returns
+        -------
+        dict
+            A dictionary of all feature values that are defined for the current
             sound, with features as keys and feature values as values.
         """
 
@@ -166,7 +191,10 @@ class Sound:
         feature value rank first and, in case of feature values with equal ranks,
         alphabetically second.
 
-        @return: A string with a representation of the current sound.
+        Returns
+        -------
+        str
+            A string with a representation of the current sound.
         """
 
         ret = " ".join(self.model.sort_fvalues(self.fvalues))
@@ -182,13 +210,16 @@ class Sound:
         By design, the `str()` command will return the same value of the
         `.grapheme()` method.
 
-        @return: A string with a representation of the current sound.
+        Returns
+        -------
+        str
+            A string with a representation of the current sound.
         """
 
         return self.grapheme()
 
     # TODO: decide what to do with `.partial`
-    def __add__(self, other):
+    def __add__(self, other: str):
         """
         Overload the `+` operator.
         """
@@ -202,7 +233,7 @@ class Sound:
     #       as an aspirated /p/ with aspiration is not a partial sound -- should probably check
     #       the list of sounds in the model. This is complex because setting a value might involve
     #       removing a previous one.
-    def __sub__(self, other):
+    def __sub__(self, other: str):
         """
         Overload the `-` operator.
         """
@@ -213,9 +244,18 @@ class Sound:
 
         return Sound(description=fvalues, partial=self.partial, model=self.model)
 
-    def __hash__(self):
+    def __hash__(self) -> int:
         """
         Return a hash of the current sound.
+
+        The hash is based on the model, the feature values, and the information on
+        whether the sound is partial or not. The hash is used to compare sounds in
+        terms of their values and internal information.
+
+        Returns
+        -------
+        int
+            A hash of the current sound.
         """
 
         # We cannot combine the hash of `self.partial` with a ^ operator as normally done,
@@ -230,6 +270,15 @@ class Sound:
     def __eq__(self, other) -> bool:
         """
         Compare two sounds in terms of their values and internal information.
+
+        The comparison is based on the model, the feature values, and the information
+        on whether the sound is partial or not. The comparison is used to compare
+        sounds in terms of their values and internal information.
+
+        Returns
+        -------
+        bool
+            True if the two sounds are equal, False otherwise.
         """
 
         # If the models are different, the sounds are different
@@ -246,6 +295,11 @@ class Sound:
     def __lt__(self, other) -> bool:
         """
         Checks if the fvalues of the current sound are a subset of the other.
+
+        Returns
+        -------
+        bool
+            True if the fvalues of the current sound are a subset of the other,
         """
 
         # If the models are different, the sounds are different
@@ -264,6 +318,11 @@ class Sound:
     def __gt__(self, other) -> bool:
         """
         Checks if the fvalues of the current sound are a superset of the other.
+
+        Returns
+        -------
+        bool
+            True if the fvalues of the current sound are a superset of the other,
         """
 
         # If the models are different, the sounds are different
@@ -290,9 +349,24 @@ class Sound:
         """
         Get feature values from their features as object attributes.
 
-        @param feature:
-        @return: A string with the feature value for the requested `feature`, or `None`
-            if no feature value associated with the requested `feature` has been
+        This method allows to get the feature value associated with a feature
+        by using the feature as an attribute of the sound object. For example,
+        if the sound has a feature value for the feature `place`, the feature
+        value can be retrieved by using the following syntax:
+
+        >>> sound.place
+        'bilabial'
+
+        Parameters
+        ----------
+        feature: str
+            The name of the feature for which the feature value is requested.
+
+        Returns
+        -------
+        str
+            The feature value associated with the requested feature, or `None`
+            if no feature value associated with the requested feature has been
             set.
         """
 

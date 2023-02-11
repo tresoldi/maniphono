@@ -2,11 +2,10 @@
 Utility functions for `maniphono`.
 """
 
-import csv
+# Import standard modules
+from typing import List, Optional, Sequence, Tuple, Iterable
 import re
 import unicodedata
-from pathlib import Path
-from typing import List, Optional, Sequence, Tuple
 
 # Pattern for unicode codepoint replacement
 RE_CODEPOINT = re.compile(r"[Uu]\+[0-9A-Fa-f]{4}")
@@ -16,41 +15,90 @@ RE_FEATURE = re.compile(r"^[a-z][-_a-z]*$")
 RE_FVALUE = re.compile(r"^[a-z][-_a-z]*$")
 
 
+def euclidean(a: Sequence[float], b: Sequence[float]) -> float:
+    """
+    Compute the Euclidean distance between two vectors.
+
+    Parameters
+    ----------
+    a : Sequence[float]
+        The first vector.
+    b : Sequence[float]
+        The second vector.
+
+    Returns
+    -------
+    float
+        The Euclidean distance between the two vectors.
+    """
+
+    return sum((x - y) ** 2 for x, y in zip(a, b)) ** 0.5
+
+
 def normalize(grapheme: str) -> str:
     """
     Normalize the string representation of a grapheme.
 
     Currently, normalization involves NFD Unicode normalization and stripping any leading
-    and trailing white spaces. As these opeations might change in the future, it is
+    and trailing white spaces. As these operations might change in the future, it is
     suggested to always use this function instead of reimplementing it in code
     each time.
 
-    @param grapheme: The grapheme to be normalized.
-    @return: The normalized version of the grapheme.
+    Parameters
+    ----------
+    grapheme : str
+        The grapheme to be normalized.
+
+    Returns
+    -------
+    str
+        The normalized version of the grapheme.
     """
 
     return unicodedata.normalize("NFD", grapheme).strip()
 
 
-# TODO: comment on the syntax that is accepted
 # TODO: annotate the type of return, which might involve changing it
 # TODO: check for duplicates and inconsistencies after the parsing
 # TODO: the usage of parse_fvalues might lead to bugs in the future, better to generalize the splitting
-def parse_constraints(constraints: Sequence) -> list:
+def parse_constraints(constraints: List[str]) -> list:
     """
-    Parses a string of constraints into a constraint structure.
+    Parses a list of constraints into a constraint structure.
 
-    @param constraints: The textual representation of the list of constraints to be
-        parsed.
-    @return: The parsed constraints.
+    The constraints are given as a list of strings, each string representing a
+    constraint group. Each constraint group is a string with the constraints
+    separated by the "|" character. Each constraint is a string with the name of
+    the feature-value pair, preceded by a "+" if the feature-value pair must be
+    present, or a "-" if it must be absent. If the constraint is not preceded by
+    any of these characters, it is assumed to be a presence constraint.
+
+    Parameters
+    ----------
+    constraints : Sequence
+        The textual representation of the list of constraints to be parsed.
+
+    Returns
+    -------
+    list
+        The parsed constraints.
     """
 
-    def _assert_valid_name(value_name):
+    def _assert_valid_name(value_name: str) -> None:
         """
         Internal function for asserting that a value name is valid.
 
         A `ValueError` is raised if the name is not valid, with the function
         passing silently otherwise.
+
+        Parameters
+        ----------
+        value_name : str
+            The name of the value to be checked.
+
+        Raises
+        ------
+        ValueError
+            If the name is not valid.
         """
 
         if not re.match(RE_FVALUE, value_name):
@@ -83,18 +131,25 @@ def parse_constraints(constraints: Sequence) -> list:
 
 # TODO: write test with all delimiters
 # TODO: should accept any iterable?
-def parse_fvalues(fvalues: Sequence) -> frozenset:
+def parse_fvalues(fvalues: Iterable) -> frozenset:
     """
     Parse a sequence of fvalues as a frozenset.
 
-    This function is mostly used for parsing string provided by the user,
+    This function is mostly used for parsing strings provided by the user,
     splitting them accordingly, but accepts any sequence type. If a string is
     passed, it will use different delimiters and guarantees that all methods will
     allow the same delimiters. Delimiters can be white spaces, commas, semicolons,
     forward slashes, and the " and " substring.
 
-    @param fvalues: The sequence with the fvalues to be parsed.
-    @return: A frozenset with the fvalues.
+    Parameters
+    ----------
+    fvalues : Iterable
+        The sequence with the fvalues to be parsed.
+
+    Returns
+    -------
+    frozenset
+        A frozenset with the fvalues.
     """
 
     if isinstance(fvalues, str):
@@ -112,16 +167,21 @@ def codepoint2glyph(codepoint: str) -> str:
     """
     Convert a Unicode codepoint, given as a string, to its glyph.
 
-    @param codepoint: A string with the codepoint in the format "U+XXXX", such as
-        "U+0283".
-    @return: The correponding glyph (such as "ʃ").
+    The codepoint must be given in the format "U+XXXX", such as "U+0283" for "ʃ".
+
+    Parameters
+    ----------
+    codepoint : str
+        The codepoint to be converted, in the format "U+XXXX".
+
+    Returns
+    -------
+    str
+        The corresponding glyph.
     """
 
     codepoint = codepoint.lower()
-    if codepoint.startswith("u+"):
-        value = int(codepoint[2:], 16)
-    else:
-        value = int(codepoint, 16)
+    value = int(codepoint[2:], 16)
 
     return chr(value)
 
@@ -133,8 +193,15 @@ def replace_codepoints(text: str) -> str:
     Multiple codepoints can be specified in the same string. Characters
     which are not part of codepoint annotation are kept.
 
-    @param text: The text with codepoint annotations to be replaced.
-    @return: The text with codepoint annotations replaced.
+    Parameters
+    ----------
+    text : str
+        The text with codepoint annotations to be replaced.
+
+    Returns
+    -------
+    str
+        The text with codepoint annotations replaced.
     """
 
     # Internal function used for calling codepoint2glyph() on a match
@@ -152,10 +219,18 @@ def match_initial(string: str, candidates: List[str]) -> Tuple[str, Optional[str
     of the string, making sure to match longer candidates first (so that it will
     match "abc" before "ab").
 
-    @param string: The string to matched at the beginning.
-    @param candidates: A list of string candidates for initial match. The list does not
-        need to be sorted in any way.
-    @return: A tuple, whose first element is the original string stripped of the initial
+    Parameters
+    ----------
+    string : str
+        The string to matched at the beginning.
+    candidates : List[str]
+        A list of string candidates for initial match. The list does not need to be
+        sorted in any way.
+
+    Returns
+    -------
+    Tuple[str, Optional[str]]
+        A tuple, whose first element is the original string stripped of the initial
         match, if any (if no candidate matched the beginning of the string, it will be
         a copy of the original one). The second element of the tuple is the candidate
         that was matched at the beginning of the string, or `None` if no match could be
@@ -164,7 +239,7 @@ def match_initial(string: str, candidates: List[str]) -> Tuple[str, Optional[str
 
     # Sort the candidates by inverse length -- this is a bit expensive computationally,
     # but it is better to perform it each time to make the function more general.
-    # Note that we make sure to remove any empty string inadvertedly passed among the
+    # Note that we make sure to remove any empty string inadvertently passed among the
     # `candidates`.
     candidates = sorted([cand for cand in candidates if cand], reverse=True, key=len)
     for cand in candidates:

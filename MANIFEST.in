@@ -4,10 +4,4 @@ include CONTRIBUTING.md
 include AUTHORS.md
 include LICENSE
 include requirements.txt
-include models/mipa/model.csv
-include models/mipa/sounds.csv
-include models/tresoldi/model.csv
-include models/tresoldi/sounds.csv
-recursive-include distances *.csv *.tsv
-recursive-include docs *.csv *.tsv
-recursive-include tests/models *.csv *.tsv *.md
+recursive-include src/maniphono/models *.csv *.tsv

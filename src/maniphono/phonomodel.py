@@ -4,10 +4,10 @@ Module for phonological model abstraction and operations.
 
 # Import Python standard libraries
 from collections import defaultdict, Counter
-from typing import List, Optional, Sequence, Tuple
+from pathlib import Path
+from typing import List, Optional, Sequence, Tuple, Iterable, Union
 import csv
 import itertools
-import pathlib
 import re
 
 # Import local modules
@@ -19,27 +19,18 @@ from .common import (
     parse_constraints,
     replace_codepoints,
     parse_fvalues,
+    euclidean,
 )
 
 
 # TODO: how to deal with resonant=-stop?
+# TODO: review "partial" and "complete" graphemes
 
 
 class PhonoModel:
-    """
-    Class for representing a phonological model.
-    """
-
-    def __init__(self, name: str, model_path: Optional[str] = None) -> None:
-        """
-        Initialize a phonological model.
-
-        :param name: Name of the model.
-        :param model_path: The path to the directory holding the model configuration
-            files. If not provided, the library will default to the resources
-            distributed along with the `maniphono` package.
-        """
-
+    def __init__(
+        self, name: str, model_path: Optional[Union[str, Path]] = None
+    ) -> None:
         # Setup model, instantiating variables and defaults
         self.name = name  # model name
         self.features = defaultdict(set)  # set of features in the model
@@ -52,25 +43,228 @@ class PhonoModel:
         self._snd_classes = []
         self._info = {}  # additional, non-mandatory information on sounds
 
-        # Build a path for reading the model (if it was not provided, we assume it
-        # lives in the `model/` directory), and then load the features/values first
+        # Build a Path object for loading the model (if it was not provided, we assume it
+        # lives in the `models/` directory), and then load the features/values first
         # and the sounds later
         if not model_path:
-            model_path = pathlib.Path(__file__).parent.parent.parent / "models" / name
+            model_path = Path(__file__).parent / "models" / name
         else:
-            model_path = pathlib.Path(model_path).absolute()
+            model_path = Path(model_path).absolute()
 
+        # Invoke the model loader in each subclass
         self._init_model(model_path)
-        self._init_sounds(model_path)
 
-    def _init_model(self, model_path: pathlib.Path) -> None:
+    def _init_model(self, model_path: Path) -> None:
+        raise NotImplementedError
+
+    def build_grapheme(self, fvalues: Sequence) -> str:
+        raise NotImplementedError
+
+    def parse_grapheme(self, grapheme: str) -> Tuple[Sequence, bool]:
+        raise NotImplementedError
+
+    def closest_grapheme(
+        self, source: Sequence, classes: bool = True
+    ) -> Tuple[str, frozenset]:
+        raise NotImplementedError
+
+    def get_info(self, source, field):
+        raise NotImplementedError
+
+    def __str__(self) -> str:
+        raise NotImplementedError
+
+
+class MachineModel(PhonoModel):
+    """
+    Class for representing a phonological model with quantitative feature description.
+    """
+
+    def __init__(
+        self, name: str, model_path: Optional[Union[str, Path]] = None
+    ) -> None:
+        """
+        Initialize a machine phonological model.
+
+        Parameters
+        ----------
+        name : str
+            Name of the model.
+        model_path : str, optional
+            The path to the directory holding the model configuration files. If not
+            provided, the library will default to the resources distributed along
+            with the `maniphono` package.
+
+        Raises
+        ------
+        ValueError
+            If the model name is invalid, if the model path is invalid, if the model
+            contains invalid feature names, if the model contains invalid feature
+            values, if the model contains duplicate feature values, if the model
+            contains invalid ranks, if the model contains constraints that refer to
+            undefined feature values, or if the model contains invalid graphemes.
+        """
+
+        # Initialize variables specific to machine models
+        self._grapheme2vector = {}
+
+        # Call superclass constructor
+        super().__init__(name, model_path)
+
+    def _init_model(self, model_path: Path) -> None:
         """
         Internal method for initializing a model.
 
         The method will read the feature/fvalues configurations stored in
         the `model.csv` file.
 
-        :param model_path: Path to model directory.
+        Parameters
+        ----------
+        model_path : Path
+            Path to model directory.
+
+        Raises
+        ------
+        ValueError
+            If the model contains invalid feature names, if the model contains
+            invalid feature values, if the model contains duplicate feature values,
+            if the model contains invalid ranks, or if the model contains constraints
+            that refer to undefined feature values.
+        """
+
+        # Read the contents of the the model `graphemes.tsv` file, where the first
+        # column is the grapheme and the remaining columns are the elements in
+        # the feature vector
+        with open(model_path / "graphemes.tsv", encoding="utf-8") as csvfile:
+            reader = csv.reader(csvfile, delimiter="\t")
+            for row in reader:
+                # Extract and clean strings as much as we can
+                grapheme = row[0].strip()
+                vector = [fvalue.strip() for fvalue in row[1:]]
+
+                # Run checks
+                if not grapheme:
+                    raise ValueError(
+                        f"Invalid grapheme in model `{self.name}`: {grapheme}"
+                    )
+                try:
+                    vector = [float(fvalue) for fvalue in vector]
+                except:
+                    raise ValueError(
+                        f"Invalid feature value in model `{self.name}`: {vector}"
+                    )
+
+                # Store grapheme and vector
+                self._grapheme2vector[grapheme] = vector
+
+    def parse_grapheme(self, grapheme: str) -> Tuple[Sequence, bool]:
+        """
+        Parse a grapheme into a feature vector.
+
+        Parameters
+        ----------
+        grapheme : str
+            Grapheme to parse.
+
+        Returns
+        -------
+        Tuple[Sequence, bool]
+            A tuple containing the feature vector and a boolean indicating
+            whether the grapheme is partial or not.
+        """
+
+        # For the time being, we assume that the grapheme is not partial
+        # and that it is a valid grapheme, so that we just query the
+        # self._grapheme2vector dictionary and return the result
+        return self._grapheme2vector[grapheme], False
+
+    def closest_grapheme(
+        self, source: Sequence[float], classes: bool = True
+    ) -> Tuple[str, frozenset]:
+        """
+        Find the closest grapheme to a given feature vector.
+
+        Parameters
+        ----------
+        source : Sequence
+            Feature vector to match.
+        classes : bool, optional
+            Whether to return the sound class of the closest grapheme. Defaults
+            to `True`.
+
+        Returns
+        -------
+        Tuple[str, frozenset]
+            A tuple containing the closest grapheme and the sound class of the
+            grapheme, if `classes` is `True`. If `classes` is `False`, the
+            second element of the tuple will be an empty set.
+        """
+
+        # Find the closest grapheme and return it; the closest grapheme is
+        # the one with the smallest Euclidean distance to the source vector
+        closest = min(
+            self._grapheme2vector.items(),
+            key=lambda x: euclidean(source, x[1]),
+        )
+
+        return closest[0], frozenset()
+
+
+class HumanModel(PhonoModel):
+    """
+    Class for representing a phonological model with qualitative feature description.
+    """
+
+    def __init__(
+        self, name: str, model_path: Optional[Union[str, Path]] = None
+    ) -> None:
+        """
+        Initialize a human phonological model.
+
+        Parameters
+        ----------
+        name : str
+            Name of the model.
+        model_path : str, optional
+            The path to the directory holding the model configuration files. If not
+            provided, the library will default to the resources distributed along
+            with the `maniphono` package.
+
+        Raises
+        ------
+        ValueError
+            If the model name is invalid, if the model path is invalid, if the model
+            contains invalid feature names, if the model contains invalid feature
+            values, if the model contains duplicate feature values, if the model
+            contains invalid ranks, if the model contains constraints that refer to
+            undefined feature values, or if the model contains invalid graphemes.
+        """
+
+        # Call superclass constructor
+        super().__init__(name, model_path)
+
+        # self._init_model(model_path)
+        # self._init_sounds(model_path)
+
+    def _init_model(self, model_path: Path) -> None:
+        """
+        Internal method for initializing a model.
+
+        The method will read the feature/fvalues configurations stored in
+        the `model.csv` file.
+
+        Parameters
+        ----------
+        model_path : Path
+            Path to model directory.
+
+        Raises
+        ------
+        ValueError
+            If the model contains invalid feature names, if the model contains
+            invalid feature values, if the model contains duplicate feature values,
+            if the model contains invalid ranks, or if the model contains constraints
+            that refer to undefined feature values.
         """
 
         # Parse file with feature definitions
@@ -125,13 +319,24 @@ class PhonoModel:
         if missing_fvalues:
             raise ValueError(f"Contraints have undefined fvalue(s): {missing_fvalues}")
 
-    def _init_sounds(self, model_path: pathlib.Path) -> None:
+        # Initialize the sounds
+        self._init_sounds(model_path)
+
+    def _init_sounds(self, model_path: Path) -> None:
         """
         Internal method for initializing the sounds of a model.
 
         The method will read the sounds stored in the `sounds.csv` file.
 
-        :param model_path: Path to model directory.
+        Parameters
+        ----------
+        model_path : Path
+            Path to model directory.
+
+        Raises
+        ------
+        ValueError
+            If the model contains invalid graphemes.
         """
 
         # Load the the descriptions as an internal dictionary; we also
@@ -191,12 +396,28 @@ class PhonoModel:
     # TODO: For partial sounds, we should allow (if desired) to build proper
     #       IPA representation instead of a shortcut for partial sounds
     #       (e.g., 'S̥' instead of 'SVL')
-    def build_grapheme(self, fvalues: Sequence) -> str:
+    # TODO: type annotation for sequence
+    def build_grapheme(self, fvalues: Iterable) -> str:
         """
         Return a grapheme representation for a collection of feature values.
 
-        @param fvalues: A collection of feature values.
-        @return: A grapheme representation of the provided collection of feature values.
+        The method will try to find a perfect match for the provided feature values,
+        and if no match is found, it will try to find the closest match.
+
+        Parameters
+        ----------
+        fvalues : Iterable
+            A collection of feature values.
+
+        Returns
+        -------
+        str
+            A grapheme representation of the provided collection of feature values.
+
+        Raises
+        ------
+        ValueError
+            If the provided feature values are not valid.
         """
 
         # We first make sure `fvalues` is a sequence of fvalues parsed as
@@ -263,11 +484,23 @@ class PhonoModel:
         (usually the homonym `.parse_grapheme()` method of the `Sound` class) to
         decide whether and how to use this information.
 
-        @param grapheme: A grapheme representation to be parsed.
-        @return: The first element of the tuple is a Sequence with the feature values
+        Parameters
+        ----------
+        grapheme : str
+            A grapheme representation to be parsed.
+
+        Returns
+        -------
+        tuple
+            The first element of the tuple is a Sequence with the feature values
             from the parsed grapheme. The second element is a boolean indicating whether
             the grapheme should be consider the representation of a partially defined
             sound (i.e., a "sound class" as understood in maniphono).
+
+        Raises
+        ------
+        ValueError
+            If the provided grapheme is not valid.
         """
 
         # Used model/cache graphemes if available; it is already a sorted tuple
@@ -313,22 +546,37 @@ class PhonoModel:
 
     def set_fvalue(
         self, fvalues: Sequence, new_fvalue: str, check: bool = True
-    ) -> Tuple[Sequence, Optional[str]]:
+    ) -> Tuple[Iterable, Optional[str]]:
         """
         Set a single value in a collection of feature values.
 
         The method will remove all other feature values for the same feature before
         setting the provided one.
 
-        @param fvalues: a collection of fvalues which will be modified.
-        @param new_fvalue: The value to be added to the sound.
-        @param check: Whether to run constraints check after adding the new value
+        Parameters
+        ----------
+        fvalues : Sequence
+            A collection of fvalues which will be modified.
+        new_fvalue : str
+            The value to be added to the sound.
+        check : bool, optional
+            Whether to run constraints check after adding the new value
             (default: True).
-        @return: The previous feature value for the feature, in case it was replaced, or
-            `None` in case no replacement happened. If the method is called to add a
-            feature value which is already set, the same feature value will be returned
-            (indicating that there was already a feature value for the corresponding
-            feature).
+
+        Returns
+        -------
+        tuple
+            The first element of the tuple is the modified collection of feature values.
+            The second element is the previous feature value for the feature, in case it
+            was replaced, or `None` in case no replacement happened. If the method is
+            called to add a feature value which is already set, the same feature value
+            will be returned (indicating that there was already a feature value for the
+            corresponding feature).
+
+        Raises
+        ------
+        ValueError
+            If the provided feature value is not valid.
         """
 
         # If the feature value is already set, there is no need to do the
@@ -378,15 +626,22 @@ class PhonoModel:
         the same rank, alphabetically later. It is possible to perform a simple
         alphabetical sorting.
 
-        @param fvalues: A list (or other iterable) of values or a string description of
-            them. If a string is provided, the method will split them in the standard
-            way.
-        @param use_rank: Whether to perform the default sorting or a simpler one
-            using only alphabet sorting (and thus skipping over rank information).
-            Even in the latter case, the method is convenient and recommended in place
-            of a normal Python `sorted()` operation as it takes care of splitting
-            strings and accepting different sequence types (default: `True`).
-        @return: A tuple with the sorted values.
+        Parameters
+        ----------
+        fvalues : Sequence
+            A list (or other iterable) of values or a string description of them. If a
+            string is provided, the method will split them in the standard way.
+        use_rank : bool, optional
+            Whether to perform the default sorting or a simpler one using only
+            alphabet sorting (and thus skipping over rank information). Even in the
+            latter case, the method is convenient and recommended in place of a normal
+            Python `sorted()` operation as it takes care of splitting strings and
+            accepting different sequence types (default: `True`).
+
+        Returns
+        -------
+        list
+            A list with the sorted values.
         """
 
         # Make sure we have a frozenset
@@ -400,12 +655,19 @@ class PhonoModel:
 
         return ret
 
-    def feature_dict(self, fvalues: Sequence) -> dict:
+    def feature_dict(self, fvalues: Iterable) -> dict:
         """
         Return a dictionary version of a feature value tuple.
 
-        @param fvalues: The collection of feature values to be converted to a dictionary.
-        @return: A dictionary with feature as keys and feature values as values. Only
+        Parameters
+        ----------
+        fvalues : Iterable
+            A collection of feature values.
+
+        Returns
+        -------
+        dict
+            A dictionary with feature as keys and feature values as values. Only
             features for feature values that are found are included.
         """
 
@@ -424,9 +686,15 @@ class PhonoModel:
         it will return an empty list of failing feature values), allowing sounds
         of which nothing is known about (empty set).
 
-        @param fvalues: A list, or another iterable, of the feature values to be checked,
-            such as those stored in `self._grapheme2fvalues`.
-        @return: A list of strings with the feature values that fail constraint check; it
+        Parameters
+        ----------
+        fvalues : Sequence
+            A collection of feature values.
+
+        Returns
+        -------
+        list
+            A list of strings with the feature values that fail constraint check; it
             will be empty if all feature values pass the checks.
         """
 
@@ -457,10 +725,18 @@ class PhonoModel:
         to use the overload operators, creating new sounds and checking whether they
         are equal or a superset (i.e., `>=`).
 
-        @param fvalues: A group of fvalues/constraints with a list of feature values provided as constraints,
-            such as `"+vowel +front -close"` or `["vowel", "+front", "-close"]`.
-        @param include_classes: Whether to include class graphemes in the output (default: False)
-        @return: A list of all graphemes that satisfy the provided constraints.
+        Parameters
+        ----------
+        fvalues : Sequence
+            A collection of feature values.
+        include_classes : bool, optional
+            Whether to include class graphemes in the output (default: `False`).
+
+        Returns
+        -------
+        list
+            A list of strings with the graphemes that satisfy the provided
+            constraints.
         """
 
         # In this case we parse the fvalues as if they were constraints
@@ -500,8 +776,16 @@ class PhonoModel:
         The method allows us to accept sounds defined as graphemes, fvalues frozen sets, of fvalues
         provided as strings, including mixing them.
 
-        @param sounds:
-        @return:
+        Parameters
+        ----------
+        sounds : Sequence
+            A collection of sounds, provided either as graphemes, fvalues frozen sets, or fvalues
+            provided as strings.
+
+        Returns
+        -------
+        list
+            A list of frozensets with the parsed sounds.
         """
 
         ret = []
@@ -525,9 +809,25 @@ class PhonoModel:
         """
         Compute the minimal feature matrix for a set of sounds or graphemes.
 
-        @param sounds: The sounds to be considered in the minimal matrix, provided either as
-            a list of graphemes or a list of fvalues.
-        @return: A minimal matrix with features as keys as feature values as values.
+        The method will compute the minimal feature matrix for a set of sounds or
+        graphemes, returning a dictionary with features as keys and feature values
+        as values. The method will raise an error if the provided sounds are not
+        consistent with the model.
+
+        Parameters
+        ----------
+        sounds : Sequence
+            A collection of sounds, provided either as graphemes or fvalues.
+
+        Returns
+        -------
+        dict
+            A dictionary with features as keys and feature values as values.
+
+        Raises
+        ------
+        ValueError
+            If the provided sounds are not consistent with the model.
         """
 
         sounds = self._parse_sound_group(sounds)
@@ -560,11 +860,22 @@ class PhonoModel:
         """
         Compute the minimal feature vector for a set of sounds or graphemes.
 
-        The values returned by this method are derived from the `.minimal_matrix()` method..
+        The values returned by this method are derived from the `.minimal_matrix()` method.
 
-        @param sounds: The sounds to be considered in the minimal matrix, provided either as
-            a list of graphemes or a list of fvalues.
-        @return: A minimal vector with feature values.
+        Parameters
+        ----------
+        sounds : Sequence
+            A collection of sounds, provided either as graphemes or fvalues.
+
+        Returns
+        -------
+        list
+            A list with feature values.
+
+        Raises
+        ------
+        ValueError
+            If the provided sounds are not consistent with the model.
         """
 
         return list(self.minimal_matrix(sounds).values())
@@ -575,10 +886,20 @@ class PhonoModel:
         """
         Compute the class features for a set of graphemes or sounds.
 
-        @param sounds: The sounds to be considered when computing class features, provided either
-            as a list of graphemes or a group of fvalues.
-        @return: A dictionary with the common traits that make a class out of the
-            provided sounds, with feature as keys and feature values as values.
+        Parameters
+        ----------
+        sounds : Sequence
+            A collection of sounds, provided either as graphemes or fvalues.
+
+        Returns
+        -------
+        dict
+            A dictionary with features as keys and feature values as values.
+
+        Raises
+        ------
+        ValueError
+            If the provided sounds are not consistent with the model.
         """
 
         sounds = self._parse_sound_group(sounds)
@@ -609,11 +930,19 @@ class PhonoModel:
         Vectors compiled with this method are mostly intended for statistical analyses,
         and can be either binary or categorical.
 
-        @param source: Either a string with a grapheme or a feature value group for the
+        Parameters
+        ----------
+        source : Sequence
+            Either a string with a grapheme or a feature value group for the
             sound to serve as basis for the vector.
-        @param categorical: Whether to build a categorical vector instead of a binary one
+        categorical : bool, optional
+            Whether to build a categorical vector instead of a binary one
             (default: `False`).
-        @return: A tuple whose first element is a list with the feature names represented
+
+        Returns
+        -------
+        tuple
+            A tuple whose first element is a list with the feature names represented
             in the vector. The names will match the model features' names in the case of
             categorical vectors, or follow the pattern `feature_featurevalue` in the case
             of binary ones. The second element is a list with the actual vector. The
@@ -662,21 +991,33 @@ class PhonoModel:
         return features, vector
 
     # TODO: consider the tuple in the return, which is not the most elegant solution
+    # TODO: allow a `k` parameter to return the `k` closest sounds
     def closest_grapheme(
-        self, source: Sequence, classes: bool = True
+        self, source: Iterable, classes: bool = True
     ) -> Tuple[str, frozenset]:
         """
         Find the sound in the model that is the closest to a given group of fvalues.
 
         The method can be used to coarse sounds within a reference group.
 
-        @param source: A feature value group, usually coming from the `.values` attributed of
+        Parameters
+        ----------
+        source : Iterable
+            A feature value group, usually coming from the `.values` attributed of
             a sound, or a string with a grapheme to be parsed.
-        @param classes:  Whether to allow a grapheme marked as a class to be returned; note that,
-            if a grapheme class is passed but `_snd_classes` is set to `False`, a different
-            grapheme will be returned (default: True).
-        @return: A tuple with the the grapheme representation as the first element and the
+        classes : bool, optional
+            Whether to allow a grapheme marked as a class to be returned (default: `True`).
+
+        Returns
+        -------
+        tuple
+            A tuple with the the grapheme representation as the first element and the
             frozenset of fvalues for the closes match as the second.
+
+        Raises
+        ------
+        ValueError
+            If the provided sounds are not consistent with the model.
         """
 
         fvalues = self._parse_sound_group([source])[0]
@@ -717,6 +1058,7 @@ class PhonoModel:
         return grapheme, best_fvalues
 
     # TODO: use a method different from `.closest_grapheme` -- perhaps a weight Jaccard on the fvalues?
+    # TODO: review if really necessary
     def get_info(self, source, field):
         """
         Return additional information on a sound.
@@ -727,9 +1069,22 @@ class PhonoModel:
 
         Note that field names are case-insensitive.
 
-        @param source:
-        @param field:
-        @return:
+        Parameters
+        ----------
+        source : str or Sequence
+            A sound to be parsed, either as a string with a grapheme or as a sequence of feature values.
+        field : str
+            The name of the field to be returned.
+
+        Returns
+        -------
+        str or None
+            The value of the field for the sound, or `None` if the field is not available.
+
+        Raises
+        ------
+        ValueError
+            If the provided sounds are not consistent with the model.
         """
 
         fvalues = self._parse_sound_group([source])[0]
@@ -741,7 +1096,10 @@ class PhonoModel:
         """
         Return a textual representation of the model.
 
-        @return: A string with a textual description of the model.
+        Returns
+        -------
+        str
+            A string with a textual description of the model.
         """
 
         _str = f"[`{self.name}` model ({len(self.features)} features, "
@@ -752,5 +1110,6 @@ class PhonoModel:
 
 
 # Load default models
-model_mipa = PhonoModel("mipa")
-model_tresoldi = PhonoModel("tresoldi")
+model_mipa = HumanModel("mipa")
+model_tresoldi = HumanModel("tresoldi")
+model_encoder = MachineModel("encoder")

@@ -60,7 +60,7 @@ def test_mipa():
     # Note that these will already be indirectly tested when running the other
     # tests, but it is still good to have a single test for this, doing
     # it "manually".
-    _mipa = maniphono.PhonoModel("mipa")
+    _mipa = maniphono.HumanModel("mipa")
 
     assert len(_mipa.features) == 20
     assert "length" in _mipa.features
@@ -77,7 +77,7 @@ def test_tresoldi():
     # Note that these will already be indirectly tested when running the other
     # tests, but it is still good to have a single test for this, doing
     # it "manually".
-    _tresoldi = maniphono.PhonoModel("tresoldi")
+    _tresoldi = maniphono.HumanModel("tresoldi")
 
     assert len(_tresoldi.features) == 30
     assert "anterior" in _tresoldi.features
@@ -85,46 +85,59 @@ def test_tresoldi():
     assert _tresoldi.fvalues["click"]["rank"] == 12
 
 
-def test_custom_models():
+def test_encoder():
+    """
+    Test the ENCODER model.
+    """
+
+    _encoder = maniphono.MachineModel("encoder")
+
+    vector, _ = _encoder.parse_grapheme("a")
+    grapheme, _ = _encoder.closest_grapheme(vector)
+
+    assert grapheme == "a"
+
+
+def test_custom_human_models():
     """
     Test the custom models.
     """
 
     # Valid model
-    model_a = maniphono.PhonoModel("A", TEST_DIR / "test_models" / "a")
+    model_a = maniphono.HumanModel("A", TEST_DIR / "test_models" / "a")
     assert len(model_a.features) == 5
 
     # Invalid feature name
     with pytest.raises(ValueError):
-        maniphono.PhonoModel("B", TEST_DIR / "test_models" / "b")
+        maniphono.HumanModel("B", TEST_DIR / "test_models" / "b")
 
     # Invalid value name
     with pytest.raises(ValueError):
-        maniphono.PhonoModel("C", TEST_DIR / "test_models" / "c")
+        maniphono.HumanModel("C", TEST_DIR / "test_models" / "c")
 
     # Duplicate value name
     with pytest.raises(ValueError):
-        maniphono.PhonoModel("D", TEST_DIR / "test_models" / "d")
+        maniphono.HumanModel("D", TEST_DIR / "test_models" / "d")
 
     # Invalid rank value
     with pytest.raises(ValueError):
-        maniphono.PhonoModel("E", TEST_DIR / "test_models" / "e")
+        maniphono.HumanModel("E", TEST_DIR / "test_models" / "e")
 
     # Invalid value name in constraint
     with pytest.raises(ValueError):
-        maniphono.PhonoModel("F", TEST_DIR / "test_models" / "f")
+        maniphono.HumanModel("F", TEST_DIR / "test_models" / "f")
 
     # Duplicate description in sounds
     with pytest.raises(ValueError):
-        maniphono.PhonoModel("G", TEST_DIR / "test_models" / "g")
+        maniphono.HumanModel("G", TEST_DIR / "test_models" / "g")
 
     # Invalid fvalue name in sound description
     with pytest.raises(ValueError):
-        maniphono.PhonoModel("H", TEST_DIR / "test_models" / "h")
+        maniphono.HumanModel("H", TEST_DIR / "test_models" / "h")
 
     # Constraint not met in sound description
     with pytest.raises(ValueError):
-        maniphono.PhonoModel("I", TEST_DIR / "test_models" / "i")
+        maniphono.HumanModel("I", TEST_DIR / "test_models" / "i")
 
 
 # TODO: add example with the `tresoldi` model
