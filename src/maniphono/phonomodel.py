@@ -25,8 +25,29 @@ from .common import (
 # TODO: how to deal with resonant=-stop?
 # TODO: review "partial"
 
-# TODO: mandate model_path? Accept only or also pathlib.Path?
 class PhonoModel:
+    def __init__(self):
+        self.name = None
+
+    def build_grapheme(self, fvalues: Sequence) -> str:
+        raise NotImplementedError
+
+    def parse_grapheme(self, grapheme: str) -> Tuple[Sequence, bool]:
+        raise NotImplementedError
+
+    def closest_grapheme(
+        self, source: Sequence, classes: bool = True
+    ) -> Tuple[str, frozenset]:
+        raise NotImplementedError
+
+    def get_info(self, source, field):
+        raise NotImplementedError
+
+    def __str__(self) -> str:
+        raise NotImplementedError
+
+# TODO: mandate model_path? Accept only or also pathlib.Path?
+class HumanModel(PhonoModel):
     """
     Class for representing a phonological model.
     """
@@ -53,6 +74,9 @@ class PhonoModel:
             contains invalid ranks, if the model contains constraints that refer to
             undefined feature values, or if the model contains invalid graphemes.
         """
+
+        # Call superclass constructor
+        super().__init__()
 
         # Setup model, instantiating variables and defaults
         self.name = name  # model name
@@ -938,5 +962,5 @@ class PhonoModel:
 
 
 # Load default models
-model_mipa = PhonoModel("mipa")
-model_tresoldi = PhonoModel("tresoldi")
+model_mipa = HumanModel("mipa")
+model_tresoldi = HumanModel("tresoldi")

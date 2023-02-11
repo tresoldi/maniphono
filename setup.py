@@ -2,7 +2,6 @@
 
 # TODO: properly list pytest
 
-import glob
 import pathlib
 
 # Import Python standard libraries
@@ -32,7 +31,7 @@ setup(
     description="Python library for the symbolic manipulation of phoneme representations",
     include_package_data=True,
     install_requires=install_requires,
-    keywords=["phoneme", "phonology", "phonetics", "distinctive features"],
+    keywords=["phoneme", "phonology", "phonetics", "distinctive features", "machine learning"],
     license="MIT",
     long_description_content_type="text/markdown",
     long_description=README_FILE,
