@@ -4,10 +4,10 @@ Module for phonological model abstraction and operations.
 
 # Import Python standard libraries
 from collections import defaultdict, Counter
-from typing import List, Optional, Sequence, Tuple
+from pathlib import Path
+from typing import List, Optional, Sequence, Tuple, Iterable, Union
 import csv
 import itertools
-import pathlib
 import re
 
 # Import local modules
@@ -19,15 +19,43 @@ from .common import (
     parse_constraints,
     replace_codepoints,
     parse_fvalues,
+    euclidean,
 )
 
 
 # TODO: how to deal with resonant=-stop?
-# TODO: review "partial"
+# TODO: review "partial" and "complete" graphemes
+
 
 class PhonoModel:
-    def __init__(self):
-        self.name = None
+    def __init__(
+        self, name: str, model_path: Optional[Union[str, Path]] = None
+    ) -> None:
+        # Setup model, instantiating variables and defaults
+        self.name = name  # model name
+        self.features = defaultdict(set)  # set of features in the model
+        self.fvalues = {}  # dictionary of structures with fvalues, as from CSV file
+
+        # Auxiliary variables for the various operations, not intended for direct access
+        self._grapheme2fvalues = {}
+        self._fvalues2grapheme = {}
+        self._diacritics = {}
+        self._snd_classes = []
+        self._info = {}  # additional, non-mandatory information on sounds
+
+        # Build a Path object for loading the model (if it was not provided, we assume it
+        # lives in the `model/` directory), and then load the features/values first
+        # and the sounds later
+        if not model_path:
+            model_path = Path(__file__).parent.parent.parent / "models" / name
+        else:
+            model_path = Path(model_path).absolute()
+
+        # Invoke the model loader in each subclass
+        self._init_model(model_path)
+
+    def _init_model(self, model_path: Path) -> None:
+        raise NotImplementedError
 
     def build_grapheme(self, fvalues: Sequence) -> str:
         raise NotImplementedError
@@ -46,15 +74,152 @@ class PhonoModel:
     def __str__(self) -> str:
         raise NotImplementedError
 
-# TODO: mandate model_path? Accept only or also pathlib.Path?
-class HumanModel(PhonoModel):
+
+class MachineModel(PhonoModel):
     """
-    Class for representing a phonological model.
+    Class for representing a phonological model with quantitative feature description.
     """
 
-    def __init__(self, name: str, model_path: Optional[str] = None) -> None:
+    def __init__(
+        self, name: str, model_path: Optional[Union[str, Path]] = None
+    ) -> None:
         """
-        Initialize a phonological model.
+        Initialize a machine phonological model.
+
+        Parameters
+        ----------
+        name : str
+            Name of the model.
+        model_path : str, optional
+            The path to the directory holding the model configuration files. If not
+            provided, the library will default to the resources distributed along
+            with the `maniphono` package.
+
+        Raises
+        ------
+        ValueError
+            If the model name is invalid, if the model path is invalid, if the model
+            contains invalid feature names, if the model contains invalid feature
+            values, if the model contains duplicate feature values, if the model
+            contains invalid ranks, if the model contains constraints that refer to
+            undefined feature values, or if the model contains invalid graphemes.
+        """
+
+        # Initialize variables specific to machine models
+        self._grapheme2vector = {}
+
+        # Call superclass constructor
+        super().__init__(name, model_path)
+
+    def _init_model(self, model_path: Path) -> None:
+        """
+        Internal method for initializing a model.
+
+        The method will read the feature/fvalues configurations stored in
+        the `model.csv` file.
+
+        Parameters
+        ----------
+        model_path : Path
+            Path to model directory.
+
+        Raises
+        ------
+        ValueError
+            If the model contains invalid feature names, if the model contains
+            invalid feature values, if the model contains duplicate feature values,
+            if the model contains invalid ranks, or if the model contains constraints
+            that refer to undefined feature values.
+        """
+
+        # Read the contents of the the model `graphemes.tsv` file, where the first
+        # column is the grapheme and the remaining columns are the elements in
+        # the feature vector
+        with open(model_path / "graphemes.tsv", encoding="utf-8") as csvfile:
+            reader = csv.reader(csvfile, delimiter="\t")
+            for row in reader:
+                # Extract and clean strings as much as we can
+                grapheme = row[0].strip()
+                vector = [fvalue.strip() for fvalue in row[1:]]
+
+                # Run checks
+                if not grapheme:
+                    raise ValueError(
+                        f"Invalid grapheme in model `{self.name}`: {grapheme}"
+                    )
+                try:
+                    vector = [float(fvalue) for fvalue in vector]
+                except:
+                    raise ValueError(
+                        f"Invalid feature value in model `{self.name}`: {vector}"
+                    )
+
+                # Store grapheme and vector
+                self._grapheme2vector[grapheme] = vector
+
+    def parse_grapheme(self, grapheme: str) -> Tuple[Sequence, bool]:
+        """
+        Parse a grapheme into a feature vector.
+
+        Parameters
+        ----------
+        grapheme : str
+            Grapheme to parse.
+
+        Returns
+        -------
+        Tuple[Sequence, bool]
+            A tuple containing the feature vector and a boolean indicating
+            whether the grapheme is partial or not.
+        """
+
+        # For the time being, we assume that the grapheme is not partial
+        # and that it is a valid grapheme, so that we just query the
+        # self._grapheme2vector dictionary and return the result
+        return self._grapheme2vector[grapheme], False
+
+    def closest_grapheme(
+        self, source: Sequence[float], classes: bool = True
+    ) -> Tuple[str, frozenset]:
+        """
+        Find the closest grapheme to a given feature vector.
+
+        Parameters
+        ----------
+        source : Sequence
+            Feature vector to match.
+        classes : bool, optional
+            Whether to return the sound class of the closest grapheme. Defaults
+            to `True`.
+
+        Returns
+        -------
+        Tuple[str, frozenset]
+            A tuple containing the closest grapheme and the sound class of the
+            grapheme, if `classes` is `True`. If `classes` is `False`, the
+            second element of the tuple will be an empty set.
+        """
+
+        # Find the closest grapheme and return it; the closest grapheme is
+        # the one with the smallest Euclidean distance to the source vector
+        closest = min(
+            self._grapheme2vector.items(),
+            key=lambda x: euclidean(source, x[1]),
+        )
+
+        return closest[0], frozenset()
+
+
+class HumanModel(PhonoModel):
+    """
+    Class for representing a phonological model with qualitative feature description.
+    """
+
+    def __init__(
+        self, name: str, model_path: Optional[Union[str, Path]] = None
+    ) -> None:
+        """
+        Initialize a human phonological model.
 
         Parameters
         ----------
@@ -76,32 +241,12 @@ class HumanModel(PhonoModel):
         """
 
         # Call superclass constructor
-        super().__init__()
+        super().__init__(name, model_path)
 
-        # Setup model, instantiating variables and defaults
-        self.name = name  # model name
-        self.features = defaultdict(set)  # set of features in the model
-        self.fvalues = {}  # dictionary of structures with fvalues, as from CSV file
+        # self._init_model(model_path)
+        # self._init_sounds(model_path)
 
-        # Auxiliary variables for the various operations, not intended for direct access
-        self._grapheme2fvalues = {}
-        self._fvalues2grapheme = {}
-        self._diacritics = {}
-        self._snd_classes = []
-        self._info = {}  # additional, non-mandatory information on sounds
-
-        # Build a path for reading the model (if it was not provided, we assume it
-        # lives in the `model/` directory), and then load the features/values first
-        # and the sounds later
-        if not model_path:
-            model_path = pathlib.Path(__file__).parent.parent.parent / "models" / name
-        else:
-            model_path = pathlib.Path(model_path).absolute()
-
-        self._init_model(model_path)
-        self._init_sounds(model_path)
-
-    def _init_model(self, model_path: pathlib.Path) -> None:
+    def _init_model(self, model_path: Path) -> None:
         """
         Internal method for initializing a model.
 
@@ -110,7 +255,7 @@ class HumanModel(PhonoModel):
 
         Parameters
         ----------
-        model_path : pathlib.Path
+        model_path : Path
             Path to model directory.
 
         Raises
@@ -174,7 +319,10 @@ class HumanModel(PhonoModel):
         if missing_fvalues:
             raise ValueError(f"Contraints have undefined fvalue(s): {missing_fvalues}")
 
-    def _init_sounds(self, model_path: pathlib.Path) -> None:
+        # Initialize the sounds
+        self._init_sounds(model_path)
+
+    def _init_sounds(self, model_path: Path) -> None:
         """
         Internal method for initializing the sounds of a model.
 
@@ -182,7 +330,7 @@ class HumanModel(PhonoModel):
 
         Parameters
         ----------
-        model_path : pathlib.Path
+        model_path : Path
             Path to model directory.
 
         Raises
@@ -249,7 +397,7 @@ class HumanModel(PhonoModel):
     #       IPA representation instead of a shortcut for partial sounds
     #       (e.g., 'S̥' instead of 'SVL')
     # TODO: type annotation for sequence
-    def build_grapheme(self, fvalues: Sequence) -> str:
+    def build_grapheme(self, fvalues: Iterable) -> str:
         """
         Return a grapheme representation for a collection of feature values.
 
@@ -258,7 +406,7 @@ class HumanModel(PhonoModel):
 
         Parameters
         ----------
-        fvalues : Sequence
+        fvalues : Iterable
             A collection of feature values.
 
         Returns
@@ -398,7 +546,7 @@ class HumanModel(PhonoModel):
 
     def set_fvalue(
         self, fvalues: Sequence, new_fvalue: str, check: bool = True
-    ) -> Tuple[Sequence, Optional[str]]:
+    ) -> Tuple[Iterable, Optional[str]]:
         """
         Set a single value in a collection of feature values.
 
@@ -507,13 +655,13 @@ class HumanModel(PhonoModel):
 
         return ret
 
-    def feature_dict(self, fvalues: Sequence) -> dict:
+    def feature_dict(self, fvalues: Iterable) -> dict:
         """
         Return a dictionary version of a feature value tuple.
 
         Parameters
         ----------
-        fvalues : Sequence
+        fvalues : Iterable
             A collection of feature values.
 
         Returns
@@ -845,7 +993,7 @@ class HumanModel(PhonoModel):
     # TODO: consider the tuple in the return, which is not the most elegant solution
     # TODO: allow a `k` parameter to return the `k` closest sounds
     def closest_grapheme(
-        self, source: Sequence, classes: bool = True
+        self, source: Iterable, classes: bool = True
     ) -> Tuple[str, frozenset]:
         """
         Find the sound in the model that is the closest to a given group of fvalues.
@@ -854,7 +1002,7 @@ class HumanModel(PhonoModel):
 
         Parameters
         ----------
-        source : Sequence
+        source : Iterable
             A feature value group, usually coming from the `.values` attributed of
             a sound, or a string with a grapheme to be parsed.
         classes : bool, optional
@@ -964,3 +1112,4 @@ class HumanModel(PhonoModel):
 # Load default models
 model_mipa = HumanModel("mipa")
 model_tresoldi = HumanModel("tresoldi")
+model_encoder = MachineModel("encoder")

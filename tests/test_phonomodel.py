@@ -85,6 +85,19 @@ def test_tresoldi():
     assert _tresoldi.fvalues["click"]["rank"] == 12
 
 
+def test_encoder():
+    """
+    Test the ENCODER model.
+    """
+
+    _encoder = maniphono.MachineModel("encoder")
+
+    vector, _ = _encoder.parse_grapheme("a")
+    grapheme, _ = _encoder.closest_grapheme(vector)
+
+    assert grapheme == "a"
+
+
 def test_custom_human_models():
     """
     Test the custom models.

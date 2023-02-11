@@ -3,7 +3,7 @@ Utility functions for `maniphono`.
 """
 
 # Import standard modules
-from typing import List, Optional, Sequence, Tuple
+from typing import List, Optional, Sequence, Tuple, Iterable
 import re
 import unicodedata
 
@@ -15,12 +15,32 @@ RE_FEATURE = re.compile(r"^[a-z][-_a-z]*$")
 RE_FVALUE = re.compile(r"^[a-z][-_a-z]*$")
 
 
+def euclidean(a: Sequence[float], b: Sequence[float]) -> float:
+    """
+    Compute the Euclidean distance between two vectors.
+
+    Parameters
+    ----------
+    a : Sequence[float]
+        The first vector.
+    b : Sequence[float]
+        The second vector.
+
+    Returns
+    -------
+    float
+        The Euclidean distance between the two vectors.
+    """
+
+    return sum((x - y) ** 2 for x, y in zip(a, b)) ** 0.5
+
+
 def normalize(grapheme: str) -> str:
     """
     Normalize the string representation of a grapheme.
 
     Currently, normalization involves NFD Unicode normalization and stripping any leading
-    and trailing white spaces. As these opeations might change in the future, it is
+    and trailing white spaces. As these operations might change in the future, it is
     suggested to always use this function instead of reimplementing it in code
     each time.
 
@@ -111,7 +131,7 @@ def parse_constraints(constraints: List[str]) -> list:
 
 # TODO: write test with all delimiters
 # TODO: should accept any iterable?
-def parse_fvalues(fvalues: Sequence) -> frozenset:
+def parse_fvalues(fvalues: Iterable) -> frozenset:
     """
     Parse a sequence of fvalues as a frozenset.
 
@@ -121,9 +141,9 @@ def parse_fvalues(fvalues: Sequence) -> frozenset:
     allow the same delimiters. Delimiters can be white spaces, commas, semicolons,
     forward slashes, and the " and " substring.
 
-    PArameters
+    Parameters
     ----------
-    fvalues : Sequence
+    fvalues : Iterable
         The sequence with the fvalues to be parsed.
 
     Returns
