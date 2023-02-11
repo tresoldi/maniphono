@@ -9,6 +9,3 @@ include models/mipa/sounds.csv
 include models/tresoldi/model.csv
 include models/tresoldi/sounds.csv
 include models/encoder/graphemes.tsv
-recursive-include distances *.csv *.tsv
-recursive-include docs *.csv *.tsv
-recursive-include tests/models *.csv *.tsv *.md
