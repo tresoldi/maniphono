@@ -161,10 +161,7 @@ def codepoint2glyph(codepoint: str) -> str:
     """
 
     codepoint = codepoint.lower()
-    if codepoint.startswith("u+"):
-        value = int(codepoint[2:], 16)
-    else:
-        value = int(codepoint, 16)
+    value = int(codepoint[2:], 16)
 
     return chr(value)
 
@@ -222,7 +219,7 @@ def match_initial(string: str, candidates: List[str]) -> Tuple[str, Optional[str
 
     # Sort the candidates by inverse length -- this is a bit expensive computationally,
     # but it is better to perform it each time to make the function more general.
-    # Note that we make sure to remove any empty string inadvertedly passed among the
+    # Note that we make sure to remove any empty string inadvertently passed among the
     # `candidates`.
     candidates = sorted([cand for cand in candidates if cand], reverse=True, key=len)
     for cand in candidates:
